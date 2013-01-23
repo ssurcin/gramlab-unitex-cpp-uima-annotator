@@ -1,0 +1,37 @@
+/*
+ * FileUtils.h
+ *
+ *  Created on: 10 juil. 2012
+ *      Author: sylvain
+ */
+
+#ifndef FILEUTILS_H_
+#define FILEUTILS_H_
+
+#include <boost/filesystem.hpp>
+
+#include <uima/unistrref.hpp>
+#include <unicode/ustring.h>
+
+#undef u_fopen
+#undef u_fread
+#undef u_fwrite
+#undef u_fclose
+#undef u_feof
+#undef u_fgetc
+
+namespace unitexcpp
+{
+	bool writeStringToFile(const std::string& strFilename, const uima::UnicodeStringRef& uString);
+	bool writeStringToFile(const boost::filesystem::path& filename, const uima::UnicodeStringRef& uString);
+	bool getStringFromFile(const std::string& strFilename, icu::UnicodeString& uString);
+	bool getStringFromFile(const boost::filesystem::path& filename, icu::UnicodeString& uString);
+
+	void getVirtualFilesInDirectory(const std::string& strDirectory, std::list<std::string>& list);
+	void getVirtualFilesInDirectory(const boost::filesystem::path& directory, std::list<std::string>& list);
+
+	boost::filesystem::path getRelativePathFrom(const boost::filesystem::path& rootPath, const boost::filesystem::path& fullPath);
+	boost::filesystem::path createPathRelativeTo(const boost::filesystem::path& rootPath, const boost::filesystem::path& offsetPath);
+}
+
+#endif /* FILEUTILS_H_ */

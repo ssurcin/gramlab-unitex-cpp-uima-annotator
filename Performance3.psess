@@ -1,0 +1,67 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<VSPerformanceSession Version="1.00">
+  <Options>
+    <Solution>C:\Users\Sylvain\workspace\unitex-uima-cpp\UnitexAnnotatorCpp.sln</Solution>
+    <CollectionMethod>Sampling</CollectionMethod>
+    <AllocationMethod>None</AllocationMethod>
+    <LaunchRuntimeControl>true</LaunchRuntimeControl>
+    <AddReport>true</AddReport>
+    <ResourceBasedAnalysisSelected>true</ResourceBasedAnalysisSelected>
+    <ThreadBasedAnalysisSelected>true</ThreadBasedAnalysisSelected>
+    <UniqueReport>Timestamp</UniqueReport>
+    <SamplingMethod>Cycles</SamplingMethod>
+    <CycleCount>10000000</CycleCount>
+    <PageFaultCount>10</PageFaultCount>
+    <SysCallCount>10</SysCallCount>
+    <SamplingCounter Name="" ReloadValue="00000000000f4240" DisplayName="" />
+    <RelocateBinaries>false</RelocateBinaries>
+    <CollectOnHpcCluster>false</CollectOnHpcCluster>
+    <HPCSettings>
+      <NumberOfProcesses>0</NumberOfProcesses>
+      <TargetSelection>UnknownDisabled</TargetSelection>
+      <ProfileOnRank>0</ProfileOnRank>
+      <AdvancedProperties>
+        <Project>Profiler Project</Project>
+        <CleanUp>true</CleanUp>
+        <MpiexecCommand>mpiexec.exe</MpiexecCommand>
+        <DeployCRT>true</DeployCRT>
+      </AdvancedProperties>
+    </HPCSettings>
+    <HardwareCounters EnableHWCounters="false" />
+    <EtwSettings />
+    <PdhSettings>
+      <PdhCountersEnabled>false</PdhCountersEnabled>
+      <PdhCountersRate>500</PdhCountersRate>
+      <PdhCounters>
+        <PdhCounter>\Disque physique(_Total)\Longueur moyenne de file d’attente du disque</PdhCounter>
+        <PdhCounter>\Mémoire\Pages/s</PdhCounter>
+        <PdhCounter>\Processeur(_Total)\% temps processeur</PdhCounter>
+      </PdhCounters>
+    </PdhSettings>
+  </Options>
+  <ExcludeSmallFuncs>true</ExcludeSmallFuncs>
+  <JScriptProfilingEnabled>false</JScriptProfilingEnabled>
+  <PreinstrumentEvent>
+    <InstrEventExclude>false</InstrEventExclude>
+  </PreinstrumentEvent>
+  <PostinstrumentEvent>
+    <InstrEventExclude>false</InstrEventExclude>
+  </PostinstrumentEvent>
+  <Reports>
+    <Report>
+      <Path>C:\Users\Sylvain\workspace\unitex-uima-cpp\Report121116.vsp</Path>
+    </Report>
+  </Reports>
+  <RuntimeMarks>
+    <MarkName>Marquer un</MarkName>
+    <MarkName>Marquer deux</MarkName>
+    <MarkName>Marquer trois</MarkName>
+    <MarkName>Marquer quatre</MarkName>
+    <MarkName>Marquer cinq</MarkName>
+    <MarkName>Marquer six</MarkName>
+    <MarkName>Marquer sept</MarkName>
+    <MarkName>Marquer huit</MarkName>
+    <MarkName>Marquer neuf</MarkName>
+    <MarkName>Marquer dix</MarkName>
+  </RuntimeMarks>
+</VSPerformanceSession>

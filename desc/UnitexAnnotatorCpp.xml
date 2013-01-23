@@ -1,0 +1,349 @@
+<?xml version="1.0" encoding="UTF-8"?><analysisEngineDescription xmlns="http://uima.apache.org/resourceSpecifier">
+  <frameworkImplementation>org.apache.uima.cpp</frameworkImplementation>
+  <primitive>true</primitive>
+  <annotatorImplementationName>C:\Users\Sylvain\Pulse\workspace\UnitexAnnotatorCpp\UnitexAnnotatorCpp.dll</annotatorImplementationName>
+  <analysisEngineMetaData>
+    <name>UnitexAnnotatorCpp</name>
+    <description>Find entities using Unitex.</description>
+    <version>1.0</version>
+    <vendor>Kwaga</vendor>
+    <configurationParameters defaultGroup="French" searchStrategy="none">
+      <commonParameters>
+        <configurationParameter>
+          <name>Dictionaries</name>
+          <description>List of dictionaries to use with this language.</description>
+          <type>String</type>
+          <multiValued>true</multiValued>
+          <mandatory>false</mandatory>
+        </configurationParameter>
+        <configurationParameter>
+          <name>Graphs</name>
+          <description>Graphs independent of the analysis strategy</description>
+          <type>String</type>
+          <multiValued>true</multiValued>
+          <mandatory>true</mandatory>
+        </configurationParameter>
+        <configurationParameter>
+          <name>SystemDictionaries</name>
+          <description>A file containing the names of the system dictionaries to apply (supercedes the Dictionaries parameter).</description>
+          <type>String</type>
+          <multiValued>false</multiValued>
+          <mandatory>false</mandatory>
+        </configurationParameter>
+        <configurationParameter>
+          <name>UserDictionaries</name>
+          <description>A file containing the names of the user dictionaries to apply (supercedes the Dictionaries parameter).</description>
+          <type>String</type>
+          <multiValued>false</multiValued>
+          <mandatory>false</mandatory>
+        </configurationParameter>
+        <configurationParameter>
+          <name>MorphoDictionaries</name>
+          <description>Morphological dictionaries to be applied on each graph.
+Use the format:
+&lt;graph path&gt;=&lt;list of morpho dictionaries&gt;
+where the list of morphological dictionaries is a single string with one or more dictionary paths (relative to the current language's Dela folder) separated with semi-colons.</description>
+          <type>String</type>
+          <multiValued>true</multiValued>
+          <mandatory>false</mandatory>
+        </configurationParameter>
+        <configurationParameter>
+          <name>Mode</name>
+          <description>REPLACE or MERGE</description>
+          <type>String</type>
+          <multiValued>false</multiValued>
+          <mandatory>false</mandatory>
+        </configurationParameter>
+        <configurationParameter>
+          <name>Debug</name>
+          <description>Set to true if you want to produce more debug info in the log</description>
+          <type>Boolean</type>
+          <multiValued>false</multiValued>
+          <mandatory>false</mandatory>
+        </configurationParameter>
+        <configurationParameter>
+          <name>TimeoutDelay</name>
+          <type>Integer</type>
+          <multiValued>false</multiValued>
+          <mandatory>true</mandatory>
+        </configurationParameter>
+        <configurationParameter>
+          <name>fakeTokens</name>
+          <description>A list of tokens produced by Unitex that are not present in the input document (those "fake" tokens are optionnally generated before calling Unitex, for ad hoc graph purposes).
+
+Each item of this list can span over more than 1 token, e.g. "[SDOC]" is in fact 3 tokens for Unitex: [, SDOC, ].</description>
+          <type>String</type>
+          <multiValued>true</multiValued>
+          <mandatory>false</mandatory>
+        </configurationParameter>
+        <configurationParameter>
+          <name>cleanTemporaryFiles</name>
+          <description>Clean Unitex temporary files after processing.</description>
+          <type>Boolean</type>
+          <multiValued>false</multiValued>
+          <mandatory>false</mandatory>
+        </configurationParameter>
+        <configurationParameter>
+          <name>logProfilingInfo</name>
+          <description>set this flag to add an annotation logging time elapsed while processing a CAS</description>
+          <type>Boolean</type>
+          <multiValued>false</multiValued>
+          <mandatory>false</mandatory>
+        </configurationParameter>
+        <configurationParameter>
+          <name>LongestMatchOutput</name>
+          <description>In case of multiple match by an automaton, keep matches with different left part, and among subsets with the same left part, keep only the longest output.</description>
+          <type>Boolean</type>
+          <multiValued>false</multiValued>
+          <mandatory>true</mandatory>
+        </configurationParameter>
+        <configurationParameter>
+          <name>ForceGraphCompilation</name>
+          <description>If True, recompile graphs when initializing the annotator.
+If Fale, recompile only those graphs for which the .grf was specified (cf. parameter Graphs), and only if there is no corresponding .fst2 or an older one.</description>
+          <type>Boolean</type>
+          <multiValued>false</multiValued>
+          <mandatory>false</mandatory>
+        </configurationParameter>
+		<configurationParameter>
+			<name>HideUnitexOutput</name>
+			<description>If set (recommended), hide Unitex internal output from console.</description>
+			<type>Boolean</type>
+			<multiValued>false</multiValued>
+			<mandatory>true</mandatory>
+        </configurationParameter>		
+      </commonParameters>
+      <configurationGroup names="English French"/>
+    </configurationParameters>
+    <configurationParameterSettings>
+      <settingsForGroup name="French">
+        <nameValuePair>
+          <name>Dictionaries</name>
+          <value>
+            <array>
+              <string>MyDico.bin</string>
+              <string>motsGramf-.bin</string>
+              <string>prenom-c.bin</string>
+              <string>prenom-s.bin</string>
+              <string>ajouts80jours.bin</string>
+              <string>Prolex-Toponymes.bin</string>
+              <string>Prolex-PaysCapitales.bin</string>
+              <string>profession.bin</string>
+              <string>dela-en-publicEN.bin</string>
+              <string>dela-fr-publicFR_PLUS.bin</string>
+            </array>
+          </value>
+        </nameValuePair>
+        <nameValuePair>
+          <name>Graphs</name>
+          <value>
+            <array>
+              <string>Preprocessing/Replace/Replace.fst2</string>
+              <string>Preprocessing/Sentence/Sentence.fst2</string>
+            </array>
+          </value>
+        </nameValuePair>
+        <nameValuePair>
+          <name>SystemDictionaries</name>
+          <value>
+            <string>system_dic.def</string>
+          </value>
+        </nameValuePair>
+        <nameValuePair>
+          <name>UserDictionaries</name>
+          <value>
+            <string>user_dic.def</string>
+          </value>
+        </nameValuePair>
+        <nameValuePair>
+          <name>Mode</name>
+          <value>
+            <string>REPLACE</string>
+          </value>
+        </nameValuePair>
+        <nameValuePair>
+          <name>Debug</name>
+          <value>
+            <boolean>true</boolean>
+          </value>
+        </nameValuePair>
+        <nameValuePair>
+          <name>TimeoutDelay</name>
+          <value>
+            <integer>120000</integer>
+          </value>
+        </nameValuePair>
+        <nameValuePair>
+          <name>fakeTokens</name>
+          <value>
+            <array>
+              <string>[SDOC]</string>
+              <string>[EDOC]</string>
+            </array>
+          </value>
+        </nameValuePair>
+        <nameValuePair>
+          <name>cleanTemporaryFiles</name>
+          <value>
+            <boolean>true</boolean>
+          </value>
+        </nameValuePair>
+        <nameValuePair>
+          <name>logProfilingInfo</name>
+          <value>
+            <boolean>true</boolean>
+          </value>
+        </nameValuePair>
+        <nameValuePair>
+          <name>LongestMatchOutput</name>
+          <value>
+            <boolean>true</boolean>
+          </value>
+        </nameValuePair>
+        <nameValuePair>
+          <name>ForceGraphCompilation</name>
+          <value>
+            <boolean>true</boolean>
+          </value>
+        </nameValuePair>
+        <nameValuePair>
+          <name>HideUnitexOutput</name>
+          <value>
+            <boolean>true</boolean>
+          </value>
+        </nameValuePair>
+      </settingsForGroup>
+      <settingsForGroup name="English">
+        <nameValuePair>
+          <name>Dictionaries</name>
+          <value>
+            <array>
+              <string>dela-en-public.bin</string>
+              <string>prenom-s.bin</string>
+              <string>Prolex-Toponymes_min.bin</string>
+              <string>Prolex-PaysCapitales_min.bin</string>
+              <string>kwaga_abrev_etc.bin</string>
+              <string>kwaga_prenom.bin</string>
+              <string>kwaga_profession.bin</string>
+              <string>kwaga_toponymes_local.bin</string>
+            </array>
+          </value>
+        </nameValuePair>
+        <nameValuePair>
+          <name>Graphs</name>
+          <value>
+            <array>
+              <string>Preprocessing/Replace/Replace.fst2</string>
+              <string>Preprocessing/Sentence/Sentence.fst2</string>
+            </array>
+          </value>
+        </nameValuePair>
+        <nameValuePair>
+          <name>SystemDictionaries</name>
+          <value>
+            <string>system_dic.def</string>
+          </value>
+        </nameValuePair>
+        <nameValuePair>
+          <name>UserDictionaries</name>
+          <value>
+            <string>user_dic.def</string>
+          </value>
+        </nameValuePair>
+        <nameValuePair>
+          <name>Mode</name>
+          <value>
+            <string>REPLACE</string>
+          </value>
+        </nameValuePair>
+        <nameValuePair>
+          <name>Debug</name>
+          <value>
+            <boolean>true</boolean>
+          </value>
+        </nameValuePair>
+        <nameValuePair>
+          <name>TimeoutDelay</name>
+          <value>
+            <integer>120000</integer>
+          </value>
+        </nameValuePair>
+        <nameValuePair>
+          <name>fakeTokens</name>
+          <value>
+            <array>
+              <string>[SDOC]</string>
+              <string>[EDOC]</string>
+            </array>
+          </value>
+        </nameValuePair>
+        <nameValuePair>
+          <name>cleanTemporaryFiles</name>
+          <value>
+            <boolean>true</boolean>
+          </value>
+        </nameValuePair>
+        <nameValuePair>
+          <name>logProfilingInfo</name>
+          <value>
+            <boolean>true</boolean>
+          </value>
+        </nameValuePair>
+        <nameValuePair>
+          <name>LongestMatchOutput</name>
+          <value>
+            <boolean>true</boolean>
+          </value>
+        </nameValuePair>
+        <nameValuePair>
+          <name>ForceGraphCompilation</name>
+          <value>
+            <boolean>true</boolean>
+          </value>
+        </nameValuePair>
+        <nameValuePair>
+          <name>HideUnitexOutput</name>
+          <value>
+            <boolean>true</boolean>
+          </value>
+        </nameValuePair>
+      </settingsForGroup>
+    </configurationParameterSettings>
+    <typeSystemDescription>
+      <imports>
+        <import location="UnitexTypeSystemDescriptor.xml"/>
+        <import location="GeneralLinguisticTypeSystemDescriptor.xml"/>
+        <import location="GeneralPerformanceTypeSystemDescriptor.xml"/>
+      </imports>
+    </typeSystemDescription>
+    <typePriorities/>
+    <fsIndexCollection/>
+    <capabilities>
+      <capability>
+        <inputs>
+          <type allAnnotatorFeatures="true">org.gramlab.kwaga.unitex_uima.unitex.tcas.UnitexDocumentParameters</type>
+          <type allAnnotatorFeatures="true">org.gramlab.kwaga.unitex_uima.general.tcas.LanguageArea</type>
+          <type allAnnotatorFeatures="true">org.gramlab.kwaga.unitex_uima.unitex.tcas.DynamicDictionary</type>
+        </inputs>
+        <outputs>
+          <type allAnnotatorFeatures="true">org.gramlab.kwaga.unitex_uima.unitex.tcas.TransductionOutputAnnotation</type>
+          <type allAnnotatorFeatures="true">org.gramlab.kwaga.unitex_uima.unitex.tcas.TokenAnnotation</type>
+          <type allAnnotatorFeatures="true">org.gramlab.kwaga.unitex_uima.unitex.tcas.SentenceAnnotation</type>
+          <type allAnnotatorFeatures="true">org.gramlab.kwaga.unitex_uima.unitex.tcas.ParagraphAnnotation</type>
+          <type allAnnotatorFeatures="true">org.gramlab.kwaga.unitex_uima.general.tcas.AnnotatorPerformanceAnnotation</type>
+          <type allAnnotatorFeatures="true">org.gramlab.kwaga.unitex_uima.general.tcas.AutomatonLocatePerformanceAnnatation</type>
+        </outputs>
+        <outputSofas>
+          <sofaName>_InitialView</sofaName>
+        </outputSofas>
+        <languagesSupported/>
+      </capability>
+    </capabilities>
+    <operationalProperties>
+      <modifiesCas>true</modifiesCas>
+      <multipleDeploymentAllowed>true</multipleDeploymentAllowed>
+      <outputsNewCASes>false</outputsNewCASes>
+    </operationalProperties>
+  </analysisEngineMetaData>
+  <resourceManagerConfiguration/>
+</analysisEngineDescription>

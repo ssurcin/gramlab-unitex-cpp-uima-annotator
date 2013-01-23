@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<typeSystemDescription xmlns="http://uima.apache.org/resourceSpecifier">
+  <name>UnitexTypeSystemDescriptor</name>
+  <description>The minimal Type System to work with UnitexAnnotator.</description>
+  <version>1.0</version>
+  <vendor>Kwaga</vendor>
+  <types>
+    <typeDescription>
+      <name>org.gramlab.kwaga.unitex_uima.unitex.tcas.TextAreaAnnotation</name>
+      <description>Represent a text area, starting at a given token and ending at a given token, with links to the same text area in other views. 
+This should be used as an abstract root class for other actual classes such as SentenceAnnotation and ParagraphAnnotation, and it is also the root for the hierarchy of LinguisticHintAnnotation.</description>
+      <supertypeName>uima.tcas.Annotation</supertypeName>
+      <features>
+        <featureDescription>
+          <name>previous</name>
+          <description>The previous TextAreaAnnotation within the current SOFA.</description>
+          <rangeTypeName>org.gramlab.kwaga.unitex_uima.unitex.tcas.TextAreaAnnotation</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>next</name>
+          <description>The next TextAreaAnnotation within the current SOFA.</description>
+          <rangeTypeName>org.gramlab.kwaga.unitex_uima.unitex.tcas.TextAreaAnnotation</rangeTypeName>
+        </featureDescription>
+      </features>
+    </typeDescription>
+    <typeDescription>
+      <name>org.gramlab.kwaga.unitex_uima.unitex.tcas.TokenAnnotation</name>
+      <description>Annotates a token.</description>
+      <supertypeName>org.gramlab.kwaga.unitex_uima.unitex.tcas.TextAreaAnnotation</supertypeName>
+      <features>
+        <featureDescription>
+          <name>token</name>
+          <description>If necessary, this is a canonical form of the token.</description>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>index</name>
+          <description>A sequence index for this token (the text is thought as a string of tokens).</description>
+          <rangeTypeName>uima.cas.Integer</rangeTypeName>
+        </featureDescription>
+      </features>
+    </typeDescription>
+    <typeDescription>
+      <name>org.gramlab.kwaga.unitex_uima.unitex.tcas.ContextAnnotation</name>
+      <description>A context is a text area with special markers: the index of the first and last token in the area.</description>
+      <supertypeName>org.gramlab.kwaga.unitex_uima.unitex.tcas.TextAreaAnnotation</supertypeName>
+      <features>
+        <featureDescription>
+          <name>firstToken</name>
+          <description>Points to the first token in this context area.</description>
+          <rangeTypeName>org.gramlab.kwaga.unitex_uima.unitex.tcas.TokenAnnotation</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>lastToken</name>
+          <description>Points to the last token in this context area.</description>
+          <rangeTypeName>org.gramlab.kwaga.unitex_uima.unitex.tcas.TokenAnnotation</rangeTypeName>
+        </featureDescription>
+      </features>
+    </typeDescription>
+    <typeDescription>
+      <name>org.gramlab.kwaga.unitex_uima.unitex.tcas.ParagraphAnnotation</name>
+      <description>A paragraph is a context area.</description>
+      <supertypeName>org.gramlab.kwaga.unitex_uima.unitex.tcas.ContextAnnotation</supertypeName>
+      <features>
+        <featureDescription>
+          <name>sentences</name>
+          <description>The array of sentences contained whithin this paragraph.</description>
+          <rangeTypeName>uima.cas.FSArray</rangeTypeName>
+          <elementType>org.gramlab.kwaga.unitex_uima.unitex.tcas.SentenceAnnotation</elementType>
+        </featureDescription>
+      </features>
+    </typeDescription>
+    <typeDescription>
+      <name>org.gramlab.kwaga.unitex_uima.unitex.tcas.SentenceAnnotation</name>
+      <description>A sentence is a smaller context area inside a paragraph.</description>
+      <supertypeName>org.gramlab.kwaga.unitex_uima.unitex.tcas.ContextAnnotation</supertypeName>
+      <features>
+        <featureDescription>
+          <name>paragraph</name>
+          <description>Points to the paragraph containing this sentence.</description>
+          <rangeTypeName>org.gramlab.kwaga.unitex_uima.unitex.tcas.ParagraphAnnotation</rangeTypeName>
+        </featureDescription>
+      </features>
+    </typeDescription>
+    <typeDescription>
+      <name>org.gramlab.kwaga.unitex_uima.unitex.tcas.TransductionOutputAnnotation</name>
+      <description>Annotates the text area that triggered the transduction with the transduction's output.</description>
+      <supertypeName>org.gramlab.kwaga.unitex_uima.unitex.tcas.ContextAnnotation</supertypeName>
+      <features>
+        <featureDescription>
+          <name>output</name>
+          <description>The transduction output.</description>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+      </features>
+    </typeDescription>
+    <typeDescription>
+      <name>org.gramlab.kwaga.unitex_uima.unitex.tcas.DynamicDictionary</name>
+      <description/>
+      <supertypeName>uima.tcas.DocumentAnnotation</supertypeName>
+      <features>
+        <featureDescription>
+          <name>entries</name>
+          <description/>
+          <rangeTypeName>uima.cas.StringArray</rangeTypeName>
+        </featureDescription>
+      </features>
+    </typeDescription>
+    <typeDescription>
+      <name>org.gramlab.kwaga.unitex_uima.unitex.tcas.UnitexDocumentParameters</name>
+      <description>Stores parameters global to the document.</description>
+      <supertypeName>uima.tcas.DocumentAnnotation</supertypeName>
+      <features>
+        <featureDescription>
+          <name>analysisStrategy</name>
+          <description/>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>skip</name>
+          <description/>
+          <rangeTypeName>uima.cas.Boolean</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>uri</name>
+          <description/>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+      </features>
+    </typeDescription>
+  </types>
+</typeSystemDescription>

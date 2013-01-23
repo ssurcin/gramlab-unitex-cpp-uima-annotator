@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<typeSystemDescription xmlns="http://uima.apache.org/resourceSpecifier">
+  <name>GeneralLinguisticTypeSystemDescriptor</name>
+  <description/>
+  <version>1.0</version>
+  <vendor>Kwaga</vendor>
+  <types>
+    <typeDescription>
+      <name>org.gramlab.kwaga.unitex_uima.general.tcas.SourceDocumentInformation</name>
+      <description/>
+      <supertypeName>uima.tcas.DocumentAnnotation</supertypeName>
+      <features>
+        <featureDescription>
+          <name>skip</name>
+          <description>TRUE if this item must not be linguistically processed.</description>
+          <rangeTypeName>uima.cas.Boolean</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>uri</name>
+          <description/>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>offsetInSource</name>
+          <description/>
+          <rangeTypeName>uima.cas.Integer</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>documentSize</name>
+          <description/>
+          <rangeTypeName>uima.cas.Integer</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>lastSegment</name>
+          <description/>
+          <rangeTypeName>uima.cas.Boolean</rangeTypeName>
+        </featureDescription>
+      </features>
+    </typeDescription>
+    <typeDescription>
+      <name>org.gramlab.kwaga.unitex_uima.general.tcas.LanguageArea</name>
+      <description>Annotates a text area with a language name.</description>
+      <supertypeName>uima.tcas.Annotation</supertypeName>
+      <features>
+        <featureDescription>
+          <name>language</name>
+          <description>Language name</description>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>additionalOpeningTag</name>
+          <description>A text that must be added before the text's beginning before being processed by linguistic annotator.</description>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>additionalClosingTag</name>
+          <description>A text that must be added after the text's ending before being processed by linguistic annotator.</description>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>graphFilter</name>
+          <description>A filter specifying which graphs must be applied or not applied to this language area.
+
+Each item in the array is a graph name that is allowed to apply.
+
+If the graph filter is null or empty, all available graphs are allowed.</description>
+          <rangeTypeName>uima.cas.StringArray</rangeTypeName>
+          <multipleReferencesAllowed>false</multipleReferencesAllowed>
+        </featureDescription>
+        <featureDescription>
+          <name>graphNegativeFilter</name>
+          <description>Graphs described here must not be applied on this language area.</description>
+          <rangeTypeName>uima.cas.StringArray</rangeTypeName>
+          <multipleReferencesAllowed>false</multipleReferencesAllowed>
+        </featureDescription>
+      </features>
+    </typeDescription>
+  </types>
+</typeSystemDescription>

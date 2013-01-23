@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<typeSystemDescription xmlns="http://uima.apache.org/resourceSpecifier">
+  <name>GeneralPerformanceTypeSystem</name>
+  <description>This Type System defines annotations used to store informations about performance (for debugging purposes).</description>
+  <version>1.0</version>
+  <vendor>Kwaga</vendor>
+  <types>
+    <typeDescription>
+      <name>org.gramlab.kwaga.unitex_uima.general.tcas.AnnotatorPerformanceAnnotation</name>
+      <description/>
+      <supertypeName>org.gramlab.kwaga.unitex_uima.general.tcas.ComponentPerformanceAnnotation</supertypeName>
+    </typeDescription>
+    <typeDescription>
+      <name>org.gramlab.kwaga.unitex_uima.general.tcas.AutomatonLocatePerformanceAnnatation</name>
+      <description>Stores performances of locate on each automaton.</description>
+      <supertypeName>org.gramlab.kwaga.unitex_uima.general.tcas.ComponentPerformanceAnnotation</supertypeName>
+    </typeDescription>
+    <typeDescription>
+      <name>org.gramlab.kwaga.unitex_uima.general.tcas.ComponentPerformanceAnnotation</name>
+      <description>Performance of any named component</description>
+      <supertypeName>uima.tcas.DocumentAnnotation</supertypeName>
+      <features>
+        <featureDescription>
+          <name>componentName</name>
+          <description/>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>elapsedTime</name>
+          <description/>
+          <rangeTypeName>uima.cas.Long</rangeTypeName>
+        </featureDescription>
+      </features>
+    </typeDescription>
+    <typeDescription>
+      <name>org.gramlab.kwaga.unitex_uima.general.tcas.UnitexCommandPerformanceAnnotation</name>
+      <description/>
+      <supertypeName>org.gramlab.kwaga.unitex_uima.general.tcas.ComponentPerformanceAnnotation</supertypeName>
+    </typeDescription>
+  </types>
+</typeSystemDescription>

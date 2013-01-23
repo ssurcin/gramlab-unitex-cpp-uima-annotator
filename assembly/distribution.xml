@@ -1,0 +1,54 @@
+<assembly
+	xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0 http://maven.apache.org/xsd/assembly-1.1.0.xsd">
+	<id>create-base-package</id>
+	
+	<!-- Give the same name to the artifact contents, whatever the platform. -->
+	<!-- This way we don't get unitex-uima-cpp-win32 (or -linux, etc.) entering the
+	     dependent projects' architecture. -->
+	<baseDirectory>unitex-uima-cpp</baseDirectory>
+	
+	<!-- Create a zip file into target directory containing the files we want to distribute -->
+	<formats>
+		<format>zip</format>
+	</formats>
+
+	<!-- Here are the files we want to include into the zip file -->
+	<fileSets>
+		<!-- Take all dynamic libraries in the build directory produced by C++ compiler -->
+		<fileSet>
+			<directory>${project.basedir}/${build.mode}</directory>
+			<outputDirectory>/</outputDirectory>
+			<useDefaultExcludes>true</useDefaultExcludes>
+			<includes>
+				<include>*.dll</include>
+				<include>*.so</include>
+				<include>*.dylib</include>
+			</includes>
+		</fileSet>
+		<!-- Take all UIMA-C++ dynamic libraries in the build directory produced by C++ compiler -->
+		<fileSet>
+			<directory>${project.basedir}/${build.mode}/uima-cpp</directory>
+			<outputDirectory>/</outputDirectory>
+			<useDefaultExcludes>true</useDefaultExcludes>
+			<includes>
+				<include>*.dll</include>
+				<include>*.so</include>
+				<include>*.so.*</include>
+				<include>*.dylib</include>
+			</includes>
+		</fileSet>
+		<!-- Take all descriptors from the desc directory and put them in zip's top level -->
+		<!-- (easier to unpack in the dependent project architecture)                     -->
+		<fileSet>
+			<directory>${project.basedir}/desc</directory>
+			<outputDirectory>/</outputDirectory>
+			<useDefaultExcludes>true</useDefaultExcludes>
+			<includes>
+				<include>*.xml</include>
+			</includes>
+		</fileSet>
+	</fileSets>
+</assembly>
+

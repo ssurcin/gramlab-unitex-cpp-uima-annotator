@@ -1,0 +1,237 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.kwaga</groupId>
+	<artifactId>unitex-uima-cpp-${actual.platform}</artifactId>
+	<version>1.1.2-SNAPSHOT</version>
+
+	<!-- HOWTO: deploy a release on the repository -->
+	<!-- 1. Choose a platform, and adapt the property actual.platform below 
+		(win32, linux, osx). -->
+	<!-- 2. mvn release:clean release:prepare release:perform -->
+	<!-- This will remove the -SNAPSHOT from the version, deploy the release 
+		with the current version number in the repository, -->
+	<!-- and modify this pom to increase the version number and add -SNAPSHOT. -->
+	<!-- 3. (Optional) Go to another machine to release another platform and 
+		adapt the actual.platform property accordingly. -->
+	<!-- mvn release:clean release:prepare release:perform -DpushChanges=false -->
+	<!-- This will release the artifact for the other platform without changing 
+		the version number. -->
+
+	<properties>
+		<!-- Use default UTF-8 encoding -->
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<!-- <current.base.version>0.0.15</current.base.version> <current.version>${current.base.version}-SNAPSHOT</current.version> -->
+		<!-- The version of the UIMA-C++ framework artifact we need -->
+		<uima-cpp.version>0.0.8</uima-cpp.version>
+		<!-- This is the name of the folder where the C++ compiler stores the build 
+			of UnitexAnnotatorCpp project -->
+		<!-- It must exist before launching Maven -->
+		<build.mode>Release</build.mode>
+	</properties>
+
+	<scm>
+		<connection>scm:svn:https://subversion.assembla.com/svn/gramlab/GramLab-Components/unitex-uima-cpp/tags/unitex-uima-cpp-1.1.1</connection>
+		<developerConnection>scm:svn:https://subversion.assembla.com/svn/gramlab/GramLab-Components/unitex-uima-cpp/tags/unitex-uima-cpp-1.1.1</developerConnection>
+	</scm>
+
+	<distributionManagement>
+		<repository>
+			<id>kwaga</id>
+			<name>kwaga-releases</name>
+			<url>http://kwaga.artifactoryonline.com/kwaga/ext-releases-local</url>
+		</repository>
+		<snapshotRepository>
+			<id>kwaga</id>
+			<name>kwaga-snapshots</name>
+			<url>http://kwaga.artifactoryonline.com/kwaga/ext-snapshots-local</url>
+		</snapshotRepository>
+	</distributionManagement>
+
+	<profiles>
+		<profile>
+			<id>win32</id>
+			<activation>
+				<os>
+					<family>Windows</family>
+				</os>
+			</activation>
+			<properties>
+				<!-- Change this to reflect the actual platform: win32, linux or osx -->
+				<actual.platform>win32</actual.platform>
+			</properties>
+		</profile>
+		<profile>
+			<id>linux</id>
+			<activation>
+				<os>
+					<family>linux</family>
+				</os>
+			</activation>
+			<properties>
+				<!-- Change this to reflect the actual platform: win32, linux or osx -->
+				<actual.platform>linux</actual.platform>
+			</properties>
+		</profile>
+		<profile>
+			<id>mac</id>
+			<activation>
+				<os>
+					<family>mac</family>
+				</os>
+			</activation>
+			<properties>
+				<!-- Change this to reflect the actual platform: win32, linux or osx -->
+				<actual.platform>osx</actual.platform>
+			</properties>
+		</profile>
+	</profiles>
+
+	<build>
+		<finalName>${project.artifactId}</finalName>
+		<resources>
+			<resource>
+				<directory>desc</directory>
+				<filtering>true</filtering>
+			</resource>
+		</resources>
+
+		<!-- Allow unpack in m2e -->
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>org.apache.maven.plugins</groupId>
+										<artifactId>maven-dependency-plugin</artifactId>
+										<versionRange>[2.0,)</versionRange>
+										<goals>
+											<goal>unpack</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<execute />
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+
+		<plugins>
+			<!-- Encode resources in UTF-8 -->
+			<plugin>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>2.2</version>
+				<configuration>
+					<encoding>UTF-8</encoding>
+				</configuration>
+			</plugin>
+
+			<!-- Clean dependency related directories -->
+			<plugin>
+				<artifactId>maven-clean-plugin</artifactId>
+				<version>2.4.1</version>
+				<configuration>
+					<filesets>
+						<fileset>
+							<directory>${project.basedir}/${build.mode}</directory>
+							<includes>
+								<include>uima*</include>
+								<include>activemq-cpp.*</include>
+								<include>deployCppService*</include>
+								<include>runAECpp*</include>
+								<include>icu*</include>
+								<include>libapr*</include>
+								<include>msvc*.dll</include>
+								<include>xerces-c*</include>
+							</includes>
+							<excludes>
+								<exclude>UnitexAnnotatorCpp*</exclude>
+								<exclude>desc</exclude>
+							</excludes>
+						</fileset>
+					</filesets>
+				</configuration>
+			</plugin>
+
+			<!-- Unpack UIMA-C++ dependencies intro project/build/uima-cpp -->
+			<plugin>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>2.5.1</version>
+				<executions>
+					<execution>
+						<id>unpack</id>
+						<phase>package</phase>
+						<goals>
+							<goal>unpack</goal>
+						</goals>
+						<configuration>
+							<artifactItems>
+								<artifactItem>
+									<groupId>com.kwaga</groupId>
+									<artifactId>uima-cpp-${actual.platform}</artifactId>
+									<version>${uima-cpp.version}</version>
+									<type>zip</type>
+									<outputDirectory>${project.basedir}/${build.mode}</outputDirectory>
+								</artifactItem>
+							</artifactItems>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<!-- Build the target assembly -->
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>2.3</version>
+				<configuration>
+					<encoding>UTF-8</encoding>
+					<appendAssemblyId>false</appendAssemblyId>
+					<descriptors>
+						<descriptor>assembly/distribution.xml</descriptor>
+					</descriptors>
+				</configuration>
+				<executions>
+					<execution>
+						<id>make-assembly</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<!-- Pack everything into a jar -->
+			<plugin>
+				<groupId>
+					org.apache.maven.plugins
+				</groupId>
+				<artifactId>
+					maven-source-plugin
+				</artifactId>
+				<version>
+					2.1.2
+				</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+		</plugins>
+	</build>
+</project>
