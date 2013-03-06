@@ -526,8 +526,7 @@ namespace uima
 
 		const set<UnicodeString> supportedLanguages = getAnnotatorContext().getGroupNamesForParameter(PARAM_DICTIONARIES);
 
-		for (set<UnicodeString>::const_iterator it = supportedLanguages.begin(); it != supportedLanguages.end(); it++) {
-			const UnicodeString& language = *it;
+		BOOST_FOREACH(const UnicodeString& language, supportedLanguages) {
 #ifdef DEBUG_UIMA_CPP
 			cout << "Initializing resources for language " << language << endl;
 #endif

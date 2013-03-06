@@ -45,7 +45,7 @@ namespace unitexcpp
 		public:
 			bool locate(const std::string& automaton,
 						const std::string& inputFilename,
-						bool startOnSpace = true,
+						bool startOnSpace = false,
 						const unitexcpp::MatchMode& matchMode = unitexcpp::MatchMode::LONGEST,
 						const unitexcpp::TransductionMode& transductionMode = unitexcpp::TransductionMode::REPLACE,
 						bool protectDicChars = false,
