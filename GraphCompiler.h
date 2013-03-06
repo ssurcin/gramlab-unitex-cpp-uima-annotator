@@ -40,7 +40,7 @@ namespace unitexcpp
 					      const boost::filesystem::path& alphabet =boost::filesystem::path(),
 					      bool loopCheck =true,
 					      bool charByChar =false,
-					      bool noEmptyGraphWarning =false) const;
+					      bool noEmptyGraphWarning =true) const;
 			bool flatten(const boost::filesystem::path& automaton, bool unfold =false, bool recursive =true, int depth =5) const;
 			bool fst2check(const boost::filesystem::path& automaton, bool sentenceCheck =false);
 
