@@ -31,8 +31,8 @@
 	</properties>
 
 	<scm>
-		<connection>scm:svn:https://subversion.assembla.com/svn/gramlab/GramLab-Components/unitex-uima-cpp/trunk</connection>
-		<developerConnection>scm:svn:https://subversion.assembla.com/svn/gramlab/GramLab-Components/unitex-uima-cpp/trunk</developerConnection>
+		<connection>scm:svn:https://gramlab-unitex-cpp-uima-annotator.googlecode.com/svn/trunk</connection>
+		<developerConnection>scm:svn:https://gramlab-unitex-cpp-uima-annotator.googlecode.com/svn/trunk</developerConnection>
 	</scm>
 
 	<distributionManagement>
