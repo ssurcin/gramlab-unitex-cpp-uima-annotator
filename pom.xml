@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.kwaga</groupId>
 	<artifactId>unitex-uima-cpp-${actual.platform}</artifactId>
-	<version>1.1.2-SNAPSHOT</version>
+	<version>1.1.2-SNAPSHOT</version> 
 
 	<!-- HOWTO: deploy a release on the repository -->
 	<!-- 1. Choose a platform, and adapt the property actual.platform below 
