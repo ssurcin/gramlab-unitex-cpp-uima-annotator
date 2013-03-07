@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.kwaga</groupId>
 	<artifactId>unitex-uima-cpp-${actual.platform}</artifactId>
-	<version>1.1.2-SNAPSHOT</version> 
+	<version>1.1.2</version> 
 
 	<!-- HOWTO: deploy a release on the repository -->
 	<!-- 1. Choose a platform, and adapt the property actual.platform below 
@@ -30,8 +30,8 @@
 	</properties>
 
 	<scm>
-		<connection>scm:svn:https://gramlab-unitex-cpp-uima-annotator.googlecode.com/svn/trunk</connection>
-		<developerConnection>scm:svn:https://gramlab-unitex-cpp-uima-annotator.googlecode.com/svn/trunk</developerConnection>
+		<connection>scm:svn:https://gramlab-unitex-cpp-uima-annotator.googlecode.com/svn/tags/unitex-uima-cpp-osx-1.1.2</connection>
+		<developerConnection>scm:svn:https://gramlab-unitex-cpp-uima-annotator.googlecode.com/svn/tags/unitex-uima-cpp-osx-1.1.2</developerConnection>
 	</scm>
 
 	<distributionManagement>
