@@ -1,9 +1,9 @@
 /*
- * FileUtils.cpp
- *
- *  Created on: 10 juil. 2012
- *      Author: sylvain
- */
+* FileUtils.cpp
+*
+*  Created on: 10 juil. 2012
+*      Author: sylvain
+*/
 
 #include "FileUtils.h"
 #include "FileEncoding.h"
@@ -13,6 +13,16 @@
 #include "Utils.h"
 #include <sstream>
 
+#if defined(_MSC_VER) && defined(_DEBUG) && defined(DEBUG_MEMORY_LEAKS)
+#define _CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
+#define DEBUG_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__)
+#define new DEBUG_NEW
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
+#endif
+
 using namespace std;
 using namespace uima;
 using namespace boost::filesystem;
@@ -21,10 +31,10 @@ using namespace unitex;
 namespace unitexcpp {
 
 	/**
-	 * Writes a string to a file, converting the ICU Unicode string into something
-	 * understandable by Unitex.
-	 * The file may be "regular" or abstract (i.e. starting with "$:").
-	 */
+	* Writes a string to a file, converting the ICU Unicode string into something
+	* understandable by Unitex.
+	* The file may be "regular" or abstract (i.e. starting with "$:").
+	*/
 	bool writeStringToFile(const string& strFilename, const UnicodeStringRef& uString)
 	{
 		VersatileEncodingConfig cfg = VEC_DEFAULT;
@@ -53,12 +63,16 @@ namespace unitexcpp {
 
 	bool getStringFromFile(const string& strFilename, UnicodeString& uString)
 	{
+		uString.remove();
+
 		if (!isPersistedPath(strFilename) && !exists(path(strFilename)))
 			return false;
 
+		buffer* contents;
+
 		VersatileEncodingConfig cfg = VEC_DEFAULT;
 		U_FILE* f = u_fopen(&cfg, strFilename.c_str(), U_READ);
-		buffer* contents = new_buffer_for_file(UNICHAR_BUFFER, f, 0);
+		contents = new_buffer_for_file(UNICHAR_BUFFER, f, 0);
 		int ok;
 		contents->size = u_fread(contents->unichar_buffer, contents->MAXIMUM_BUFFER_SIZE, f, &ok);
 		u_fclose(f);
@@ -66,7 +80,6 @@ namespace unitexcpp {
 		if (!ok)
 			return false;
 
-		uString.remove();
 		for (int i = 0; i < contents->size; i++)
 			uString.append((UChar)contents->unichar_buffer[i]);
 		uString.append(0);
@@ -108,8 +121,8 @@ namespace unitexcpp {
 	}
 
 	/**
-	 * Fills a string list with the paths of all virtual files contained in a virtual directory.
-	 */
+	* Fills a string list with the paths of all virtual files contained in a virtual directory.
+	*/
 	void getVirtualFilesInDirectory(const string& strDirectory, list<string>& list)
 	{
 		list.clear();
@@ -123,8 +136,8 @@ namespace unitexcpp {
 	}
 
 	/**
-	 * Fills a string list with the paths of all virtual files contained in a virtual directory.
-	 */
+	* Fills a string list with the paths of all virtual files contained in a virtual directory.
+	*/
 	void getVirtualFilesInDirectory(const path& directory, list<string>& list)
 	{
 		getVirtualFilesInDirectory(directory.string(), list);

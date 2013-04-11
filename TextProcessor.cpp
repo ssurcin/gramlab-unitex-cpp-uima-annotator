@@ -30,6 +30,16 @@
 
 #include "Unitex-C++/UnitexLibIO.h"
 
+#if defined(_MSC_VER) && defined(_DEBUG) && defined(DEBUG_MEMORY_LEAKS)
+#define _CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
+#define DEBUG_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__)
+#define new DEBUG_NEW
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
+#endif
+
 using namespace std;
 using namespace uima;
 using namespace unitexcpp;
@@ -357,7 +367,13 @@ namespace unitexcpp
 			// Keep track of the time spent in this automaton
 			AutomatonPerformanceTimer performanceTimer(*this, automaton);
 
-			LocateCommand command(getEngine(), automaton, inputFilename, matchMode, transductionMode, protectDicChars, maxMatchNumber, alphabet, morphoDics, startOnSpace, noStartOnSpaceMatching,
+			Stringlist persistedMorphoDicts;
+			getEngine().getMorphologicalDictionaries(automaton, persistedMorphoDicts);
+			BOOST_FOREACH(const string& dict, morphoDics) {
+				persistedMorphoDicts.push_back(dict);
+			}
+
+			LocateCommand command(getEngine(), automaton, inputFilename, matchMode, transductionMode, protectDicChars, maxMatchNumber, alphabet, persistedMorphoDicts, startOnSpace, noStartOnSpaceMatching,
 					charByChar, wordByWord, sntDir, korean, arabicTypoRulesFile, negOperator, allowsAmbiguousOutput, errorBehaviour, warnTokenCount, stopTokenCount);
 #ifdef DEBUG_UIMA_CPP
 			cout << "Executing Locate command" << endl;

@@ -48,10 +48,13 @@ namespace unitexcpp
 		bool m_bDictionariesAreSet; // flag set when the BIN dictionaries have been set
 		bool bAutomataOk; // flag set when the automata have been loaded
 
+		typedef enum { ALPHABET, DICTIONARY, AUTOMATON } ResourceType;
+		typedef std::map<boost::filesystem::path, ResourceType> PersistedResourceCollection;
 		/**
-		 * The set of persisted resources (using Unitex native persistence), shared among all the Language instances so that we do not persist a resource twice.
+		 * The persisted resources (using Unitex native persistence), shared among all the Language instances so that we do not persist a resource twice.
 		 */
-		static std::set<boost::filesystem::path> ms_persistedResources;
+		static PersistedResourceCollection ms_persistedResources;
+		static std::size_t ms_livingInstances;
 
 	public:
 		LanguageResources(engine::UnitexEngine& anEngine, Language const& aLanguage);
@@ -75,23 +78,31 @@ namespace unitexcpp
 		boost::filesystem::path const& getSentenceAutomatonPath() const;
 		boost::filesystem::path const& getReplaceAutomatonPath() const;
 		const std::set<boost::filesystem::path>& getBinDictionariesPath() const;
+		const icu::UnicodeString& getMorphologicalDictionariesAsString(const boost::filesystem::path& automatonPath) const;
+		void getMorphologicalDictionaries(const boost::filesystem::path& automatonPath, unitexcpp::Stringlist& morphoDictList) const;
 		const std::set<boost::filesystem::path>& getAutomataPaths() const;
 
 		void setBinaryDictionaries(const std::vector<icu::UnicodeString>& dictionaries);
 		void setMorphologicalDictionaries(const std::map<icu::UnicodeString, icu::UnicodeString>& morphoDictNames);
 		void setSentenceAutomaton(boost::filesystem::path const& automatonPath);
 		void setAutomata(const std::vector<icu::UnicodeString>& automata);
-		bool persistAutomaton(boost::filesystem::path const& automatonPath, bool sentenceGraph =false);
-		bool persistDictionary(boost::filesystem::path const& dictionaryPath, bool addToDictionaries =true);
-		bool persistAlphabet(boost::filesystem::path const& alphabetPath);
+		
 		void check();
 
 		static boost::filesystem::path getSourceAutomatonPath(const boost::filesystem::path& automatonPath);
 		static boost::filesystem::path getCompiledAutomatonPath(const boost::filesystem::path& automatonPath);
 		static bool needsCompilation(const boost::filesystem::path& sourceFile, const boost::filesystem::path& compiledFile);
 
+		bool persistAutomaton(boost::filesystem::path const& automatonPath, bool sentenceGraph =false);
+		bool persistDictionary(boost::filesystem::path const& dictionaryPath, bool addToDictionaries =true);
+		bool persistAlphabet(boost::filesystem::path const& alphabetPath);
+
 	private:
 		static bool isPersistedResourcePath(boost::filesystem::path const& aPath);
+		static void freePersistedResources();
+		static void freePersistedAlphabet(boost::filesystem::path const& alphabetPath);
+		static void freePersistedAutomaton(boost::filesystem::path const& automatonPath);
+		static void freePersistedDictionary(boost::filesystem::path const& dictionaryPath);
 
 #ifdef MY_ABSTRACT_SPACES
 		// Implementation of callbacks for interface AbstractDelaSpace

@@ -1,9 +1,9 @@
 /*
- * UnitexTokenizer.cpp
- *
- *  Created on: 12 janv. 2011
- *      Author: sylvainsurcin
- */
+* UnitexTokenizer.cpp
+*
+*  Created on: 12 janv. 2011
+*      Author: sylvainsurcin
+*/
 
 #ifdef _MSC_VER
 #pragma warning(push,0)
@@ -25,6 +25,16 @@
 #include <unicode/ustream.h>
 #include <unicode/regex.h>
 #include <algorithm>
+
+#if defined(_MSC_VER) && defined(_DEBUG) && defined(DEBUG_MEMORY_LEAKS)
+#define _CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
+#define DEBUG_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__)
+#define new DEBUG_NEW
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
+#endif
 
 using namespace uima;
 using namespace unitexcpp;
@@ -140,8 +150,8 @@ namespace unitexcpp
 		///////////////////////////////////////////////////////////////////////
 
 		UnitexTokenizer::UnitexTokenizer(const UnitexAnnotatorCpp& anAnnotator, const UnicodeStringVector& fakeTokenParameter, const UnitexEngine& unitexEngine, size_t offsetInDocument,
-				UnicodeStringRef text) :
-				m_annotator(anAnnotator), m_unitexEngine(unitexEngine), m_view(m_annotator.getView()), m_fakeTokens(fakeTokenParameter), m_offset(offsetInDocument), m_text(text)
+			UnicodeStringRef text) :
+		m_annotator(anAnnotator), m_unitexEngine(unitexEngine), m_view(m_annotator.getView()), m_fakeTokens(fakeTokenParameter), m_offset(offsetInDocument), m_text(text)
 		{
 			m_unitexEngine.getNormalizedText(m_sntText);
 
@@ -167,8 +177,8 @@ namespace unitexcpp
 		}
 
 		/**
-		 * Reads the list of tokens as determined by Unitex.
-		 */
+		* Reads the list of tokens as determined by Unitex.
+		*/
 		void UnitexTokenizer::readTokenList()
 		{
 #ifdef _DEBUG
@@ -202,9 +212,9 @@ namespace unitexcpp
 		}
 
 		/**
-		 * Checks whether there is a fake token (cf. list of fake tokens passed during instantiation) starting at the given position in the string.
-		 * \return the length of the fake token if found, or 0 otherwise
-		 */
+		* Checks whether there is a fake token (cf. list of fake tokens passed during instantiation) starting at the given position in the string.
+		* \return the length of the fake token if found, or 0 otherwise
+		*/
 		size_t UnitexTokenizer::isFakeTokenAt(UnicodeStringRef rustr, size_t position)
 		{
 			for (UnicodeStringVector::const_iterator it = m_fakeTokens.begin(); it != m_fakeTokens.end(); it++) {
@@ -216,8 +226,8 @@ namespace unitexcpp
 		}
 
 		/**
-		 *
-		 */
+		*
+		*/
 		int32_t UnitexTokenizer::fakeTokenStartingAtLine(const UnicodeStringVector& lines, const int32_t n)
 		{
 			for (UnicodeStringVector::const_iterator it = m_fakeTokens.begin(); it != m_fakeTokens.end(); it++) {
@@ -237,15 +247,15 @@ namespace unitexcpp
 		}
 
 		/**
-		 * Concatenates an indexed token form to a Unicode string.
-		 *
-		 * \param dest
-		 * 				the Unicode string the will expand
-		 * \param lines
-		 * 				a collection of token representations (as in tokens.txt file), one per line
-		 * \param n
-		 * 				the index of the token form in the lines collection
-		 */
+		* Concatenates an indexed token form to a Unicode string.
+		*
+		* \param dest
+		* 				the Unicode string the will expand
+		* \param lines
+		* 				a collection of token representations (as in tokens.txt file), one per line
+		* \param n
+		* 				the index of the token form in the lines collection
+		*/
 		void UnitexTokenizer::concatenateWithTokenFormAtLine(UnicodeString& dest, const UnicodeStringVector& lines, const int32_t n)
 		{
 			tuple<int32_t, int32_t, int32_t> coord = tokenCoordinates(lines[n]);
@@ -253,9 +263,9 @@ namespace unitexcpp
 		}
 
 		/**
-		 * Parses a line from the snttoken.txt file to extract the "token coordinates", i.e. the
-		 * 3 first integers at the beginning of the line.
-		 */
+		* Parses a line from the snttoken.txt file to extract the "token coordinates", i.e. the
+		* 3 first integers at the beginning of the line.
+		*/
 		tuple<int32_t, int32_t, int32_t> UnitexTokenizer::tokenCoordinates(const UnicodeString& line)
 		{
 			ostringstream oss;
@@ -268,26 +278,29 @@ namespace unitexcpp
 		}
 
 		/**
-		 * Reads the snttoken.txt file produced by Unitex and stores its contents.
-		 * The tokens' begin and end limits are modified in various situations:
-		 */
+		* Reads the snttoken.txt file produced by Unitex and stores its contents.
+		* The tokens' begin and end limits are modified in various situations:
+		*/
 		void UnitexTokenizer::readSntTokens()
 		{
-#ifdef _DEBUG
-			cout << "Reading SNT tokens" << endl;
+#ifdef DEBUG_UIMA_CPP
+			ostringstream oss;
+			m_annotator.logMessage("Reading SNT tokens");
 #endif
 
 			path sntPath(m_unitexEngine.getSntDirectory());
 			UnicodeStringRef rmb = m_annotator.getView().getDocumentText();
-#ifdef _DEBUG
-			cout << "RMB characters:" << endl;
+#ifdef DEBUG_UIMA_CPP
+			m_annotator.logMessage("RMB characters:");
 			int32_t max = 100;
 			if (max > rmb.length())
 				max = rmb.length();
 			for (int32_t i = m_offset; i < m_offset + max; i++) {
 				UChar32 uc = rmb.char32At(i);
 				UnicodeString us = uc;
-				cout << "  rmb[" << i << "] = '" << us << "' (" << uc << ")" << endl;
+				oss.str("");
+				oss << "  rmb[" << i << "] = '" << us << "' (" << uc << ")";
+				m_annotator.logMessage(oss.str());
 			}
 #endif
 
@@ -295,8 +308,10 @@ namespace unitexcpp
 			path tokensPath = sntPath / "snttokens.txt";
 			UnicodeString ustrTokens;
 			getStringFromFile(tokensPath.string(), ustrTokens);
-#ifdef _DEBUG
-			cout << "snttokens.txt=" << endl << ustrTokens << endl << endl;
+#ifdef DEBUG_UIMA_CPP
+			oss.str("");
+			oss << "snttokens.txt=" << endl << ustrTokens << endl;
+			m_annotator.logMessage(oss.str());
 #endif
 
 			// Split it into lines without blank or empty lines
@@ -318,8 +333,10 @@ namespace unitexcpp
 			// Iterate over the lines of snttokens.txt
 			int32_t nbLines = lines.size();
 			for (int32_t tokenIndex = 0; tokenIndex < nbLines; tokenIndex++) {
-#ifdef _DEBUG
-				cout << "reading token " << tokenIndex << "/" << nbLines - 1 << ": \"" << lines[tokenIndex] << "\"" << endl;
+#ifdef DEBUG_UIMA_CPP
+				oss.str("");
+				oss << "reading token " << tokenIndex << "/" << nbLines - 1 << ": \"" << lines[tokenIndex] << "\"" << endl;
+				m_annotator.logMessage(oss.str());
 #endif
 
 				// Parse the current line to extract:
@@ -353,8 +370,10 @@ namespace unitexcpp
 					int32_t tokenLength = end - start;
 					if (tokenLength % 2 == 0) {
 						int32_t pos = start - offsetWithoutFakeTokens, nbLfInRmb = 0, rmbLen = rmb.length();
-#ifdef _DEBUG
-						cout << "Investigating possible CRLF / LF mismatch starting at " << pos << endl;
+#ifdef DEBUG_UIMA_CPP
+						oss.str("");
+						oss << "Investigating possible CRLF / LF mismatch starting at " << pos;
+						m_annotator.logMessage(oss.str());
 #endif
 						while ((pos < rmbLen) && (rmb.char32At(pos) == 10)) {
 							pos++;
@@ -363,22 +382,25 @@ namespace unitexcpp
 						if (nbLfInRmb == tokenLength / 2) {
 							int32_t offsetIncrement = 0;
 							offsetWithoutFakeTokens += nbLfInRmb;
-#ifdef _DEBUG
-							cout << "increment offset to RMB by " << nbLfInRmb << " because it has LF instead of CRLF" << endl;
+#ifdef DEBUG_UIMA_CPP
+							oss.str("");
+							oss << "increment offset to RMB by " << nbLfInRmb << " because it has LF instead of CRLF";
+							m_annotator.logMessage(oss.str());
 #endif
 						}
 					}
 				}
-#ifdef _DEBUG
+#ifdef DEBUG_UIMA_CPP
 				if (drop) {
-					cout << "drop token '" << form << "' because ";
+					oss.str("");
+					oss << "drop token '" << form << "' because ";
 					if (tokenIndex < m_firstLineToKeep)
-						cout << "line " << tokenIndex << " is before first line to keep " << m_firstLineToKeep;
+						oss << "line " << tokenIndex << " is before first line to keep " << m_firstLineToKeep;
 					else if (form == UNICODE_STRING_SIMPLE("{S}"))
-						cout << "is is a sentence marker";
+						oss << "is is a sentence marker";
 					else
-						cout << "the form is blank";
-					cout << endl;
+						oss << "the form is blank";
+					m_annotator.logMessage(oss.str());
 				}
 #endif
 
@@ -408,12 +430,15 @@ namespace unitexcpp
 				}
 				if (deltaOffset > 0) {
 					drop = true;
-#ifdef _DEBUG
-					cout << "drop token '" << form << "' because it is a fake token of length " << deltaOffset << endl;
+#ifdef DEBUG_UIMA_CPP
+					oss.str("");
+					oss << "drop token '" << form << "' because it is a fake token of length " << deltaOffset;
+					m_annotator.logMessage(oss.str());
 #endif
 				}
-#ifdef _DEBUG
-				cout << "(" << start << ", " << end << ") =\t\"" << form << "\" offset =" << offsetWithoutFakeTokens << " firstLineToKeep=" << m_firstLineToKeep << " ";
+#ifdef DEBUG_UIMA_CPP
+				oss.str("");
+				oss << "(" << start << ", " << end << ") =\t\"" << form << "\" offset =" << offsetWithoutFakeTokens << " firstLineToKeep=" << m_firstLineToKeep << " ";
 #endif
 
 				if (!drop) {
@@ -424,26 +449,32 @@ namespace unitexcpp
 
 					SntToken token(tokenIndex, formIndex, start, end, form);
 					m_tokens.push_back(token);
-#ifdef _DEBUG
-					cout << "=> (" << start << ", " << end << ") " << (drop ? "drop" : "keep") << " ";
+#ifdef DEBUG_UIMA_CPP
+					oss << "=> (" << start << ", " << end << ") " << (drop ? "drop" : "keep") << " ";
 					UnicodeString substring;
 					rmb.extract(start + m_offset, end - start, substring);
-					cout << "in RMB=\"" << substring << "\"" << endl;
+					oss << "in RMB=\"" << substring << "\"" << endl;
 					if (form != substring)
-						cout << "Divergence!" << endl;
+						oss << "Divergence!" << endl;
+					m_annotator.logMessage(oss.str());
 
-					cout << "first token in sentence = " << firstTokenInSentence << endl;
+					oss.str("");
+					oss << "first token in sentence = " << firstTokenInSentence;
+					m_annotator.logMessage(oss.str());
 #endif
 					if (firstTokenInSentence.isEmpty()) {
 						firstTokenInSentence = token;
-#ifdef _DEBUG
-						cout << "firstTokenInSentence = " << firstTokenInSentence << endl;
+#ifdef DEBUG_UIMA_CPP
+						oss.str("");
+						oss << "firstTokenInSentence = " << firstTokenInSentence;
+						m_annotator.logMessage(oss.str());
 #endif
 					}
 					lastNonDropToken = token;
 				} else {
-#ifdef _DEBUG
-					cout << "drop" << endl;
+#ifdef DEBUG_UIMA_CPP
+					oss << "drop";
+					m_annotator.logMessage(oss.str());
 #endif
 				}
 
@@ -451,45 +482,50 @@ namespace unitexcpp
 					pair<SntToken, SntToken> sentenceMarker = make_pair(firstTokenInSentence, lastNonDropToken);
 					m_sentenceMarkers.push_back(sentenceMarker);
 					if (!firstTokenInSentence.isEmpty()) {
-#ifdef _DEBUG
-						cout << "added sentence marker (" << sentenceMarker.first << ", " << sentenceMarker.second << ")" << endl;
+#ifdef DEBUG_UIMA_CPP
+						oss.str("");
+						oss << "added sentence marker (" << sentenceMarker.first << ", " << sentenceMarker.second << ")";
+						m_annotator.logMessage(oss.str());
 #endif
 						firstTokenInSentence = SntToken::EmptyToken;
 					}
 				}
 			}
 
-#ifdef _DEBUG
-			cout << "Leaving read SNT tokens" << endl;
+#ifdef DEBUG_UIMA_CPP
+			oss.str("");
+			cout << "Leaving read SNT tokens";
+			m_annotator.logMessage(oss.str());
 #endif
 		}
 
 		/**
-		 * Gets the number of tokens created.
-		 */
+		* Gets the number of tokens created.
+		*/
 		size_t UnitexTokenizer::countTokens() const
 		{
 			return m_tokens.size();
 		}
 
 		/**
-		 * Tokenizes a string (and creates the underlying token annotations in the UIMA view).
-		 *
-		 * \param tokenIndexOffset
-		 * 				the number of tokens already created before processing this string
-		 */
+		* Tokenizes a string (and creates the underlying token annotations in the UIMA view).
+		*
+		* \param tokenIndexOffset
+		* 				the number of tokens already created before processing this string
+		*/
 		size_t UnitexTokenizer::tokenize(size_t tokenIndexOffset)
 		{
-#ifdef _DEBUG
-			cout << "Creating token annotations... starting with tokenIndexOffset =" << tokenIndexOffset << endl;
+#ifdef DEBUG_UIMA_CPP
+			ostringstream oss;
+			m_annotator.logMessage("Creating token annotations... starting with tokenIndexOffset = %d", tokenIndexOffset);
 #endif
 			m_tokens.clear();
 
 			readTokenList();
 			readSntTokens();
 
-#ifdef _DEBUG
-			cout << "There are " << m_tokens.size() << " tokens in SNT" << endl;
+#ifdef DEBUG_UIMA_CPP
+			m_annotator.logMessage("There are %d tokens in SNT", m_tokens.size());
 #endif
 
 			vector<TokenAnnotation> rmbTokens;
@@ -521,8 +557,10 @@ namespace unitexcpp
 			}
 
 			// Mark paragraphs and sentences
-			createParagraphAnnotations();
-			createSentenceAnnotations();
+			if (m_tokens.size() > 0) {
+				createParagraphAnnotations();
+				createSentenceAnnotations();
+			}
 
 			return countTokens();
 		}
@@ -564,15 +602,25 @@ namespace unitexcpp
 				TokenAnnotation firstToken = TokenAnnotation::tokenStartingAtOffsetInView(start, view);
 				if (!firstToken.isValid()) {
 					ostringstream oss;
-					oss << "Cannot find token starting at " << paragraph.getBegin() << " in RMB";
+					oss << "Cannot create paragraph because cannot find token starting at " << paragraph.getBegin() << " in RMB";
 					throw UnitexException(oss.str());
 				}
 #ifdef _DEBUG
 				cout << "First token = " << firstToken << endl;
 #endif
+
 				if (firstToken.getBegin() > start) {
-					m_annotator.getLogger().logMessage("First token found after current paragraph boundaries => skipping");
-					continue;
+					bool skip = true;
+					// Special case of BOM
+					if (start == 0) {
+						UChar32 c = paragraphText.char32At(0);
+						if (firstToken.getBegin() == 1 && ((c == 0xFEFF) || (c == 0xFFFE)))
+							skip = false;
+					}
+					if (skip) {
+						m_annotator.getLogger().logMessage("First token found after current paragraph boundaries => skipping");
+						continue;
+					}
 				}
 
 				TokenAnnotation lastToken = TokenAnnotation::tokenEndingAtOffsetInView(end, view);
@@ -609,13 +657,13 @@ namespace unitexcpp
 		}
 
 		/**
-		 * Builds a version of a text without initial mail quoting signs (typically
-		 * ">" but it can be different).
-		 *
-		 * \param result a reference to the string where to store the result
-		 * \param text the text containing the quoting signs
-		 * \param quoteSign the quote sign to remove
-		 */
+		* Builds a version of a text without initial mail quoting signs (typically
+		* ">" but it can be different).
+		*
+		* \param result a reference to the string where to store the result
+		* \param text the text containing the quoting signs
+		* \param quoteSign the quote sign to remove
+		*/
 		static UnicodeString removeLeadingQuoteSigns(const UnicodeString& text, const UnicodeString& quoteSign)
 		{
 			UnicodeStringlist lines, cleanLines;
@@ -633,19 +681,19 @@ namespace unitexcpp
 		}
 
 		/**
-		 * Tests whether we are on a Unitex mark (sentence mark of subject line
-		 * mark) and returns the length of the mark if so, or 0 it we are not on a
-		 * mark.
-		 *
-		 * \param text the reference text
-		 * \param offset the current offset
-		 * \param limit a limit to the right offset
-		 * \return the number of characters to skip when finding a Unitex specific mark
-		 */
+		* Tests whether we are on a Unitex mark (sentence mark of subject line
+		* mark) and returns the length of the mark if so, or 0 it we are not on a
+		* mark.
+		*
+		* \param text the reference text
+		* \param offset the current offset
+		* \param limit a limit to the right offset
+		* \return the number of characters to skip when finding a Unitex specific mark
+		*/
 		static int32_t isUnitexMark(const UnicodeString& text, int32_t offset, int32_t limit)
 		{
 			static UnicodeString unitexMarks[] =
-				{ "{S}", "[SUBJECT]", "[SDOC]", "[EDOC]" };
+			{ "{S}", "[SUBJECT]", "[SDOC]", "[EDOC]" };
 			static const size_t nbMarks = 4;
 
 			const int32_t length = MIN((int32_t)text.length(), limit + 1);
@@ -659,19 +707,19 @@ namespace unitexcpp
 		}
 
 		/**
-		 * Tests whether we are on the end of a Unitex mark (sentence mark of subject line
-		 * mark) and returns the length of the mark if so, or 0 it we are not on a
-		 * mark.
-		 *
-		 * \param text the reference text
-		 * \param offset the current offset
-		 * \param limit a limit to the left offset
-		 * \return the number of characters to skip when finding a Unitex specific mark
-		 */
+		* Tests whether we are on the end of a Unitex mark (sentence mark of subject line
+		* mark) and returns the length of the mark if so, or 0 it we are not on a
+		* mark.
+		*
+		* \param text the reference text
+		* \param offset the current offset
+		* \param limit a limit to the left offset
+		* \return the number of characters to skip when finding a Unitex specific mark
+		*/
 		static int32_t isEndOfUnitexMark(const UnicodeString& text, int32_t offset, int32_t limit)
 		{
 			static UnicodeString unitexMarks[] =
-				{ "{S}", "[SUBJECT]", "[SDOC]", "[EDOC]" };
+			{ "{S}", "[SUBJECT]", "[SDOC]", "[EDOC]" };
 			static const size_t nbMarks = 4;
 
 			for (size_t i = 0; i < nbMarks; i++) {
@@ -685,13 +733,13 @@ namespace unitexcpp
 		}
 
 		/**
-		 * Finds the offset of the next line start in a text.
-		 *
-		 * \param text the reference text
-		 * \param currentOffset the current offset
-		 * \param limit a limit to the right offset
-		 * \return the offset of the 1st character after an EOL or a Unitex sentence marker
-		 */
+		* Finds the offset of the next line start in a text.
+		*
+		* \param text the reference text
+		* \param currentOffset the current offset
+		* \param limit a limit to the right offset
+		* \return the offset of the 1st character after an EOL or a Unitex sentence marker
+		*/
 		static int32_t skipToNextLine(const UnicodeString& text, int32_t currentOffset, int32_t limit)
 		{
 			int32_t offset = currentOffset;
@@ -709,13 +757,13 @@ namespace unitexcpp
 		}
 
 		/**
-		 * Finds the offset immediately after the next Unitex sentence mark.
-		 *
-		 * \param text the reference text
-		 * \param currentOffset the current offset
-		 * \param limit a limit to the right offset
-		 * \return the offset of the 1st character after a Unitex sentence marker
-		 */
+		* Finds the offset immediately after the next Unitex sentence mark.
+		*
+		* \param text the reference text
+		* \param currentOffset the current offset
+		* \param limit a limit to the right offset
+		* \return the offset of the 1st character after a Unitex sentence marker
+		*/
 		static int32_t skipUnitexMark(const UnicodeString& text, int32_t currentOffset, int32_t limit)
 		{
 			if (currentOffset >= text.length())

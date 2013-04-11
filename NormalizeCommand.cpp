@@ -15,6 +15,16 @@
 #include "UnitexToolCommand.h"
 #include "Unitex-C++/Normalize.h"
 
+#if defined(_MSC_VER) && defined(_DEBUG) && defined(DEBUG_MEMORY_LEAKS)
+#define _CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
+#define DEBUG_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__)
+#define new DEBUG_NEW
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
+#endif
+
 using namespace std;
 using namespace unitexcpp;
 using namespace unitexcpp::engine;
@@ -54,6 +64,7 @@ namespace unitexcpp
 		UnitexCommand::fnUnitexMainCommand NormalizeCommand::getUnitexCommandFunction() const
 		{
 			return &unitex::main_Normalize;
+			//return NULL;
 		}
 
 		void NormalizeCommand::buildArguments(Stringlist& arguments) const

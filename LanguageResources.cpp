@@ -28,6 +28,16 @@
 #include "Unitex-C++/AbstractDelaPlugCallback.h"
 #include "Unitex-C++/AbstractFst2PlugCallback.h"
 
+#if defined(_MSC_VER) && defined(_DEBUG) && defined(DEBUG_MEMORY_LEAKS)
+#define _CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
+#define DEBUG_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__)
+#define new DEBUG_NEW
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
+#endif
+
 using namespace std;
 using namespace boost;
 using namespace boost::filesystem;
@@ -78,8 +88,8 @@ extern "C"
 	int ABSTRACT_CALLBACK_UNITEX initFst2Space(void* privateSpacePtr);
 	void ABSTRACT_CALLBACK_UNITEX uninitFst2Space(void* privateSpacePtr);
 
-    Fst2* ABSTRACT_CALLBACK_UNITEX loadAbstractFst2(const VersatileEncodingConfig* vec,const char* name,int read_names,struct FST2_free_info* p_fst2_free_info,void* privateSpacePtr);
-    void ABSTRACT_CALLBACK_UNITEX freeAbstractFst2(Fst2* fst2,struct FST2_free_info* p_inf_free_info,void* privateSpacePtr);
+	Fst2* ABSTRACT_CALLBACK_UNITEX loadAbstractFst2(const VersatileEncodingConfig* vec,const char* name,int read_names,struct FST2_free_info* p_fst2_free_info,void* privateSpacePtr);
+	void ABSTRACT_CALLBACK_UNITEX freeAbstractFst2(Fst2* fst2,struct FST2_free_info* p_inf_free_info,void* privateSpacePtr);
 
 	const t_persistent_fst2_func_array persistentFst2Hooks = {
 		sizeof(t_persistent_fst2_func_array),
@@ -92,6 +102,8 @@ extern "C"
 }
 #endif
 
+static const UnicodeString EmptyUnicodeString = "";
+
 namespace unitexcpp
 {
 
@@ -101,15 +113,8 @@ namespace unitexcpp
 	//
 	///////////////////////////////////////////////////////////////////////////////
 
-	set<path> LanguageResources::ms_persistedResources;
-
-	/**
-	* Tests whether a resource path is present in the set of already persisted resources.
-	*/
-	bool LanguageResources::isPersistedResourcePath(path const& aPath)
-	{
-		return ms_persistedResources.find(aPath) != ms_persistedResources.end();
-	}
+	LanguageResources::PersistedResourceCollection LanguageResources::ms_persistedResources;
+	size_t LanguageResources::ms_livingInstances = 0;
 
 	///////////////////////////////////////////////////////////////////////////////
 	//
@@ -118,8 +123,9 @@ namespace unitexcpp
 	///////////////////////////////////////////////////////////////////////////////
 
 	LanguageResources::LanguageResources(engine::UnitexEngine& anEngine, Language const& aLanguage) :
-	engine(anEngine), language(aLanguage)
+		engine(anEngine), language(aLanguage)
 	{
+		ms_livingInstances++;
 	}
 
 	/**
@@ -134,8 +140,8 @@ namespace unitexcpp
 	*/
 	bool LanguageResources::initialize(path const& normDicPath, string const& sentenceName, string const& replaceName, string const& alphName, string const& alphSortName)
 	{
-        UnitexAnnotatorCpp const& annotator = engine.getAnnotator();
-        
+		UnitexAnnotatorCpp const& annotator = engine.getAnnotator();
+
 #ifdef DEBUG_UIMA_CPP
 		cout << "Initializing language resources for " << language.getNormalizedForm() << endl;
 #endif
@@ -158,54 +164,58 @@ namespace unitexcpp
 		AddAbstractFst2Space(&persistentFst2Hooks, this);
 #endif // MY_ABSTRACT_SPACES
 
-		// normalization dictionary
+		// normalization dictionary (no need to persist)
 		m_normalizationDictionaryPath = m_languageDirectoryPath / normDicPath;
-        if (!exists(m_normalizationDictionaryPath)) {
-            LogStream& ls = annotator.getLogStream(LogStream::EnError);
-            ls << "Normalization dictionary " << m_normalizationDictionaryPath << " does not exist!";
-            ls.flush();
-            return false;
-        }
-        
-		// alphabet file
-		m_alphabetPath = m_languageDirectoryPath / alphName;
-        if (!exists(m_alphabetPath)) {
-            LogStream& ls = annotator.getLogStream(LogStream::EnError);
-            ls << "Alphabet " << m_alphabetPath << " does not exist!";
-            ls.flush();
-            return false;
-        }
-		if (!isPersistedResourcePath(m_alphabetPath))
-			persistAlphabet(m_alphabetPath);
+		if (!exists(m_normalizationDictionaryPath)) {
+			LogStream& ls = annotator.getLogStream(LogStream::EnError);
+			ls << "Normalization dictionary " << m_normalizationDictionaryPath << " does not exist!";
+			ls.flush();
+			return false;
+		}
 
-		// sorted alphabet file
-		m_sortedAlphabetPath = m_languageDirectoryPath / alphSortName;
-        if (!exists(m_sortedAlphabetPath)) {
-            LogStream& ls = annotator.getLogStream(LogStream::EnError);
-            ls << "Sorted alphabet " << m_sortedAlphabetPath << " does not exist!";
-            ls.flush();
-            return false;
-        }
-		if (!isPersistedResourcePath(m_sortedAlphabetPath))
-			persistAlphabet(m_sortedAlphabetPath);
+		// alphabet file (persisted)
+		path alphabetPath = m_languageDirectoryPath / alphName;
+		if (!exists(alphabetPath)) {
+			LogStream& ls = annotator.getLogStream(LogStream::EnError);
+			ls << "Alphabet " << alphabetPath << " does not exist!";
+			ls.flush();
+			return false;
+		}
+		if (!isPersistedResourcePath(alphabetPath))
+			persistAlphabet(alphabetPath);
+		m_alphabetPath = persistedPath(alphabetPath);
 
-		// sentence formatting graph
+		// sorted alphabet file (persisted)
+		path sortedAlphabetPath = m_languageDirectoryPath / alphSortName;
+		if (!exists(sortedAlphabetPath)) {
+			LogStream& ls = annotator.getLogStream(LogStream::EnError);
+			ls << "Sorted alphabet " << sortedAlphabetPath << " does not exist!";
+			ls.flush();
+			return false;
+		}
+		if (!isPersistedResourcePath(sortedAlphabetPath))
+			persistAlphabet(sortedAlphabetPath);
+		m_sortedAlphabetPath = persistedPath(sortedAlphabetPath);
+
+		// sentence formatting graph (persisted)
 		path actualSentencePath = m_preprocessingDirectoryPath / "Sentence" / sentenceName;
 		if (!isPersistedResourcePath(actualSentencePath))
 			persistAutomaton(actualSentencePath, true);
 		m_sentenceAutomatonPath = persistedPath(actualSentencePath);
 
-		// sentence formatting graph
+		// sentence formatting graph (persisted)
 		path actualReplacePath = m_preprocessingDirectoryPath / "Replace" / replaceName;
 		if (!isPersistedResourcePath(actualReplacePath))
 			persistAutomaton(actualReplacePath);
 		m_replaceAutomatonPath = persistedPath(actualReplacePath);
-        
-        return true;
+
+		return true;
 	}
 
 	LanguageResources::~LanguageResources()
 	{
+		if (--ms_livingInstances == 0)
+			freePersistedResources();
 	}
 
 	///////////////////////////////////////////////////////////////////////////////
@@ -327,7 +337,7 @@ namespace unitexcpp
 		for (vector<UnicodeString>::const_iterator it = dictionaries.begin(); it != dictionaries.end(); it++) {
 			// we are provided with the .BIN dictionary name
 			path binDicPath = getDictionaryDirectoryPath() / convertUnicodeStringToRawString(*it);
-			m_dictionaryPaths.insert(binDicPath);
+			//m_dictionaryPaths.insert(binDicPath);
 			// we also store the corresponding .INF dictionary name
 			//path infDicPath = change_extension(binDicPath, ".inf");
 			if (!persistDictionary(binDicPath)) {
@@ -343,6 +353,33 @@ namespace unitexcpp
 	}
 
 	/**
+	* Gets the list of morphological dictionaries associated to an automaton, as a list of dictionaries
+	* separated by semi-colons.
+	*/
+	const UnicodeString& LanguageResources::getMorphologicalDictionariesAsString(const path& automatonPath) const
+	{
+		path persistedAutomatonPath = persistedPath(automatonPath);
+		map<path, UnicodeString>::const_iterator it = m_morphologicalDictionaryPaths.find(persistedAutomatonPath);
+		if (it == m_morphologicalDictionaryPaths.end())
+			return EmptyUnicodeString;
+		return it->second;
+	}
+
+	/**
+	* Stores the list of morphological dictionaries associated to an automaton in the provided string list.
+	*/
+	void LanguageResources::getMorphologicalDictionaries(const path& automatonPath, Stringlist& morphoDictList) const
+	{
+		morphoDictList.clear();
+		const UnicodeString& ustrMorphoDicts = getMorphologicalDictionariesAsString(automatonPath);
+		vector<UnicodeString> dictNames;
+		splitRegex(dictNames, ustrMorphoDicts, UNICODE_STRING_SIMPLE(";"));
+		BOOST_FOREACH(const UnicodeString& morphoDict, dictNames) {
+			morphoDictList.push_back(convertUnicodeStringToRawString(morphoDict));
+		}
+	}
+
+	/**
 	* Associates a list of morphological dictionaries to be used when applying
 	* Locate to a graph.
 	*
@@ -354,29 +391,36 @@ namespace unitexcpp
 	void LanguageResources::setMorphologicalDictionaries(const map<UnicodeString, UnicodeString>& morphoDictNames)
 	{
 		m_morphologicalDictionaryPaths.clear();
-		for (map<UnicodeString, UnicodeString>::const_iterator it = morphoDictNames.begin(); it != morphoDictNames.end(); it++) {
-			string automatonName = convertUnicodeStringToRawString(it->first);
+		UnicodeString ustrAutomaton;
+		UnicodeString ustrMorphoDicts;
+		BOOST_FOREACH(boost::tie(ustrAutomaton, ustrMorphoDicts), morphoDictNames) {
+			string automatonName = convertUnicodeStringToRawString(ustrAutomaton);
 			path automatonPath = getAutomataDirectoryPath() / automatonName;
 			automatonPath.make_preferred();
+			automatonPath = persistedPath(automatonPath);
 
 			if (m_automataPaths.find(automatonPath) == m_automataPaths.end()) {
 				ostringstream oss;
-				oss << "Setting morpho dictionaries for automaton: " << automatonPath << " is not a declared";
+				oss << "Setting morpho dictionaries for automaton: " << automatonPath << " is not a declared automaton";
 				engine.getAnnotator().logWarning(oss.str());
 				continue;
 			}
 
-			ostringstream oss;
-			oss << "Setting morpho dictionaries for automaton " << it->first;
-			engine.getAnnotator().logMessage(oss.str());
+			if (engine.getAnnotator().isLoggingEnabled(LogStream::EnEntryType::EnMessage)) {
+				ostringstream oss;
+				oss << "Setting morpho dictionaries for automaton " << automatonName;
+				engine.getAnnotator().logMessage(oss.str());
+			}
 
 			vector<UnicodeString> dictNames;
 			list<UnicodeString> fullNames;
-			splitRegex(dictNames, it->second, UNICODE_STRING_SIMPLE(";"));
-			for (vector<UnicodeString>::const_iterator jt = dictNames.begin(); jt != dictNames.end(); jt++) {
-				path dictPath = getDictionaryDirectoryPath() / convertUnicodeStringToRawString(*jt);
-				if (persistDictionary(dictPath, false))
-					fullNames.push_back(dictPath.string().c_str());
+			splitRegex(dictNames, ustrMorphoDicts, UNICODE_STRING_SIMPLE(";"));
+			BOOST_FOREACH(UnicodeString const& ustrDictName, dictNames) {
+				path dictPath = getDictionaryDirectoryPath() / convertUnicodeStringToRawString(ustrDictName);
+				if (persistDictionary(dictPath, false)) {
+					path persistedDictPath = persistedPath(dictPath);
+					fullNames.push_back(persistedDictPath.string().c_str());
+				}
 			}
 
 			m_morphologicalDictionaryPaths[automatonPath] = join(fullNames, UNICODE_STRING_SIMPLE(";"));
@@ -451,11 +495,27 @@ namespace unitexcpp
 
 	bool LanguageResources::needsCompilation(const path& sourceFile, const path& compiledFile)
 	{
+		if (!exists(sourceFile))
+			return false;
 		if (!exists(compiledFile))
 			return true;
 		if (last_write_time(compiledFile) > last_write_time(sourceFile))
 			return true;
 		return false;
+	}
+
+	///////////////////////////////////////////////////////////////////////////////
+	//
+	// Persisted resources
+	//
+	///////////////////////////////////////////////////////////////////////////////
+
+	/**
+	* Tests whether a resource path is present in the set of already persisted resources.
+	*/
+	bool LanguageResources::isPersistedResourcePath(path const& aPath)
+	{
+		return ms_persistedResources.find(aPath) != ms_persistedResources.end();
 	}
 
 	bool LanguageResources::persistAutomaton(const path& automatonPath, bool sentenceGraph)
@@ -467,18 +527,18 @@ namespace unitexcpp
 		path sourcePath = getSourceAutomatonPath(automatonPath);
 		path compiledPath = getCompiledAutomatonPath(automatonPath);
 
-		if (!exists(unpersistedPath(sourcePath))) {
-			if (annotator.isLoggingEnabled(LogStream::EnWarning)) {
-				LogStream& ls = annotator.getLogStream(LogStream::EnWarning);
-				ls << "Source automaton " << sourcePath << " file does not exist!";
-				ls.flush();
-			}
-			return false;
-		}
-
 		if (engine.getAnnotator().forceGraphCompilation() || needsCompilation(sourcePath, compiledPath)) {
 			if (annotator.isLoggingEnabled(LogStream::EnMessage))
 				annotator.logMessage("Compiling graph %s into %s", sourcePath.string().c_str(), compiledPath.string().c_str());
+			if (!exists(unpersistedPath(sourcePath))) {
+				if (annotator.isLoggingEnabled(LogStream::EnWarning)) {
+					LogStream& ls = annotator.getLogStream(LogStream::EnWarning);
+					ls << "Source automaton " << sourcePath << " file does not exist!";
+					ls.flush();
+				}
+				return false;
+			}
+
 			if (!engine.getGraphCompiler().compile(sourcePath, sentenceGraph, compiledPath))
 				return false;
 		}
@@ -498,7 +558,7 @@ namespace unitexcpp
 				annotator.logError("Error while persisting FST2 %s", automatonPath.string().c_str());
 				return false;
 			} else {
-				ms_persistedResources.insert(automatonPath);
+				ms_persistedResources[automatonPath] = ResourceType::AUTOMATON;
 				bool isPreprocessingGraph = false;
 				for (path::iterator it = automatonPath.begin(); it != automatonPath.end(); it++) {
 					string item = (*it).string();
@@ -566,7 +626,7 @@ namespace unitexcpp
 				engine.getAnnotator().logError(oss.str());
 				return false;
 			} else {
-				ms_persistedResources.insert(dictionaryPath);
+				ms_persistedResources[dictionaryPath] = ResourceType::DICTIONARY;
 				if (addToDictionaries)
 					m_dictionaryPaths.insert(persistedDictionaryPath);
 			}
@@ -597,7 +657,8 @@ namespace unitexcpp
 		}
 
 		// If the path is not already in the set of persisted resources, persist it.
-		if (!isPersistedResourcePath(alphabetPath)) {
+		path persistedAlphabetPath = persistedPath(alphabetPath);
+		if (!isPersistedResourcePath(persistedAlphabetPath)) {
 			ostringstream oss;
 			oss << "Loading persistent alphabet " << alphabetPath;
 			engine.getAnnotator().logMessage(oss.str());
@@ -608,11 +669,65 @@ namespace unitexcpp
 				engine.getAnnotator().logError(oss.str());
 				return false;
 			} else {
-				ms_persistedResources.insert(alphabetPath);
+				ms_persistedResources[persistedAlphabetPath] = ResourceType::ALPHABET;
 			}
 		}
 
 		return true;
+	}
+
+	/**
+	* Free all persisted resources once all living instances of LanguageResources have been destroyed.
+	*/
+	void LanguageResources::freePersistedResources() 
+	{
+#ifdef DEBUG_MEMORY_LEAKS
+		cout << "Free persisted language resources" << endl;
+#endif
+		path p;
+		ResourceType rscType;
+		BOOST_FOREACH(tie(p, rscType), ms_persistedResources) {
+			switch (rscType) {
+			case ResourceType::ALPHABET:
+				freePersistedAlphabet(p);
+				break;
+			case ResourceType::AUTOMATON:
+				freePersistedAutomaton(p);
+				break;
+			case ResourceType::DICTIONARY:
+				freePersistedDictionary(p);
+				break;
+			}
+		}
+		ms_persistedResources.clear();
+
+#ifdef DEBUG_MEMORY_LEAKS
+		cout << "Persisted language resources are free." << endl;
+#endif
+	}
+
+	void LanguageResources::freePersistedAlphabet(const path& alphabetPath) 
+	{
+#ifdef DEBUG_MEMORY_LEAKS
+		cout << "Free persisted alphabet" << alphabetPath << endl;
+#endif
+		free_persistent_alphabet(alphabetPath.string().c_str());
+	}
+
+	void LanguageResources::freePersistedAutomaton(const path& automatonPath) 
+	{
+#ifdef DEBUG_MEMORY_LEAKS
+		cout << "Free persisted automaton" << automatonPath << endl;
+#endif
+		free_persistent_fst2(automatonPath.string().c_str());
+	}
+
+	void LanguageResources::freePersistedDictionary(const path& dictionaryPath) 
+	{
+#ifdef DEBUG_MEMORY_LEAKS
+		cout << "Free persisted dictionary" << dictionaryPath << endl;
+#endif
+		free_persistent_dictionary(dictionaryPath.string().c_str());
 	}
 
 	/**
@@ -848,7 +963,7 @@ extern "C"
 		return result;
 	}
 
-    Fst2* ABSTRACT_CALLBACK_UNITEX loadAbstractFst2(const VersatileEncodingConfig* vec,const char* name,int read_names,struct FST2_free_info* p_fst2_free_info,void* privateSpacePtr)
+	Fst2* ABSTRACT_CALLBACK_UNITEX loadAbstractFst2(const VersatileEncodingConfig* vec,const char* name,int read_names,struct FST2_free_info* p_fst2_free_info,void* privateSpacePtr)
 	{
 		Fst2* result = NULL;
 		unitexcpp::LanguageResources* pLanguageResources = (unitexcpp::LanguageResources*)privateSpacePtr;
@@ -859,7 +974,7 @@ extern "C"
 		return result;
 	}
 
-    void ABSTRACT_CALLBACK_UNITEX freeAbstractFst2(Fst2* fst2,struct FST2_free_info* p_inf_free_info,void* privateSpacePtr)
+	void ABSTRACT_CALLBACK_UNITEX freeAbstractFst2(Fst2* fst2,struct FST2_free_info* p_inf_free_info,void* privateSpacePtr)
 	{
 		// Do nothing
 	}

@@ -13,6 +13,17 @@
 #include "LocateCommand.h"
 #include "UnitexEngine.h"
 #include "Unitex-C++/Locate.h"
+#include <boost/foreach.hpp>
+
+#if defined(_MSC_VER) && defined(_DEBUG) && defined(DEBUG_MEMORY_LEAKS)
+#define _CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
+#define DEBUG_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__)
+#define new DEBUG_NEW
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
+#endif
 
 using namespace std;
 using namespace unitexcpp;
@@ -109,8 +120,10 @@ namespace unitexcpp
 		//
 		///////////////////////////////////////////////////////////////////////////
 
-		UnitexCommand::fnUnitexMainCommand LocateCommand::getUnitexCommandFunction() const {
+		UnitexCommand::fnUnitexMainCommand LocateCommand::getUnitexCommandFunction() const 
+		{
 			return &unitex::main_Locate;
+			//return NULL;
 		}
 
 		void LocateCommand::buildArguments(Stringlist& arguments) const
@@ -125,12 +138,12 @@ namespace unitexcpp
 				arguments.push_back("-m");
 				ostringstream oss;
 				bool firstItem = true;
-				for (Stringlist::const_iterator it = morphoBinDics.begin(); it != morphoBinDics.end(); it++) {
+				BOOST_FOREACH(const string& morphoDict, morphoBinDics) {
 					if (firstItem)
 						firstItem = false;
 					else
-						oss << ":";
-					oss << *it;
+						oss << ";";
+					oss << morphoDict;
 				}
 				arguments.push_back(oss.str());
 			}

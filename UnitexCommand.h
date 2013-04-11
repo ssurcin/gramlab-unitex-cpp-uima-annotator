@@ -59,6 +59,12 @@ namespace unitexcpp
 			std::string m_command;
 		protected:
 			unitexcpp::engine::UnitexEngine const& getUnitexEngine() const;
+
+#ifdef DEBUG_UIMA_CPP
+		private:
+			void printArguments(size_t argc, char** argv);
+			void printUsage(fnUnitexMainCommand pfnCommand);
+#endif
 		};
 
 	}

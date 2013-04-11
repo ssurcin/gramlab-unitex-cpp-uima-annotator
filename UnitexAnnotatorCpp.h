@@ -17,6 +17,10 @@
 #include <boost/timer.hpp>
 #include "Utils.h"
 
+#if defined(_MSC_VER) && defined(DEBUG_MEMORY_LEAKS)
+#include "MemoryLeaksDumper.h"
+#endif
+
 // Forward declarations
 namespace unitexcpp
 {
@@ -111,8 +115,15 @@ namespace uima
 		Feature fEntries;
 
 		CAS* pCurrentCAS;
+		CAS* m_pWorkingView; // The actual working view
+
 		std::size_t nbTokens;
 		std::size_t m_nbTokensForOutputProcessing;
+		std::size_t m_nbProcessedDocuments;
+
+#if defined(_MSC_VER) && defined(DEBUG_MEMORY_LEAKS)
+		unitexcpp::MemoryLeaksDumper m_memoryLeaksDumper;
+#endif
 
 	public:
 		UnitexAnnotatorCpp(void);
@@ -169,10 +180,12 @@ namespace uima
 	private:
 		char* buildLogBuffer(const char* szFormat, va_list ap) const;
 
+	private:
+		void initializeWorkingView(uima::CAS& cas);
 	public:
 		CAS& getView() const;
-		UnicodeStringRef getMailId() const;
-		std::string getMailIdAsString() const;
+		UnicodeStringRef getDocumentId() const;
+		std::string getDocumentIdAsString() const;
 		UnicodeStringRef getAnalysisStrategy() const;
 		bool skip() const;
 		bool forceGraphCompilation() const;

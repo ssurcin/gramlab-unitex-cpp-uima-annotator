@@ -1,9 +1,9 @@
 /*
- * UnitexEngine.cpp
- *
- *  Created on: 28 déc. 2010
- *      Author: sylvainsurcin
- */
+* UnitexEngine.cpp
+*
+*  Created on: 28 déc. 2010
+*      Author: sylvainsurcin
+*/
 
 #ifdef _MSC_VER
 #pragma warning(push,0)
@@ -28,6 +28,16 @@
 #include "FileUtils.h"
 #include "VirtualFolderCleaner.h"
 #include <boost/foreach.hpp>
+
+#if defined(_MSC_VER) && defined(_DEBUG) && defined(DEBUG_MEMORY_LEAKS)
+#define _CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
+#define DEBUG_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__)
+#define new DEBUG_NEW
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
+#endif
 
 using namespace std;
 using namespace boost::filesystem;
@@ -58,25 +68,25 @@ namespace unitexcpp
 		///////////////////////////////////////////////////////////////////////
 
 		/**
-		 * Builds an instance of Unitex engine for a given language, and preloads
-		 * resources.
-		 *
-		 * @param annotator
-		 *            the annotator
-		 * @param normalizedLanguage
-		 *            the normalized form of a language (e.g. "en" or "fr")
-		 * @param resourcesDir
-		 *            the path to the local Unitex source resources (.grf, .fst2, .dic and .bin)
-		 *            working directory (partially equivalent to "My Unitex")
-		 * @param dictionariesPaths
-		 * 			  a set of dictionary paths
-		 * @param automataPaths
-		 * 			  a set of automata paths
-		 */
+		* Builds an instance of Unitex engine for a given language, and preloads
+		* resources.
+		*
+		* @param annotator
+		*            the annotator
+		* @param normalizedLanguage
+		*            the normalized form of a language (e.g. "en" or "fr")
+		* @param resourcesDir
+		*            the path to the local Unitex source resources (.grf, .fst2, .dic and .bin)
+		*            working directory (partially equivalent to "My Unitex")
+		* @param dictionariesPaths
+		* 			  a set of dictionary paths
+		* @param automataPaths
+		* 			  a set of automata paths
+		*/
 		UnitexEngine::UnitexEngine(UnitexAnnotatorCpp const& annotator, UnicodeString const& normalizedLanguage, const path& resourcesDir, const vector<UnicodeString>& dictionaries,
-				const vector<UnicodeString>& automata, const map<UnicodeString, UnicodeString>& morphoDictNames) :
-				m_annotator(annotator), m_language(Language::getLanguage(normalizedLanguage)), m_languageResources(*this, m_language), m_dictionaryCompiler(*this), m_graphCompiler(*this), m_textPreprocessor(
-						*this), m_textProcessor(*this)
+			const vector<UnicodeString>& automata, const map<UnicodeString, UnicodeString>& morphoDictNames) :
+		m_annotator(annotator), m_language(Language::getLanguage(normalizedLanguage)), m_languageResources(*this, m_language), m_dictionaryCompiler(*this), m_graphCompiler(*this), m_textPreprocessor(
+			*this), m_textProcessor(*this)
 		{
 			m_unitexSrcResourcesDir = resourcesDir;
 			m_unitexBinResourcesDir = resourcesDir;
@@ -88,28 +98,28 @@ namespace unitexcpp
 		}
 
 		/**
-		 * Builds an instance of Unitex engine for a given language, and preloads
-		 * resources.
-		 *
-		 * @param annotator
-		 *            the annotator
-		 * @param normalizedLanguage
-		 *            the normalized form of a language (e.g. "en" or "fr")
-		 * @param srcResourcesDir
-		 *            the path to the local Unitex source resources (.grf and .dic)
-		 *            working directory (partially equivalent to "My Unitex") * @param
-		 * @param binResourcesDir
-		 *            the path to the local Unitex compiled resources (.fst2 and
-		 *            .bin) working directory (partially equivalent to "My Unitex")
-		 * @param dictionariesPaths
-		 * 			  a set of dictionary paths
-		 * @param automataPaths
-		 * 			  a set of automata paths
-		 */
+		* Builds an instance of Unitex engine for a given language, and preloads
+		* resources.
+		*
+		* @param annotator
+		*            the annotator
+		* @param normalizedLanguage
+		*            the normalized form of a language (e.g. "en" or "fr")
+		* @param srcResourcesDir
+		*            the path to the local Unitex source resources (.grf and .dic)
+		*            working directory (partially equivalent to "My Unitex") * @param
+		* @param binResourcesDir
+		*            the path to the local Unitex compiled resources (.fst2 and
+		*            .bin) working directory (partially equivalent to "My Unitex")
+		* @param dictionariesPaths
+		* 			  a set of dictionary paths
+		* @param automataPaths
+		* 			  a set of automata paths
+		*/
 		UnitexEngine::UnitexEngine(UnitexAnnotatorCpp const& annotator, UnicodeString const& normalizedLanguage, const path& srcResourcesDir, const path& binResourcesDir,
-				const vector<UnicodeString>& dictionaries, const vector<UnicodeString>& automata, const map<UnicodeString, UnicodeString>& morphoDictNames) :
-				m_annotator(annotator), m_language(Language::getLanguage(normalizedLanguage)), m_languageResources(*this, m_language), m_dictionaryCompiler(*this), m_graphCompiler(*this), m_textPreprocessor(
-						*this), m_textProcessor(*this)
+			const vector<UnicodeString>& dictionaries, const vector<UnicodeString>& automata, const map<UnicodeString, UnicodeString>& morphoDictNames) :
+		m_annotator(annotator), m_language(Language::getLanguage(normalizedLanguage)), m_languageResources(*this, m_language), m_dictionaryCompiler(*this), m_graphCompiler(*this), m_textPreprocessor(
+			*this), m_textProcessor(*this)
 		{
 			m_unitexSrcResourcesDir = srcResourcesDir;
 			m_unitexBinResourcesDir = binResourcesDir.empty() ? m_unitexSrcResourcesDir : binResourcesDir;
@@ -122,13 +132,16 @@ namespace unitexcpp
 
 		UnitexEngine::~UnitexEngine()
 		{
+#ifdef DEBUG_UIMA_CPP
+			cout << "Destroying a UnitexEngine " << endl;
+#endif
 		}
 
-        bool UnitexEngine::validResources() const
-        {
-            return m_validResources;
-        }
-        
+		bool UnitexEngine::validResources() const
+		{
+			return m_validResources;
+		}
+
 		const path& UnitexEngine::getUnitexSrcResourcesDir() const
 		{
 			return m_unitexSrcResourcesDir;
@@ -189,10 +202,15 @@ namespace unitexcpp
 			return m_dynamicDictionaries;
 		}
 
+		void UnitexEngine::getMorphologicalDictionaries(const string& automatonPath, Stringlist& morphoDictList) const
+		{
+			m_languageResources.getMorphologicalDictionaries(automatonPath, morphoDictList);
+		}
+
 		/**
-		 * Gets the path to the SNT directory corresponding to the current input file
-		 * name.
-		 */
+		* Gets the path to the SNT directory corresponding to the current input file
+		* name.
+		*/
 		path UnitexEngine::getSntDirectory() const
 		{
 			string pathname;
@@ -205,28 +223,28 @@ namespace unitexcpp
 		}
 
 		/**
-		 * Resets the dynamic dictionary list used by this engine.
-		 */
+		* Resets the dynamic dictionary list used by this engine.
+		*/
 		void UnitexEngine::clearDynamicDictionaries()
 		{
 			m_dynamicDictionaries.clear();
 		}
 
 		/**
-		 * Add a dynamic dictionary for the given language into the current session.
-		 * The dictionary is a UTF16-LE text using the DELAF or DELAS format.
-		 *
-		 * The method performs the following steps: 1. check the dictionary 2.
-		 * compress it into a BIN dictionary.
-		 *
-		 * If possible, use UnitexTool in order to make a single call.
-		 *
-		 * @param strDictName
-		 *            the dictionary file name
-		 * @param dictionaryType
-		 *            the dictionary type (DELAF or DELAS)
-		 * @return true if everything went well
-		 */
+		* Add a dynamic dictionary for the given language into the current session.
+		* The dictionary is a UTF16-LE text using the DELAF or DELAS format.
+		*
+		* The method performs the following steps: 1. check the dictionary 2.
+		* compress it into a BIN dictionary.
+		*
+		* If possible, use UnitexTool in order to make a single call.
+		*
+		* @param strDictName
+		*            the dictionary file name
+		* @param dictionaryType
+		*            the dictionary type (DELAF or DELAS)
+		* @return true if everything went well
+		*/
 		bool UnitexEngine::addDynamicDictionary(string const& strDictName, DictionaryType const& dictionaryType)
 		{
 			bool compileOk = m_dictionaryCompiler.compile(strDictName, dictionaryType);
@@ -245,12 +263,12 @@ namespace unitexcpp
 		///////////////////////////////////////////////////////////////////////
 
 		/*!
-		 * Builds the expected corresponding SNT filename for a given input file
-		 * name.
-		 *
-		 * \param fileName the input file name
-		 * \return the corresponding SNT file name
-		 */
+		* Builds the expected corresponding SNT filename for a given input file
+		* name.
+		*
+		* \param fileName the input file name
+		* \return the corresponding SNT file name
+		*/
 		string UnitexEngine::buildSntFileNameFrom(const string& filename)
 		{
 			path originalPath(filename);
@@ -259,12 +277,12 @@ namespace unitexcpp
 		}
 
 		/*!
-		 * Builds the expected corresponding SNT directory name for a given input file
-		 * name.
-		 *
-		 * \param fileName the input file name
-		 * \return the corresponding SNT directory name
-		 */
+		* Builds the expected corresponding SNT directory name for a given input file
+		* name.
+		*
+		* \param fileName the input file name
+		* \return the corresponding SNT directory name
+		*/
 		string UnitexEngine::buildSntDirNameFrom(const string& filename)
 		{
 			path originalPath(filename);
@@ -317,8 +335,8 @@ namespace unitexcpp
 		///////////////////////////////////////////////////////////////////////
 
 		/*!
-		 * Prevents the Unitex library to write to stdout
-		 */
+		* Prevents the Unitex library to write to stdout
+		*/
 		void UnitexEngine::preventWritingToStdout()
 		{
 			if (ms_allowedToStdout) {
@@ -345,25 +363,25 @@ namespace unitexcpp
 		///////////////////////////////////////////////////////////////////////
 
 		/*!
-		 * Clears performance cache to avoid cumulating results bewteen 2 messages.
-		 */
+		* Clears performance cache to avoid cumulating results bewteen 2 messages.
+		*/
 		void UnitexEngine::clearPerformanceCache()
 		{
 			m_textProcessor.clearPerformanceMap();
 		}
 
 		/**
-		 * Run a whole process from the point of view of PulseUIMA for an input
-		 * file.
-		 *
-		 * @param result
-		 *            a list of QualifiedString where the tranduscers' outputs
-		 *            will be stored.
-		 * @param inputFile
-		 *            the name of the input file containing the text to analyze
-		 *            (empty by default, and we expect the input file to have been
-		 *            prepared before calling).
-		 */
+		* Run a whole process from the point of view of PulseUIMA for an input
+		* file.
+		*
+		* @param result
+		*            a list of QualifiedString where the tranduscers' outputs
+		*            will be stored.
+		* @param inputFile
+		*            the name of the input file containing the text to analyze
+		*            (empty by default, and we expect the input file to have been
+		*            prepared before calling).
+		*/
 		list<QualifiedString> UnitexEngine::run(const string& inputFile)
 		{
 #ifdef DEBUG_UIMA_CPP
@@ -414,7 +432,7 @@ namespace unitexcpp
 #ifdef DEBUG_UIMA_CPP
 				cout << automatonOutput.size() << " unambiguous outputs" << endl;
 				for (list<QualifiedString>::const_iterator it = automatonOutput.begin(); it != automatonOutput.end(); it++)
-				cout << "- " << *it << endl;
+					cout << "- " << *it << endl;
 #endif
 				result.splice(result.end(), automatonOutput);
 			}
@@ -426,15 +444,15 @@ namespace unitexcpp
 		}
 
 		/**
-		 * Browses a list of automaton outputs to issue a warning message when a
-		 * double analysis is detected, i.e. when 2 analysis start at the same
-		 * offset.
-		 *
-		 * @param automaton
-		 *            the automaton's name
-		 * @param automatonOutput
-		 *            the list of qualified strings output of the automaton
-		 */
+		* Browses a list of automaton outputs to issue a warning message when a
+		* double analysis is detected, i.e. when 2 analysis start at the same
+		* offset.
+		*
+		* @param automaton
+		*            the automaton's name
+		* @param automatonOutput
+		*            the list of qualified strings output of the automaton
+		*/
 		void UnitexEngine::checkDoubleAnalysis(const string& automaton, const list<QualifiedString>& automatonOutput)
 		{
 			bool debug = false;

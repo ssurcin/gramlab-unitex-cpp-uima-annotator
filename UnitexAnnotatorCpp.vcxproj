@@ -31,6 +31,8 @@
     <ClCompile Include="LanguageArea.cpp" />
     <ClCompile Include="LanguageResources.cpp" />
     <ClCompile Include="LocateCommand.cpp" />
+    <ClCompile Include="MemLeakDetect.cpp" />
+    <ClCompile Include="MemoryLeaksDumper.cpp" />
     <ClCompile Include="NormalizeCommand.cpp" />
     <ClCompile Include="ParagraphAnnotation.cpp" />
     <ClCompile Include="ProfilingLogger.cpp" />
@@ -141,7 +143,9 @@
     <ClCompile Include="Unitex-C++\Cassys_io.cpp" />
     <ClCompile Include="Unitex-C++\Cassys_lexical_tags.cpp" />
     <ClCompile Include="Unitex-C++\Cassys_tokens.cpp" />
-    <ClCompile Include="Unitex-C++\Cassys_transducer.cpp" />
+    <ClCompile Include="Unitex-C++\Cassys_transducer.cpp">
+      <ProgramDataBaseFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)$(TargetName).pdb</ProgramDataBaseFileName>
+    </ClCompile>
     <ClCompile Include="Unitex-C++\Cassys_xml_output.cpp" />
     <ClCompile Include="Unitex-C++\CheckDic.cpp" />
     <ClCompile Include="Unitex-C++\CodePages.cpp" />
@@ -368,6 +372,7 @@
     <ClInclude Include="LanguageArea.h" />
     <ClInclude Include="LanguageResources.h" />
     <ClInclude Include="LocateCommand.h" />
+    <ClInclude Include="MemoryLeaksDumper.h" />
     <ClInclude Include="NormalizeCommand.h" />
     <ClInclude Include="ParagraphAnnotation.h" />
     <ClInclude Include="ProfilingLogger.h" />
@@ -444,29 +449,32 @@
     <RunCodeAnalysis Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</RunCodeAnalysis>
     <CodeAnalysisIgnoreGeneratedCode Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CodeAnalysisIgnoreGeneratedCode>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ExecutablePath>$(VCInstallDir)bin;$(WindowsSdkDir)bin\NETFX 4.0 Tools;$(WindowsSdkDir)bin;$(VSInstallDir)Common7\Tools\bin;$(VSInstallDir)Common7\tools;$(VSInstallDir)Common7\ide;$(ProgramFiles)\HTML Help Workshop;$(FrameworkSDKDir)\bin;$(MSBuildToolsPath32);$(VSInstallDir);$(SystemRoot)\SysWow64;$(FxCopDir);C:\Libraries\bin;$(PATH);</ExecutablePath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>$(UIMACPP_HOME)\include;$(APR_HOME)\include;Unitex-C++;Unitex-C++\include_tre;Unitex-C++\build\tre-0.8.0\lib;Unitex-C++\build\tre-0.8.0\win32;Unitex-C++\logger;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>UNITEX_LIBRARY;VFSIMPL=1;WIN32;_DEBUG;_WINDOWS;_USRDLL;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>DEBUG_MEMORY_LEAKS;DEBUG_UIMA_CPP;UNITEX_LIBRARY;WIN32;_DEBUG;_WINDOWS;_USRDLL;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <ExceptionHandling>Sync</ExceptionHandling>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <PrecompiledHeader>
       </PrecompiledHeader>
-      <ProgramDataBaseFileName>$(IntDir)$TargetName).pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>$(IntDir)$(TargetName).pdb</ProgramDataBaseFileName>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>libapr-1.lib;xerces-c_3.lib;icudt.lib;icuin.lib;icuio.lib;icule.lib;iculx.lib;icutu.lib;icuuc.lib;uimacpp.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>$(OutDir)$(Configuration)\UnitexAnnotatorCpp.dll</OutputFile>
-      <AdditionalLibraryDirectories>$(UIMACPP_HOME)\lib;$(XERCES_HOME)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libapr-1.lib;xerces-c_3.lib;icudt.lib;icuin.lib;icuio.lib;icule.lib;iculx.lib;icutu.lib;icuuc.lib;uima.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)$(Configuration)\$(TargetName)D.dll</OutputFile>
+      <AdditionalLibraryDirectories>$(UIMACPP_HOME)\lib-dbg;$(XERCES_HOME)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ProgramDatabaseFile>$(OutDir)$(Configuration)\UnitexAnnotatorCppD.pdb</ProgramDatabaseFile>
+      <ProgramDatabaseFile>$(OutDir)$(Configuration)\$(TargetName)D.pdb</ProgramDatabaseFile>
       <SubSystem>Windows</SubSystem>
-      <ImportLibrary>$(OutDir)$(TargetName).lib</ImportLibrary>
+      <ImportLibrary>$(OutDir)$(TargetName)D.lib</ImportLibrary>
       <TargetMachine>MachineX86</TargetMachine>
       <GenerateMapFile>true</GenerateMapFile>
       <MapExports>true</MapExports>
@@ -485,14 +493,13 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <Optimization>Full</Optimization>
-      <AdditionalIncludeDirectories>$(UIMACPP_HOME)\include;$(APR_HOME)\include;Unitex-C++;Unitex-C++\include_tre;Unitex-C++\build\tre-0.8.0\lib;Unitex-C++\build\tre-0.8.0\win32;Unitex-C++\logger;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(UIMACPP_HOME)\include;$(APR_HOME)\include;Unitex-C++;Unitex-C++\include_tre;Unitex-C++\build\tre-0.8.0\lib;Unitex-C++\build\tre-0.8.0\win32;Unitex-C++\logger;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>UNITEX_LIBRARY;TRACEOFF;NDEBUG;WIN32;_WINDOWS;_USRDLL;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <ExceptionHandling>Sync</ExceptionHandling>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <ProgramDataBaseFileName>$(IntDir)$(TargetName).pdb</ProgramDataBaseFileName>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -501,7 +508,7 @@
       <EnablePREfast>false</EnablePREfast>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>libapr-1.lib;xerces-c_3.lib;icudt.lib;icuin.lib;icuio.lib;icule.lib;iculx.lib;icutu.lib;icuuc.lib;uimacpp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>libapr-1.lib;xerces-c_3.lib;icudt.lib;icuin.lib;icuio.lib;icule.lib;iculx.lib;icutu.lib;icuuc.lib;uima.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(Configuration)\UnitexAnnotatorCpp.dll</OutputFile>
       <AdditionalLibraryDirectories>$(UIMACPP_HOME)\lib;$(XERCES_HOME)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>

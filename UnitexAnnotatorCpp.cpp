@@ -44,6 +44,7 @@
 #include "UserCancellingPlugCallback.h"
 #include "UnitexTokenizer.h"
 #include "ProfilingLogger.h"
+#include "MemoryLeaksDumper.h"
 
 #include "LanguageArea.h"
 #include "ContextAreaAnnotation.h"
@@ -58,6 +59,7 @@
 
 #include "Unitex-C++/VirtualFiles.h"
 #include "Unitex-C++/UnitexLibIO.h"
+#include "Unitex-C++/Persistence.h"
 
 #include <xercesc/parsers/XercesDOMParser.hpp>
 #include <xercesc/util/XMLUni.hpp>
@@ -71,6 +73,16 @@ using namespace unitexcpp;
 using namespace unitexcpp::engine;
 using namespace unitexcpp::tokenize;
 using namespace unitexcpp::annotation;
+
+#if defined(_MSC_VER) && defined(_DEBUG) && defined(DEBUG_MEMORY_LEAKS)
+#define _CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
+#define DEBUG_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__)
+#define new DEBUG_NEW
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
+#endif
 
 namespace uima
 {
@@ -106,10 +118,17 @@ namespace uima
 		m_pAnnotatorContext = NULL;
 		pUnitexLogger = NULL;
 		typeSystemInitialized = false;
+		m_nbProcessedDocuments = 0;
+		XMLPlatformUtils::Initialize();
 	}
 
 	UnitexAnnotatorCpp::~UnitexAnnotatorCpp(void)
 	{
+		// Empty virtual file system
+		unitex::virtualfile::VFS_reset();
+		// Uninitialization
+		unitex::dispose_persistence();
+		unitex::virtualfile::dispose_virtual_files();
 	}
 
 	/////////////////////////////////////////////////////////////////////////
@@ -216,8 +235,8 @@ namespace uima
 	}
 
 	/*!
-	 * Initializes the showing or hiding Unitex internal output.
-	 */
+	* Initializes the showing or hiding Unitex internal output.
+	*/
 	TyErrorId UnitexAnnotatorCpp::initializeHideUnitexOutput()
 	{
 		bool hideUnitexOutput = true;
@@ -334,6 +353,9 @@ namespace uima
 			}
 		}
 
+#ifdef DEBUG_UIMA_CPP
+		cout << "Unitex timeout parameter = " << m_timeoutDelay << "ms" << endl;
+#endif
 		return (TyErrorId) UIMA_ERR_NONE;
 	}
 
@@ -434,15 +456,15 @@ namespace uima
 	TyErrorId UnitexAnnotatorCpp::initializeUnitexResourcePath()
 	{
 		boost::optional<string> unitexResourcePath = get_env("UNITEX_RESOURCES");
-        if (isLoggingEnabled()) {
-            LogStream& ls = getLogStream(LogStream::EnMessage);
-            if (unitexResourcePath)
-            ls << "Checking UNITEX_RESOURCES = '" << *unitexResourcePath << "'";
-            else
-            	ls << "UNITEX_RESOURCES is not defined";
-            ls.flush();
-        }
-        if (!unitexResourcePath || (unitexResourcePath == boost::none) || unitexResourcePath->empty()) {
+		if (isLoggingEnabled()) {
+			LogStream& ls = getLogStream(LogStream::EnMessage);
+			if (unitexResourcePath)
+				ls << "Checking UNITEX_RESOURCES = '" << *unitexResourcePath << "'";
+			else
+				ls << "UNITEX_RESOURCES is not defined";
+			ls.flush();
+		}
+		if (!unitexResourcePath || (unitexResourcePath == boost::none) || unitexResourcePath->empty()) {
 			logWarning("Environment variable UNITEX_RESOURCES is not defined. Looking in DataPath");
 			// In UIMACPP the getDataPath() does not exist so we rather use the following
 			string resourcePathDefinition = ResourceManager::getInstance().getLocationData().getAsCString();
@@ -558,7 +580,7 @@ namespace uima
 				ls.flush();
 			}
 
-			bool manyStrategies = (supportedStrategies.size() > 1);
+			bool manyStrategies = (supportedStrategies.size() > 1); 
 
 			for (set<UnicodeString>::const_iterator itStrategy = supportedStrategies.begin(); itStrategy != supportedStrategies.end(); itStrategy++) {
 				const UnicodeString& strategy = *itStrategy;
@@ -611,17 +633,17 @@ namespace uima
 					}
 #endif
 
-                    if (isLoggingEnabled()) {
-                        LogStream& ls = getLogStream(LogStream::EnMessage);
-                        ls << "Instantiating a Unitex engine for " << language << " / " << strategy;
-                        ls.flush();
-                    }
+					if (isLoggingEnabled()) {
+						LogStream& ls = getLogStream(LogStream::EnMessage);
+						ls << "Instantiating a Unitex engine for " << language << " / " << strategy;
+						ls.flush();
+					}
 					UnitexEngine* pEngine = new UnitexEngine(*this, language, m_pathUnitexResourcesDir, dictionaries, graphs, morphoDictionaries);
-                    if (!pEngine->validResources()) {
-                        logError("Linguistic resources are not valid!");
-                        return UIMA_ERR_USER_ANNOTATOR_COULD_NOT_INIT;
-                    }
-                    
+					if (!pEngine->validResources()) {
+						logError("Linguistic resources are not valid!");
+						return UIMA_ERR_USER_ANNOTATOR_COULD_NOT_INIT;
+					}
+
 					// Adapt the Sentence graph to the actual graphs in the
 					// descriptor
 					for (vector<UnicodeString>::const_iterator itGraph = graphs.begin(); itGraph != graphs.end(); itGraph++) {
@@ -1074,9 +1096,13 @@ namespace uima
 	{
 		ProfilingLogger profilingLogger(tcas, *this);
 
+		// Reinitialize the working view for the new document
+		m_pWorkingView = NULL;
+		initializeWorkingView(tcas);
+
 		pCurrentCAS = &tcas;
 		if (isLoggingEnabled(LogStream::EnMessage))
-			logMessage("Start UnitexAnnotatorCpp for %s", getMailIdAsString().c_str());
+			logMessage("Start UnitexAnnotatorCpp for %s", getDocumentIdAsString().c_str());
 
 		if (skip()) {
 			logMessage("Skip processing");
@@ -1105,7 +1131,7 @@ namespace uima
 			logError("Unable to retrieve language areas");
 		}
 
-		
+
 		ostringstream oss;
 #ifdef WIN32
 		oss << "Corpus" << GetCurrentThreadId();
@@ -1144,6 +1170,9 @@ namespace uima
 			path inputPath = prepareInputFile(unitexEngine, languageArea, corpusPath);
 #ifdef DEBUG_UIMA_CPP
 			cout << "Input for Unitex is ready" << endl;
+			UnicodeString ustrInputFileContent;
+			getStringFromFile(inputPath, ustrInputFileContent);
+			cout << ustrInputFileContent << endl;
 #endif
 			VirtualFolderCleaner vfsSntCleaner(unitexEngine.getSntDirectory());
 
@@ -1155,9 +1184,12 @@ namespace uima
 			try {
 				list<QualifiedString> unitexResultMatches;
 
-//#ifdef DEBUG_UIMA_CPP
-//				m_timeoutDelay = 0;
-//#endif
+#ifdef DEBUG_UIMA_CPP
+				m_timeoutDelay = 0;
+#endif
+#ifdef DEBUG_MEMORY_LEAKS
+				m_timeoutDelay = 0;
+#endif
 
 				// Launch Unitex main annotation process
 				// and monitor its state until we reach a time out delay
@@ -1168,14 +1200,25 @@ namespace uima
 					try {
 						logMessage("Running Unitex with a time out delay of %d ms", m_timeoutDelay);
 						boost::thread unitexThread(boost::move(task));
+#ifdef DEBUG_UIMA_CPP
+						cout << "Built thread " << unitexThread.get_id() << " to run Unitex in background" << endl;
+#endif
 
 						if (future.timed_wait(delay))
 							logMessage("Unitex task complete in acceptable time");
 						else
 							logWarning("Unitex task not complete before time out");
-
-					} catch (boost::thread_interrupted const&) {
+					} 
+					catch (boost::thread_interrupted const&) {
 						logError("Time Out in Unitex! Aborting...");
+						return UIMA_ERR_USER_ANNOTATOR_ERROR_IN_SUBSYSTEM;
+					}
+					catch (boost::broken_promise& ex) {
+						logError("Broken promise while running Unitex in a background task: %s", ex.what());
+						return UIMA_ERR_USER_ANNOTATOR_ERROR_IN_SUBSYSTEM;
+					}
+					catch (std::exception& ex) {
+						logError("Exception while running Unitex in a background task: %s", ex.what());
 						return UIMA_ERR_USER_ANNOTATOR_ERROR_IN_SUBSYSTEM;
 					}
 
@@ -1231,9 +1274,11 @@ namespace uima
 
 		if (isLoggingEnabled(LogStream::EnMessage)) {
 			LogStream& ls = getLogStream(LogStream::EnMessage);
-			ls << "End UnitexAnnotatorCpp processing for " << getMailId();
+			ls << "End UnitexAnnotatorCpp processing for " << getDocumentId();
 			ls.flush();
 		}
+
+		m_nbProcessedDocuments++;
 
 		return (TyErrorId) UIMA_ERR_NONE;
 	}
@@ -1343,7 +1388,7 @@ namespace uima
 		else
 			inputText.removeBetween(pos + 1, len);
 
-		
+
 		inputPath = corpusPath / "unitexInput.txt";
 		writeStringToFile(inputPath, inputText);
 
@@ -1355,7 +1400,7 @@ namespace uima
 	* dictionary entries that might have been generated by another annotator
 	* earlier in the chain.
 	*
-	* The dictionary file is either virtualized in VFS or written as a genuine
+	* The dictionary file is either virtualpized in VFS or written as a genuine
 	* file, depending on the system's capabilities.
 	*/
 	void UnitexAnnotatorCpp::prepareDynamicDictionary(UnitexEngine& unitexEngine)
@@ -1492,21 +1537,63 @@ namespace uima
 	/////////////////////////////////////////////////////////////////////////
 
 	/**
-	* Retrieves the initial view for the given document.
+	* Initializes the current document's "working view", i.e. either
+	* "_InitialView" or "realMailBodyView" depending on which one
+	* contains a "UnitexDocumentParameters" annotation.
+	*
+	* If no such view exists, a CASException is raised.
+	*/
+	void UnitexAnnotatorCpp::initializeWorkingView(CAS& cas)
+	{
+		CAS* pView = NULL;
+
+		// 1. Try to find a UnitexDocumentParameters annotation in the _InitialView.
+		try {
+			pView = cas.getView("_InitialView");
+		}
+		catch (CASException& e) {
+			logError("No _InitialView in current document, this is wrong!");
+			throw e;
+		}
+		try {
+			UnitexDocumentParameters::getUnitexDocumentParameters(*pView);
+		}
+		catch (UnitexException& e) {
+			if (isLoggingEnabled(LogStream::EnEntryType::EnWarning))
+				logWarning("No UnitexDocumentParameters in _InitialView, try with realMailBodyView");
+			pView = NULL;
+		}
+
+		// 2. Try in realMailBodyView
+		if (!pView) {
+			try {
+				pView = cas.getView("realMailBodyView");
+			}
+			catch (CASException& e) {
+				logError("No realMailBodyView in current document, we cannot find a view with a UnitexDocumentParameters annotation!");
+				throw e;
+			}
+			try {
+				UnitexDocumentParameters::getUnitexDocumentParameters(*pView);
+			}
+			catch (UnitexException& e) {
+				logError("No UnitexDocumentParameters in realMailBodyView, we cannot find a view with a UnitexDocumentParameters annotation!");
+				pView = NULL;
+				throw e;
+			}
+		}
+
+		m_pWorkingView = pView;
+	}
+
+	/**
+	* Retrieves the working view for the given document.
+	* This is either "_InitialView" or "realMailBodyView" depending on which
+	* one contains a "UnitexDocumentParameters" annotation.
 	*/
 	CAS& UnitexAnnotatorCpp::getView() const
 	{
-		CAS* pView = NULL;
-		try {
-			pView = pCurrentCAS->getView("realMailBodyView");
-			//pView = pCurrentCAS->getView("_InitialView");
-		} catch (CASException& e) {
-			ostringstream oss;
-			oss << "_InitialView not found for Mail Item ";
-			getLogger().logError(oss.str());
-			throw;
-		}
-		return *pView;
+		return *m_pWorkingView;
 	}
 
 	UnitexDocumentParameters UnitexAnnotatorCpp::getUnitexDocumentParameters() const
@@ -1514,15 +1601,15 @@ namespace uima
 		return UnitexDocumentParameters::getUnitexDocumentParameters(getView());
 	}
 
-	UnicodeStringRef UnitexAnnotatorCpp::getMailId() const
+	UnicodeStringRef UnitexAnnotatorCpp::getDocumentId() const
 	{
 		return getUnitexDocumentParameters().getUri();
 	}
 
-	string UnitexAnnotatorCpp::getMailIdAsString() const
+	string UnitexAnnotatorCpp::getDocumentIdAsString() const
 	{
 		ostringstream oss;
-		oss << getMailId();
+		oss << getDocumentId();
 		return oss.str();
 	}
 
@@ -1704,7 +1791,7 @@ namespace uima
 			delete[] szMessage;
 		}
 	}
-	
+
 	// This macro exports an entry point that is used to create the annotator.
 
 	MAKE_AE(UnitexAnnotatorCpp);

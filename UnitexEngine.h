@@ -1,9 +1,9 @@
 /*
- * UnitexEngine.h
- *
- *  Created on: 28 déc. 2010
- *      Author: sylvainsurcin
- */
+* UnitexEngine.h
+*
+*  Created on: 28 déc. 2010
+*      Author: sylvainsurcin
+*/
 
 #ifndef UNITEXENGINE_H_
 #define UNITEXENGINE_H_
@@ -43,7 +43,7 @@ namespace unitexcpp
 
 			Language const& m_language;
 			LanguageResources m_languageResources;
-            bool m_validResources;
+			bool m_validResources;
 			unitexcpp::Stringlist m_dynamicDictionaries;
 
 			DictionaryCompiler m_dictionaryCompiler;
@@ -56,41 +56,41 @@ namespace unitexcpp
 
 		public:
 			/*!
-			 * Number of milliseconds spent in Unitex processes since the beginning of
-			 * the session.
-			 */
+			* Number of milliseconds spent in Unitex processes since the beginning of
+			* the session.
+			*/
 			static long ms_unitexRuntime;
 
 			/*!
-			 * Number of milliseconds spent in Virtual File System processes since the
-			 * beginning of the session.
-			 */
+			* Number of milliseconds spent in Virtual File System processes since the
+			* beginning of the session.
+			*/
 			static long ms_vfsRuntime;
 
 			/*!
-			 * Flag set if the Unitex library is allowed to write to the standard output.
-			 */
+			* Flag set if the Unitex library is allowed to write to the standard output.
+			*/
 			static bool ms_allowedToStdout;
 
 			/*!
-			 * Flag set if the abstract Virtual File System is initialized
-			 */
+			* Flag set if the abstract Virtual File System is initialized
+			*/
 			static bool ms_isVfsInitialized;
 
 		public:
 			UnitexEngine(	uima::UnitexAnnotatorCpp const& annotator,
-							icu::UnicodeString const& normalizedLanguage,
-							const boost::filesystem::path& srcResourcesDir,
-							const std::vector<icu::UnicodeString>& dictionaries,
-							const std::vector<icu::UnicodeString>& automata,
-							const std::map<icu::UnicodeString, icu::UnicodeString>& morphoDictNames);
+				icu::UnicodeString const& normalizedLanguage,
+				const boost::filesystem::path& srcResourcesDir,
+				const std::vector<icu::UnicodeString>& dictionaries,
+				const std::vector<icu::UnicodeString>& automata,
+				const std::map<icu::UnicodeString, icu::UnicodeString>& morphoDictNames);
 			UnitexEngine(	uima::UnitexAnnotatorCpp const& annotator,
-							icu::UnicodeString const& normalizedLanguage,
-							const boost::filesystem::path& srcResourcesDir,
-							const boost::filesystem::path& binResourcesDir,
-							const std::vector<icu::UnicodeString>& dictionaries,
-							const std::vector<icu::UnicodeString>& automata,
-							const std::map<icu::UnicodeString, icu::UnicodeString>& morphoDictNames);
+				icu::UnicodeString const& normalizedLanguage,
+				const boost::filesystem::path& srcResourcesDir,
+				const boost::filesystem::path& binResourcesDir,
+				const std::vector<icu::UnicodeString>& dictionaries,
+				const std::vector<icu::UnicodeString>& automata,
+				const std::map<icu::UnicodeString, icu::UnicodeString>& morphoDictNames);
 			virtual ~UnitexEngine();
 
 			std::list<QualifiedString> run(const std::string& inputFile = "");
@@ -110,7 +110,7 @@ namespace unitexcpp
 			static std::size_t initializedVirtualFileSystem();
 
 			// Language resources
-            bool validResources() const;
+			bool validResources() const;
 			const boost::filesystem::path& getUnitexSrcResourcesDir() const;
 			const boost::filesystem::path& getUnitexBinResourcesDir() const;
 
@@ -125,6 +125,7 @@ namespace unitexcpp
 			const std::string getReplaceFstFile() const;
 			unitexcpp::Stringlist::size_type getBinDictionaries(unitexcpp::Stringlist& list) const;
 			const unitexcpp::Stringlist& getDynamicDictionaries() const;
+			void getMorphologicalDictionaries(const std::string& automatonPath, unitexcpp::Stringlist& morphoDictList) const;
 			boost::filesystem::path getSntDirectory() const;
 
 			void clearDynamicDictionaries();

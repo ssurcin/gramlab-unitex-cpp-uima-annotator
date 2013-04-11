@@ -14,6 +14,16 @@
 #include "UnitexEngine.h"
 #include "Unitex-C++/Fst2Txt.h"
 
+#if defined(_MSC_VER) && defined(_DEBUG) && defined(DEBUG_MEMORY_LEAKS)
+#define _CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
+#define DEBUG_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__)
+#define new DEBUG_NEW
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
+#endif
+
 using namespace std;
 using namespace unitexcpp;
 using namespace unitexcpp::engine;
@@ -48,8 +58,10 @@ namespace unitexcpp
 		//
 		///////////////////////////////////////////////////////////////////////////
 
-		UnitexCommand::fnUnitexMainCommand Fst2TxtCommand::getUnitexCommandFunction() const {
+		UnitexCommand::fnUnitexMainCommand Fst2TxtCommand::getUnitexCommandFunction() const 
+		{
 			return &unitex::main_Fst2Txt;
+			//return NULL;
 		}
 
 		void Fst2TxtCommand::buildArguments(Stringlist& arguments) const
