@@ -11,7 +11,21 @@ if "%~1" == "" (
 	goto error
 )
 
+if "%~1" == "Debug" (
+	echo Debug distribution
+	set UIMACPP_BIN_DIR=%UIMACPP_HOME%\bin-dbg
+) else (
+	echo Release distribution
+	set UIMACPP_BIN_DIR=%UIMACPP_HOME%\bin
+)
+if not exist %UIMACPP_BIN_DIR% (
+	echo ERROR: UIMA-C++ Framework binary directory does not exist 
+	echo ERROR: %UIMACPP_BIN_DIR% not found
+	goto error
+)
+
 set TARGET_DIR=%~1
+echo Target directory is %TARGET_DIR%
 
 if not exist %TARGET_DIR% ( mkdir %TARGET_DIR% )
 if not exist %TARGET_DIR% (
@@ -25,10 +39,10 @@ echo.
 echo UimaAnnotatorCpp descriptors will be copied into %DESC_DIR%
 echo.
 
-xcopy /Q /Y desc\*.xml %DESC_DIR%\
+xcopy /Y desc\*.xml %DESC_DIR%\
 
 echo Done copying descriptors
-goto end
+REM goto end
 
 set DEP_DIR=%TARGET_DIR%\lib
 
@@ -39,12 +53,16 @@ echo UimaAnnotatorCpp's dependency libraries will be copied into %DEP_DIR%
 echo.
 
 echo Copying libraries from UIMA-C++ framework
-set DEP_SOURCE=%UIMACPP_HOME%\bin
-xcopy /Q /Y %DEP_SOURCE%\libapr*.dll %DEP_DIR%\
-xcopy /Q /Y %DEP_SOURCE%\xerces-c*.dll %DEP_DIR%\
-xcopy /Q /Y %DEP_SOURCE%\icu*.dll %DEP_DIR%\
-xcopy /Q /Y %DEP_SOURCE%\uima*.dll %DEP_DIR%\
-xcopy /Q /Y %DEP_SOURCE%\msvc*.dll %DEP_DIR%\
+set DEP_SOURCE=%UIMACPP_BIN_DIR%
+xcopy /Y %DEP_SOURCE%\libapr*.* %DEP_DIR%\
+xcopy /Y %DEP_SOURCE%\xerces-c*.* %DEP_DIR%\
+xcopy /Y %DEP_SOURCE%\icu*.* %DEP_DIR%\
+xcopy /Y %DEP_SOURCE%\uima*.* %DEP_DIR%\
+xcopy /Y %DEP_SOURCE%\msvc*.dll %DEP_DIR%\
+if "%~1" == "Debug" (
+	echo Copying Visual Studio debug databases if any into %DEP_DIR%
+	xcopy /Q /Y %DEP_SOURCE%\*.pdb %DEP_DIR%\
+)
 
 REM echo Copying libraries from Boost
 REM xcopy /Q /Y %BOOST_ROOT%\lib\boost_filesystem-vc100-mt-1_51.lib;boost_system-vc100-mt-1_51.lib;boost_date_time-vc100-mt-1_51.lib;boost_thread-vc100-mt-1_51.lib

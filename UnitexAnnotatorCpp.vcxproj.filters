@@ -989,4 +989,9 @@
       <UniqueIdentifier>{bd737fc3-9465-491e-8163-3ab65a641282}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="pom.xml" />
+    <None Include="copydep.cmd" />
+    <None Include="unziptre.cmd" />
+  </ItemGroup>
 </Project>
