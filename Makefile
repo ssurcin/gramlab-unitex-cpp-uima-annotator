@@ -249,7 +249,9 @@ prepare_deploy:
 	@mkdir -p Release
 	@echo "Copying Annotator executable into Release"
 	@cp $(ANNOTATOR_EXECUTABLE) Release
-		
+	@echo "Copying dependencies under Release"
+	@./copydep.sh Release
+	
 maven_deploy: annotator prepare_deploy
 	@echo "Deploying MAVEN artifact"
 	@mvn deploy
