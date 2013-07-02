@@ -123,7 +123,7 @@ namespace unitexcpp
 	///////////////////////////////////////////////////////////////////////////////
 
 	LanguageResources::LanguageResources(engine::UnitexEngine& anEngine, Language const& aLanguage) :
-		engine(anEngine), language(aLanguage)
+		engine(anEngine), language(aLanguage), bAutomataOk(false), m_bDictionariesAreSet(false)
 	{
 		ms_livingInstances++;
 	}
@@ -406,7 +406,7 @@ namespace unitexcpp
 				continue;
 			}
 
-			if (engine.getAnnotator().isLoggingEnabled(LogStream::EnEntryType::EnMessage)) {
+			if (engine.getAnnotator().isLoggingEnabled(LogStream::EnMessage)) {
 				ostringstream oss;
 				oss << "Setting morpho dictionaries for automaton " << automatonName;
 				engine.getAnnotator().logMessage(oss.str());
@@ -558,7 +558,7 @@ namespace unitexcpp
 				annotator.logError("Error while persisting FST2 %s", automatonPath.string().c_str());
 				return false;
 			} else {
-				ms_persistedResources[automatonPath] = ResourceType::AUTOMATON;
+				ms_persistedResources[automatonPath] = AUTOMATON;
 				bool isPreprocessingGraph = false;
 				for (path::iterator it = automatonPath.begin(); it != automatonPath.end(); it++) {
 					string item = (*it).string();
@@ -626,7 +626,7 @@ namespace unitexcpp
 				engine.getAnnotator().logError(oss.str());
 				return false;
 			} else {
-				ms_persistedResources[dictionaryPath] = ResourceType::DICTIONARY;
+				ms_persistedResources[dictionaryPath] = DICTIONARY;
 				if (addToDictionaries)
 					m_dictionaryPaths.insert(persistedDictionaryPath);
 			}
@@ -669,7 +669,7 @@ namespace unitexcpp
 				engine.getAnnotator().logError(oss.str());
 				return false;
 			} else {
-				ms_persistedResources[persistedAlphabetPath] = ResourceType::ALPHABET;
+				ms_persistedResources[persistedAlphabetPath] = ALPHABET;
 			}
 		}
 
@@ -688,13 +688,13 @@ namespace unitexcpp
 		ResourceType rscType;
 		BOOST_FOREACH(tie(p, rscType), ms_persistedResources) {
 			switch (rscType) {
-			case ResourceType::ALPHABET:
+			case ALPHABET:
 				freePersistedAlphabet(p);
 				break;
-			case ResourceType::AUTOMATON:
+			case AUTOMATON:
 				freePersistedAutomaton(p);
 				break;
-			case ResourceType::DICTIONARY:
+			case DICTIONARY:
 				freePersistedDictionary(p);
 				break;
 			}

@@ -127,8 +127,8 @@ namespace uima
 		// Empty virtual file system
 		unitex::virtualfile::VFS_reset();
 		// Uninitialization
-		unitex::dispose_persistence();
-		unitex::virtualfile::dispose_virtual_files();
+		//unitex::dispose_persistence();
+		//unitex::virtualfile::dispose_virtual_files();
 	}
 
 	/////////////////////////////////////////////////////////////////////////
@@ -1559,7 +1559,7 @@ namespace uima
 			UnitexDocumentParameters::getUnitexDocumentParameters(*pView);
 		}
 		catch (UnitexException& e) {
-			if (isLoggingEnabled(LogStream::EnEntryType::EnWarning))
+			if (isLoggingEnabled(LogStream::EnWarning))
 				logWarning("No UnitexDocumentParameters in _InitialView, try with realMailBodyView");
 			pView = NULL;
 		}
