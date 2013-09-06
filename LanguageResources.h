@@ -1,9 +1,9 @@
 /*
- * LanguageResources.h
- *
- *  Created on: 28 déc. 2010
- *      Author: sylvainsurcin
- */
+* LanguageResources.h
+*
+*  Created on: 28 déc. 2010
+*      Author: sylvainsurcin
+*/
 
 #ifndef LANGUAGERESOURCES_H_
 #define LANGUAGERESOURCES_H_
@@ -31,6 +31,9 @@ namespace unitexcpp
 		engine::UnitexEngine& engine;
 		Language const& language;
 
+		// Maps regular (disk) file paths to the actual (virtual, persisted) file paths
+		std::map<boost::filesystem::path, boost::filesystem::path> m_mapPaths;
+
 		boost::filesystem::path m_languageDirectoryPath;
 		boost::filesystem::path m_automataDirectoryPath;
 		boost::filesystem::path m_preprocessingDirectoryPath;
@@ -51,8 +54,8 @@ namespace unitexcpp
 		typedef enum { ALPHABET, DICTIONARY, AUTOMATON } ResourceType;
 		typedef std::map<boost::filesystem::path, ResourceType> PersistedResourceCollection;
 		/**
-		 * The persisted resources (using Unitex native persistence), shared among all the Language instances so that we do not persist a resource twice.
-		 */
+		* The persisted resources (using Unitex native persistence), shared among all the Language instances so that we do not persist a resource twice.
+		*/
 		static PersistedResourceCollection ms_persistedResources;
 		static std::size_t ms_livingInstances;
 
@@ -61,11 +64,22 @@ namespace unitexcpp
 		virtual ~LanguageResources();
 
 		bool initialize(boost::filesystem::path const& normDicPath, std::string const& sentenceName, std::string const& replaceName, std::string const& alphName, std::string const& alphSortName);
+	private:
+		typedef enum { SENTENCE, REPLACE } SpecialAutomatonType;
+		bool initializeNormalizationDictionary(boost::filesystem::path const& normDicPath);
+		bool initializeAlphabet(boost::filesystem::path const& alphPath, bool isSorted);
+		bool initializeSpecialAutomaton(boost::filesystem::path const& automatonPath, SpecialAutomatonType automatonType);
 
+	public:
 		Language const& getLanguage() const
 		{
 			return language;
 		}
+
+		// Mapping disk paths to virtual paths
+		void mapPath(boost::filesystem::path const& diskPath, boost::filesystem::path const& virtualPath);
+		boost::filesystem::path const& getActualPath(boost::filesystem::path const& diskPath) const;
+		boost::filesystem::path const& operator[](boost::filesystem::path const& diskPath) const;
 
 		boost::filesystem::path const& getLanguageDirectoryPath() const;
 		boost::filesystem::path const& getAutomataDirectoryPath() const;
@@ -86,16 +100,18 @@ namespace unitexcpp
 		void setMorphologicalDictionaries(const std::map<icu::UnicodeString, icu::UnicodeString>& morphoDictNames);
 		void setSentenceAutomaton(boost::filesystem::path const& automatonPath);
 		void setAutomata(const std::vector<icu::UnicodeString>& automata);
-		
+
 		void check();
 
 		static boost::filesystem::path getSourceAutomatonPath(const boost::filesystem::path& automatonPath);
 		static boost::filesystem::path getCompiledAutomatonPath(const boost::filesystem::path& automatonPath);
 		static bool needsCompilation(const boost::filesystem::path& sourceFile, const boost::filesystem::path& compiledFile);
 
-		bool persistAutomaton(boost::filesystem::path const& automatonPath, bool sentenceGraph =false);
-		bool persistDictionary(boost::filesystem::path const& dictionaryPath, bool addToDictionaries =true);
-		bool persistAlphabet(boost::filesystem::path const& alphabetPath);
+		bool virtualizeFile(boost::filesystem::path const& diskPath, boost::filesystem::path& virtualPath);
+
+		bool persistAutomaton(boost::filesystem::path const& automatonPath, boost::filesystem::path& persistedPath, bool sentenceGraph =false);
+		bool persistDictionary(boost::filesystem::path const& dictionaryPath, boost::filesystem::path& persistedPath, bool addToDictionaries =true);
+		bool persistAlphabet(boost::filesystem::path const& alphabetPath, boost::filesystem::path& persistedPath);
 
 	private:
 		static bool isPersistedResourcePath(boost::filesystem::path const& aPath);
@@ -103,29 +119,6 @@ namespace unitexcpp
 		static void freePersistedAlphabet(boost::filesystem::path const& alphabetPath);
 		static void freePersistedAutomaton(boost::filesystem::path const& automatonPath);
 		static void freePersistedDictionary(boost::filesystem::path const& dictionaryPath);
-
-#ifdef MY_ABSTRACT_SPACES
-		// Implementation of callbacks for interface AbstractDelaSpace
-	private:
-		typedef std::map<boost::filesystem::path, struct unitex::INF_codes*> PersistedInfCodesMap;
-		PersistedInfCodesMap m_persistedInfCodes;
-		typedef std::map<boost::filesystem::path, const unsigned char*> PersistedBinDictionariesMap;
-		PersistedBinDictionariesMap m_persistedBinDictionaries;
-		typedef std::map<boost::filesystem::path, Fst2*> PersistedFst2Map;
-		PersistedFst2Map m_persistedFst2Automata;
-	public:
-		bool initDelaSpace();
-		void uninitDelaSpace();
-		bool isPersistedInfCodes(const boost::filesystem::path& path) const;
-		bool isPersistedBinDictionary(const boost::filesystem::path& path) const;
-		bool isPersistedFst2Automaton(const boost::filesystem::path& path) const;
-		bool isPersistedDelaOrFst2(const std::string& filename) const;
-		struct unitex::INF_codes* getPersistedInfCodes(const boost::filesystem::path& path) const;
-		const unsigned char* getPersistedBinDictionary(const boost::filesystem::path& path) const;
-		bool initFst2Space();
-		void uninitFst2Space();
-		unitex::Fst2* getPersistedFst2(const boost::filesystem::path& fst2Path) const;
-#endif
 	};
 
 }

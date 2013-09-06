@@ -133,6 +133,7 @@ namespace uima
 		TyErrorId initialize(AnnotatorContext& rclAnnotatorContext);
 		const AnnotatorContext& getAnnotatorContext() const;
 	private:
+		TyErrorId initializeResourceManager();
 		TyErrorId initializeLogger();
 		TyErrorId initializeHideUnitexOutput();
 		TyErrorId initializeUnitexTimeout();
@@ -142,6 +143,7 @@ namespace uima
 		TyErrorId initializeUnitexFakeTokens();
 		TyErrorId initializeUnitexResourcePath();
 		TyErrorId initializeLogProfilingInformation();
+		
 		boost::filesystem::path getUnitexHomePath() const;
 		boost::filesystem::path getUnitexResourcePath() const;
 		TyErrorId getStrategiesInDescriptor(const icu::UnicodeString& language, std::set<icu::UnicodeString>& strategies) const;

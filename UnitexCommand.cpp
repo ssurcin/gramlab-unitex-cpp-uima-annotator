@@ -13,6 +13,7 @@
 #include "UnitexCommand.h"
 #include "UnitexEngine.h"
 #include "Utils.h"
+#include "FileUtils.h"
 #include <boost/filesystem.hpp>
 #include "UnitexToolCommand.h"
 #include "UnitexException.h"
@@ -124,7 +125,7 @@ namespace unitexcpp
 		string UnitexCommand::absolutePathnameOf(const std::string& argument) const
 		{
 			string result;
-			if (isPersistedPath(argument))
+			if (isVirtualPath(argument))
 				result = argument;
 			else
 				result = boost::filesystem::system_complete(path(argument)).string();
@@ -133,7 +134,7 @@ namespace unitexcpp
 
 		path UnitexCommand::absolutePathnameOf(const path& path)
 		{
-			if (isPersistedPath(path))
+			if (isVirtualPath(path))
 				return path;
 			else
 				return system_complete(path);

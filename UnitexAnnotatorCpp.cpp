@@ -142,7 +142,16 @@ namespace uima
 	*/
 	TyErrorId UnitexAnnotatorCpp::initialize(AnnotatorContext& rclAnnotatorContext)
 	{
+		TyErrorId error = UIMA_ERR_NONE;
+
 		m_pAnnotatorContext = &rclAnnotatorContext;
+
+		error = initializeResourceManager();
+		if (error != UIMA_ERR_NONE) {
+			cout << "Cannot initialize UnitexAnnotator because the resource manager cannot be initialized in the first place" << endl;
+			return error;
+		}
+
 		initializeLogger();
 
 		logMessage("Initializing UnitexAnnotatorCpp...");
@@ -151,7 +160,7 @@ namespace uima
 		logMessage("Unitex Virtual File System initialized with %d virtual file spaces", nbVfsSpaces);
 
 		// Prevent Unitex library to write into the standard output
-		TyErrorId error = initializeHideUnitexOutput();
+		error = initializeHideUnitexOutput();
 		if (error != UIMA_ERR_NONE) {
 			logError("Cannot initialize UnitexAnnotator because of error intializing hiding of Unitex output");
 			return error;
@@ -231,6 +240,27 @@ namespace uima
 
 		logMessage("UnitexAnnotatorCpp initialized");
 
+		return (TyErrorId) UIMA_ERR_NONE;
+	}
+
+	/*!
+	* Initializes the Resource Manager singleton for this process.
+	*/
+	TyErrorId UnitexAnnotatorCpp::initializeResourceManager()
+	{
+		if (ResourceManager::hasInstance()) {
+			cout << "Resource manager is already initialized" << endl;
+		}
+		else {
+			ResourceManager& rclUimaResourceMgr = ResourceManager::createInstance("UnitexAnnotatorCpp");
+			if(rclUimaResourceMgr.getLastErrorId() != UIMA_ERR_NONE)
+			{
+				TyErrorId errorId = rclUimaResourceMgr.getLastErrorId();
+				ErrorMessage clMessage(errorId);
+				cout << clMessage << endl;
+				return errorId;
+			}
+		}
 		return (TyErrorId) UIMA_ERR_NONE;
 	}
 
@@ -644,8 +674,7 @@ namespace uima
 						return UIMA_ERR_USER_ANNOTATOR_COULD_NOT_INIT;
 					}
 
-					// Adapt the Sentence graph to the actual graphs in the
-					// descriptor
+					// Adapt the Sentence graph to the actual graphs in the descriptor
 					for (vector<UnicodeString>::const_iterator itGraph = graphs.begin(); itGraph != graphs.end(); itGraph++) {
 						const UnicodeString& graph = *itGraph;
 						if (graph.indexOf("Sentence") >= 0) {
@@ -1138,13 +1167,15 @@ namespace uima
 #else
 		oss << "Corpus" << pthread_self();
 #endif
-		path corpusPath = persistedPath(path(oss.str()));
+		path corpusPath = virtualizedPath(path(oss.str()));
 
 		BOOST_FOREACH(LanguageArea& languageArea, languageAreas) {
 			VirtualFolderCleaner vfsCleaner(corpusPath);
 
 			UnicodeString language = toString(languageArea.getLanguage());
 			UnitexEngine& unitexEngine = selectUnitexLanguageInstance(language, strategy);
+
+			// Clear automaton performances from previous document???
 			unitexEngine.clearPerformanceCache();
 
 			if (isLoggingEnabled(LogStream::EnMessage)) {
@@ -1388,9 +1419,13 @@ namespace uima
 		else
 			inputText.removeBetween(pos + 1, len);
 
-
 		inputPath = corpusPath / "unitexInput.txt";
-		writeStringToFile(inputPath, inputText);
+		if (!writeUnitexFile(inputPath, inputText)) {
+			LogStream& ls = getLogStream(LogStream::EnError);
+			ls << "Cannot write input to file " << inputPath << endl;
+			ls.flush();
+			return fileNotFoundPath;
+		}
 
 		return inputPath;
 	}

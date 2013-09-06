@@ -1,9 +1,9 @@
 /*
- * FileUtils.h
- *
- *  Created on: 10 juil. 2012
- *      Author: sylvain
- */
+* FileUtils.h
+*
+*  Created on: 10 juil. 2012
+*      Author: sylvain
+*/
 
 #ifndef FILEUTILS_H_
 #define FILEUTILS_H_
@@ -22,6 +22,21 @@
 
 namespace unitexcpp
 {
+	extern const boost::filesystem::path fileNotFoundPath;
+
+	std::string const& getVirtualFilePfx();
+
+	bool isAbsolutePath(const boost::filesystem::path& path);
+	bool isVirtualPath(const boost::filesystem::path& aPath);
+	boost::filesystem::path virtualizedPath(const boost::filesystem::path& aPath);
+	boost::filesystem::path unvirtualizedPath(const boost::filesystem::path& aPath);
+	std::string quotePath(const boost::filesystem::path& path);
+
+	bool copyUnitexFile(boost::filesystem::path const& oldName, boost::filesystem::path const& newName);
+	bool writeUnitexFile(boost::filesystem::path const& fileName, const void* buffer, size_t bufferSize);
+	bool writeUnitexFile(boost::filesystem::path const& fileName, const uima::UnicodeStringRef& uString);
+	bool getStringFromUnitexFile(boost::filesystem::path const& fileName, icu::UnicodeString& uString);
+
 	bool writeStringToFile(const std::string& strFilename, const uima::UnicodeStringRef& uString);
 	bool writeStringToFile(const boost::filesystem::path& filename, const uima::UnicodeStringRef& uString);
 	bool getStringFromFile(const std::string& strFilename, icu::UnicodeString& uString);

@@ -13,6 +13,7 @@
 #include "LanguageResources.h"
 #include "UnitexAnnotatorCpp.h"
 #include "Utils.h"
+#include "FileUtils.h"
 #include "UnitexException.h"
 #include "UnitexEngine.h"
 #include "Language.h"
@@ -25,6 +26,8 @@
 #include "Alphabet.h"
 #include <boost/algorithm/string.hpp>
 #include <boost/foreach.hpp>
+#include "Unitex-C++/UnitexLibIO.h"
+#include "Unitex-C++/PersistenceInterface.h"
 #include "Unitex-C++/AbstractDelaPlugCallback.h"
 #include "Unitex-C++/AbstractFst2PlugCallback.h"
 
@@ -41,66 +44,6 @@ static char THIS_FILE[] = __FILE__;
 using namespace std;
 using namespace boost;
 using namespace boost::filesystem;
-
-///////////////////////////////////////////////////////////////////////////////
-//
-// Forward declaration of callbacks for AbstractDelaSpace plugin
-//
-///////////////////////////////////////////////////////////////////////////////
-
-#ifdef MY_ABSTRACT_SPACES
-extern "C" 
-{
-	int ABSTRACT_CALLBACK_UNITEX initDelaSpace(void* privateSpacePtr);
-	void ABSTRACT_CALLBACK_UNITEX uninitDelaSpace(void* privateSpacePtr);
-
-	int ABSTRACT_CALLBACK_UNITEX isFilenameDelaSpaceObject(const char* name, void* privateSpacePtr);
-
-	struct unitex::INF_codes* ABSTRACT_CALLBACK_UNITEX loadAbstractInfFile(const VersatileEncodingConfig* vec, const char* name, struct INF_free_info* p_inf_free_info, void* privateSpacePtr);
-	void ABSTRACT_CALLBACK_UNITEX freeAbstractInf(struct unitex::INF_codes* INF, struct INF_free_info* p_inf_free_info, void* privateSpacePtr);
-	unsigned char* ABSTRACT_CALLBACK_UNITEX loadAbstractBinFile(const char* name, long* file_size, struct BIN_free_info* p_bin_free_info, void* privateSpacePtr);
-	void ABSTRACT_CALLBACK_UNITEX freeAbstractBin(unsigned char* BIN, struct BIN_free_info* p_bin_free_info, void* privateSpacePtr);
-
-	const t_persistent_dic_func_array persistentDictionaryHooks = {
-		sizeof(t_persistent_dic_func_array),
-		isFilenameDelaSpaceObject,
-		initDelaSpace,
-		uninitDelaSpace,
-		loadAbstractInfFile,
-		freeAbstractInf,
-		loadAbstractBinFile,
-		freeAbstractBin
-	};
-}
-#endif
-
-///////////////////////////////////////////////////////////////////////////////
-//
-// Forward declaration of callbacks for AbstractFs2Space plugin
-//
-///////////////////////////////////////////////////////////////////////////////
-
-#ifdef MY_ABSTRACT_SPACES
-extern "C"
-{
-	int ABSTRACT_CALLBACK_UNITEX isFilenameFst2SpaceObject(const char* name, void* privateSpacePtr);
-
-	int ABSTRACT_CALLBACK_UNITEX initFst2Space(void* privateSpacePtr);
-	void ABSTRACT_CALLBACK_UNITEX uninitFst2Space(void* privateSpacePtr);
-
-	Fst2* ABSTRACT_CALLBACK_UNITEX loadAbstractFst2(const VersatileEncodingConfig* vec,const char* name,int read_names,struct FST2_free_info* p_fst2_free_info,void* privateSpacePtr);
-	void ABSTRACT_CALLBACK_UNITEX freeAbstractFst2(Fst2* fst2,struct FST2_free_info* p_inf_free_info,void* privateSpacePtr);
-
-	const t_persistent_fst2_func_array persistentFst2Hooks = {
-		sizeof(t_persistent_fst2_func_array),
-		isFilenameFst2SpaceObject,
-		initFst2Space,
-		uninitFst2Space,
-		loadAbstractFst2,
-		freeAbstractFst2
-	};
-}
-#endif
 
 static const UnicodeString EmptyUnicodeString = "";
 
@@ -153,62 +96,102 @@ namespace unitexcpp
 		cout << "language dir path = " << m_languageDirectoryPath << endl;
 #endif
 
-#ifdef MY_ABSTRACT_SPACES
-#ifdef DEBUG_UIMA_CPP
-		cout << "Creating new persistent space for DELA dictionaries" << endl;
-#endif
-		AddAbstractDelaSpace(&persistentDictionaryHooks, this);
-#ifdef DEBUG_UIMA_CPP
-		cout << "Creating new persistent space for FST2 automata" << endl;
-#endif
-		AddAbstractFst2Space(&persistentFst2Hooks, this);
-#endif // MY_ABSTRACT_SPACES
+		// Normalization dictionary (only virtualized)
+		if (!initializeNormalizationDictionary(normDicPath)) return false;
 
-		// normalization dictionary (no need to persist)
+		// Alphabet file (virtualized & persisted)
+		if (!initializeAlphabet(alphName, false)) return false;
+
+		// Sorted alphabet file (virtualized & persisted)
+		if (!initializeAlphabet(alphSortName, true)) return false;
+
+		// Sentence formatting graph (virtualized & persisted)
+		if (!initializeSpecialAutomaton(sentenceName, SENTENCE)) return false;
+
+		// Replacement graph (persisted)
+		if (!initializeSpecialAutomaton(replaceName, REPLACE)) return false;
+
+		return true;
+	}
+
+	bool LanguageResources::initializeNormalizationDictionary(path const& normDicPath)
+	{
+		UnitexAnnotatorCpp const& annotator = engine.getAnnotator();
+
 		m_normalizationDictionaryPath = m_languageDirectoryPath / normDicPath;
-		if (!exists(m_normalizationDictionaryPath)) {
+
+		path virtualNormalizationDictionaryPath;
+		if (!virtualizeFile(m_normalizationDictionaryPath, virtualNormalizationDictionaryPath)) return false;
+
+		mapPath(m_normalizationDictionaryPath, virtualNormalizationDictionaryPath);
+		return true;
+	}
+
+	bool LanguageResources::initializeAlphabet(boost::filesystem::path const& alphPath, bool isSorted)
+	{
+		UnitexAnnotatorCpp const& annotator = engine.getAnnotator();
+
+		path diskPath;
+		if (isSorted)
+			diskPath = m_sortedAlphabetPath = m_languageDirectoryPath / alphPath;
+		else
+			diskPath = m_alphabetPath = m_languageDirectoryPath / alphPath;
+
+		path virtualAlphabetPath;
+		if (!virtualizeFile(diskPath, virtualAlphabetPath)) return false;
+
+		path persistedPath;
+		if (!persistAlphabet(virtualAlphabetPath, persistedPath)) {
+#ifdef DEBUG_UIMA_CPP
+			cerr << "Could not persist " << (isSorted ? "sorted " : " ") << " alphabet " << virtualAlphabetPath << endl;
+#endif
 			LogStream& ls = annotator.getLogStream(LogStream::EnError);
-			ls << "Normalization dictionary " << m_normalizationDictionaryPath << " does not exist!";
+			ls << "Could not persist " << (isSorted ? "sorted " : " ") << " alphabet " << virtualAlphabetPath;
+			ls.flush();
+			return false;
+		}
+		mapPath(diskPath, persistedPath);
+
+		return true;
+	}
+
+	bool LanguageResources::initializeSpecialAutomaton(path const& automatonPath, SpecialAutomatonType automatonType)
+	{
+		UnitexAnnotatorCpp const& annotator = engine.getAnnotator();
+
+		path diskPath;
+		string description;
+		switch (automatonType) {
+		case SENTENCE:
+			diskPath = m_sentenceAutomatonPath = m_preprocessingDirectoryPath / "Sentence" / automatonPath;
+			description = "Sentence automaton";
+			break;
+		case REPLACE:
+			diskPath = m_replaceAutomatonPath = m_preprocessingDirectoryPath / "Replace" / automatonPath;
+			description = "Replace automaton";
+			break;
+		default:
+			LogStream& ls = annotator.getLogStream(LogStream::EnError);
+			ls << "Unknown special automaton type " << automatonType << "!";
 			ls.flush();
 			return false;
 		}
 
-		// alphabet file (persisted)
-		path alphabetPath = m_languageDirectoryPath / alphName;
-		if (!exists(alphabetPath)) {
+		path virtualPath;
+		if (!virtualizeFile(diskPath, virtualPath)) return false;
+
+		path persistedPath;
+		if (!persistAutomaton(virtualPath, persistedPath, true)) {
+#ifdef DEBUG_UIMA_CPP
+			cerr << "Could not persist " << description << " " << diskPath << endl;
+#endif
 			LogStream& ls = annotator.getLogStream(LogStream::EnError);
-			ls << "Alphabet " << alphabetPath << " does not exist!";
+			ls << "Could not virtualize " << description << " " << diskPath;
 			ls.flush();
 			return false;
 		}
-		if (!isPersistedResourcePath(alphabetPath))
-			persistAlphabet(alphabetPath);
-		m_alphabetPath = persistedPath(alphabetPath);
 
-		// sorted alphabet file (persisted)
-		path sortedAlphabetPath = m_languageDirectoryPath / alphSortName;
-		if (!exists(sortedAlphabetPath)) {
-			LogStream& ls = annotator.getLogStream(LogStream::EnError);
-			ls << "Sorted alphabet " << sortedAlphabetPath << " does not exist!";
-			ls.flush();
-			return false;
-		}
-		if (!isPersistedResourcePath(sortedAlphabetPath))
-			persistAlphabet(sortedAlphabetPath);
-		m_sortedAlphabetPath = persistedPath(sortedAlphabetPath);
-
-		// sentence formatting graph (persisted)
-		path actualSentencePath = m_preprocessingDirectoryPath / "Sentence" / sentenceName;
-		if (!isPersistedResourcePath(actualSentencePath))
-			persistAutomaton(actualSentencePath, true);
-		m_sentenceAutomatonPath = persistedPath(actualSentencePath);
-
-		// sentence formatting graph (persisted)
-		path actualReplacePath = m_preprocessingDirectoryPath / "Replace" / replaceName;
-		if (!isPersistedResourcePath(actualReplacePath))
-			persistAutomaton(actualReplacePath);
-		m_replaceAutomatonPath = persistedPath(actualReplacePath);
-
+		mapPath(diskPath, persistedPath);
 		return true;
 	}
 
@@ -266,7 +249,7 @@ namespace unitexcpp
 	*/
 	const path& LanguageResources::getNormalizationDictionaryPath() const
 	{
-		return m_normalizationDictionaryPath;
+		return getActualPath(m_normalizationDictionaryPath);
 	}
 
 	/**
@@ -275,7 +258,7 @@ namespace unitexcpp
 	*/
 	const path& LanguageResources::getAlphabetPath() const
 	{
-		return m_alphabetPath;
+		return getActualPath(m_alphabetPath);
 	}
 
 	/**
@@ -284,7 +267,7 @@ namespace unitexcpp
 	*/
 	const path& LanguageResources::getSortedAlphabetPath() const
 	{
-		return m_sortedAlphabetPath;
+		return getActualPath(m_sortedAlphabetPath);
 	}
 
 	/**
@@ -293,7 +276,7 @@ namespace unitexcpp
 	*/
 	const path& LanguageResources::getSentenceAutomatonPath() const
 	{
-		return m_sentenceAutomatonPath;
+		return getActualPath(m_sentenceAutomatonPath);
 	}
 
 	/**
@@ -302,7 +285,7 @@ namespace unitexcpp
 	*/
 	const path& LanguageResources::getReplaceAutomatonPath() const
 	{
-		return m_replaceAutomatonPath;
+		return getActualPath(m_replaceAutomatonPath);
 	}
 
 	/**
@@ -334,21 +317,54 @@ namespace unitexcpp
 	*/
 	void LanguageResources::setBinaryDictionaries(const vector<UnicodeString>& dictionaries)
 	{
-		for (vector<UnicodeString>::const_iterator it = dictionaries.begin(); it != dictionaries.end(); it++) {
+		UnitexAnnotatorCpp const& annotator = engine.getAnnotator();
+
+		BOOST_FOREACH(UnicodeString const& dictionary, dictionaries) {
+			path binDicPath = getDictionaryDirectoryPath() / convertUnicodeStringToRawString(dictionary);
+			if (annotator.isLoggingEnabled(LogStream::EnMessage)) {
+				LogStream& ls = annotator.getLogStream(LogStream::EnMessage);
+				ls << "Getting dictionary " << binDicPath << endl;
+				ls.flush();
+			}
+
 			// we are provided with the .BIN dictionary name
-			path binDicPath = getDictionaryDirectoryPath() / convertUnicodeStringToRawString(*it);
+			path virtualBinDicPath;
+			if (!virtualizeFile(binDicPath, virtualBinDicPath)) {
+				if (annotator.isLoggingEnabled(LogStream::EnWarning)) {
+					LogStream& ls = annotator.getLogStream(LogStream::EnWarning);
+					ls << "Could not virtualize " << binDicPath << endl;
+					ls.flush();
+				}
+				continue;
+			}
+
 			//m_dictionaryPaths.insert(binDicPath);
 			// we also store the corresponding .INF dictionary name
-			//path infDicPath = change_extension(binDicPath, ".inf");
-			if (!persistDictionary(binDicPath)) {
+			path infDicPath = change_extension(binDicPath, ".inf");
+			path virtualInfDicPath;
+			if (!virtualizeFile(infDicPath, virtualInfDicPath)) {
+				if (annotator.isLoggingEnabled(LogStream::EnWarning)) {
+					LogStream& ls = annotator.getLogStream(LogStream::EnWarning);
+					ls << "Could not virtualize " << infDicPath << endl;
+					ls.flush();
+				}
+				continue;
+			}
+
+			path persistedPath;
+			if (!persistDictionary(virtualBinDicPath, persistedPath)) {
 				UnitexAnnotatorCpp const& annotator = engine.getAnnotator();
 				if (annotator.isLoggingEnabled(LogStream::EnWarning)) {
 					LogStream& ls = annotator.getLogStream(LogStream::EnWarning);
 					ls << "Cannot persist dictionary " << binDicPath;
 					ls.flush();
 				}
+				continue;
 			}
+
+			mapPath(binDicPath, persistedPath);
 		}
+
 		m_bDictionariesAreSet = true;
 	}
 
@@ -358,7 +374,7 @@ namespace unitexcpp
 	*/
 	const UnicodeString& LanguageResources::getMorphologicalDictionariesAsString(const path& automatonPath) const
 	{
-		path persistedAutomatonPath = persistedPath(automatonPath);
+		path persistedAutomatonPath = virtualizedPath(automatonPath);
 		map<path, UnicodeString>::const_iterator it = m_morphologicalDictionaryPaths.find(persistedAutomatonPath);
 		if (it == m_morphologicalDictionaryPaths.end())
 			return EmptyUnicodeString;
@@ -397,7 +413,7 @@ namespace unitexcpp
 			string automatonName = convertUnicodeStringToRawString(ustrAutomaton);
 			path automatonPath = getAutomataDirectoryPath() / automatonName;
 			automatonPath.make_preferred();
-			automatonPath = persistedPath(automatonPath);
+			automatonPath = virtualizedPath(automatonPath);
 
 			if (m_automataPaths.find(automatonPath) == m_automataPaths.end()) {
 				ostringstream oss;
@@ -417,9 +433,10 @@ namespace unitexcpp
 			splitRegex(dictNames, ustrMorphoDicts, UNICODE_STRING_SIMPLE(";"));
 			BOOST_FOREACH(UnicodeString const& ustrDictName, dictNames) {
 				path dictPath = getDictionaryDirectoryPath() / convertUnicodeStringToRawString(ustrDictName);
-				if (persistDictionary(dictPath, false)) {
-					path persistedDictPath = persistedPath(dictPath);
-					fullNames.push_back(persistedDictPath.string().c_str());
+				path persistedPath;
+				if (persistDictionary(dictPath, persistedPath, false)) {
+					//path persistedDictPath = persistedPath(dictPath);
+					fullNames.push_back(persistedPath.string().c_str());
 				}
 			}
 
@@ -442,8 +459,10 @@ namespace unitexcpp
 #ifdef DEBUG_UIMA_CPP
 		cout << "About to set Sentence automaton to " << m_sentenceAutomatonPath << endl;
 #endif
-		if (!isPersistedResourcePath(m_sentenceAutomatonPath))
-			persistAutomaton(m_sentenceAutomatonPath, true);
+		if (!isPersistedResourcePath(m_sentenceAutomatonPath)) {
+			path persistedPath;
+			persistAutomaton(m_sentenceAutomatonPath, persistedPath, true);
+		}
 	}
 
 	/**
@@ -464,12 +483,17 @@ namespace unitexcpp
 
 		BOOST_FOREACH(UnicodeString const& automaton, automata) {
 			path automatonPath = graphPath / convertUnicodeStringToRawString(automaton);
-			if (!isPersistedResourcePath(automatonPath)) {
-				if (!persistAutomaton(automatonPath))
-					continue;
-			}
-			m_automataPaths.insert(persistedPath(automatonPath));
+
+			path virtualPath;
+			if (!virtualizeFile(automatonPath, virtualPath)) continue;
+
+			path persistedPath;
+			if (!persistAutomaton(virtualPath, persistedPath)) continue;
+
+			m_automataPaths.insert(automatonPath);
+			mapPath(automatonPath, persistedPath);
 		}
+
 		bAutomataOk = true;
 	}
 
@@ -506,6 +530,66 @@ namespace unitexcpp
 
 	///////////////////////////////////////////////////////////////////////////////
 	//
+	// File paths mapping
+	//
+	///////////////////////////////////////////////////////////////////////////////
+
+	void LanguageResources::mapPath(path const& diskPath, path const& virtualPath) 
+	{
+		m_mapPaths[diskPath] = virtualPath;
+	}
+
+	/// <summary>
+	/// Gets the actual (virtualized, persisted) path corresponding to a disk path.
+	/// </summary>
+	/// <param name='diskPath'>A file path on disk.</param>
+	/// <returns>The virtual / persisted path corresponding to this disk path, or the disk path if none matches.</returns>
+	path const& LanguageResources::getActualPath(path const& diskPath) const
+	{
+		map<path, path>::const_iterator it = m_mapPaths.find(diskPath);
+		return (it == m_mapPaths.end()) ? diskPath : it->second;
+	}
+
+	path const& LanguageResources::operator[](path const& diskPath) const
+	{
+		return getActualPath(diskPath);
+	}
+
+	///////////////////////////////////////////////////////////////////////////////
+	//
+	// Resource virtualization
+	//
+	///////////////////////////////////////////////////////////////////////////////
+
+	// Checks that a file exists and virtualizes it.
+	// The store the virtual path into virtualPath.
+	// Returns true if ok, false if error.
+	bool LanguageResources::virtualizeFile(path const& diskPath, path& virtualPath)
+	{
+		UnitexAnnotatorCpp const& annotator = engine.getAnnotator();
+
+		if (!exists(diskPath)) {
+			LogStream& ls = annotator.getLogStream(LogStream::EnError);
+			ls << "Disk file " << diskPath << " does not exist!";
+			ls.flush();
+			return false;
+		}
+
+		path persistedPath;
+		virtualPath = virtualizedPath(diskPath);
+
+		if (!copyUnitexFile(diskPath, virtualPath)) {
+			LogStream& ls = annotator.getLogStream(LogStream::EnError);
+			ls << "Could not virtualize disk file into " << virtualPath;
+			ls.flush();
+			return false;
+		}
+
+		return true;
+	}
+
+	///////////////////////////////////////////////////////////////////////////////
+	//
 	// Persisted resources
 	//
 	///////////////////////////////////////////////////////////////////////////////
@@ -518,9 +602,12 @@ namespace unitexcpp
 		return ms_persistedResources.find(aPath) != ms_persistedResources.end();
 	}
 
-	bool LanguageResources::persistAutomaton(const path& automatonPath, bool sentenceGraph)
+	bool LanguageResources::persistAutomaton(const path& automatonPath, path& persistedPath, bool sentenceGraph)
 	{
 		const UnitexAnnotatorCpp& annotator = engine.getAnnotator();
+#ifdef DEBUG_UIMA_CPP
+		cout << "Persisting automaton " << automatonPath << endl;
+#endif
 		if (annotator.isLoggingEnabled())
 			annotator.logMessage("Persisting automaton %s", automatonPath.string().c_str());
 
@@ -528,9 +615,15 @@ namespace unitexcpp
 		path compiledPath = getCompiledAutomatonPath(automatonPath);
 
 		if (engine.getAnnotator().forceGraphCompilation() || needsCompilation(sourcePath, compiledPath)) {
+#ifdef DEBUG_UIMA_CPP
+			cout << "Compiling graph " << sourcePath << " into " << compiledPath << endl;
+#endif
 			if (annotator.isLoggingEnabled(LogStream::EnMessage))
 				annotator.logMessage("Compiling graph %s into %s", sourcePath.string().c_str(), compiledPath.string().c_str());
-			if (!exists(unpersistedPath(sourcePath))) {
+			if (!exists(unvirtualizedPath(sourcePath))) {
+#ifdef DEBUG_UIMA_CPP
+				cout << "Source automaton " << sourcePath << " does not exist!";
+#endif
 				if (annotator.isLoggingEnabled(LogStream::EnWarning)) {
 					LogStream& ls = annotator.getLogStream(LogStream::EnWarning);
 					ls << "Source automaton " << sourcePath << " file does not exist!";
@@ -543,33 +636,35 @@ namespace unitexcpp
 				return false;
 		}
 
-		// If the automaton path is not already in the set of persisted resources, persist it.
-		if (!isPersistedResourcePath(automatonPath)) {
-			if (annotator.isLoggingEnabled(LogStream::EnMessage))
-				annotator.logMessage("Loading persistent FST2 %s", automatonPath.string().c_str());
-
-#ifdef MY_ABSTRACT_SPACES
-			path persistedFst2Path = persistedPath(automatonPath);
-			const VersatileEncodingConfig vec = VEC_DEFAULT;
-			Fst2* fst2 = load_fst2(&vec, persistedFst2Path.string().c_str(), 1);
-			m_persistedFst2Automata[persistedFst2Path] = new_Fst2_clone(fst2);
+#ifdef DEBUG_UIMA_CPP
+		cout << "Loading persistent FST2 " << automatonPath << endl;
 #endif
-			if (!unitex::load_persistent_fst2(automatonPath.string().c_str())) {
-				annotator.logError("Error while persisting FST2 %s", automatonPath.string().c_str());
-				return false;
-			} else {
-				ms_persistedResources[automatonPath] = AUTOMATON;
-				bool isPreprocessingGraph = false;
-				for (path::iterator it = automatonPath.begin(); it != automatonPath.end(); it++) {
-					string item = (*it).string();
-					if (boost::iequals(item, "preprocessing")) {
-						isPreprocessingGraph = true;
-						break;
-					}
+		if (annotator.isLoggingEnabled(LogStream::EnMessage))
+			annotator.logMessage("Loading persistent FST2 %s", automatonPath.string().c_str());
+		char newPath[MAX_PATH];
+		if (!unitex::standard_load_persistence_fst2(automatonPath.string().c_str(), newPath, MAX_PATH)) {
+			// VFS
+			// if (!unitex::load_persistent_fst2(automatonPath.string().c_str())) {
+#ifdef DEBUG_UIMA_CPP
+			cerr << "Error while persisting FST2 " << automatonPath << endl;
+#endif
+			annotator.logError("Error while persisting FST2 %s", automatonPath.string().c_str());
+			return false;
+		} else {
+			// VFS
+			// ms_persistedResources[automatonPath] = ResourceType::AUTOMATON;
+			ms_persistedResources[newPath] = ResourceType::AUTOMATON;
+			bool isPreprocessingGraph = false;
+			for (path::iterator it = automatonPath.begin(); it != automatonPath.end(); it++) {
+				string item = (*it).string();
+				if (boost::iequals(item, "preprocessing")) {
+					isPreprocessingGraph = true;
+					break;
 				}
-				//if (!isPreprocessingGraph)
-				//	m_automataPaths.insert(persistedPath(automatonPath));
 			}
+			persistedPath = newPath;
+			//if (!isPreprocessingGraph)
+			//	m_automataPaths.insert(persistedPath(automatonPath));
 		}
 
 		return true;
@@ -585,52 +680,36 @@ namespace unitexcpp
 	* @return
 	* 				true if ok, false if a problem occurred.
 	*/
-	bool LanguageResources::persistDictionary(path const& dictionaryPath, bool addToDictionaries)
+	bool LanguageResources::persistDictionary(path const& dictionaryPath, path& persistedPath, bool addToDictionaries)
 	{
 		UnitexAnnotatorCpp const& unitexAnnotator = engine.getAnnotator();
 
-		if (!exists(dictionaryPath)) {
-			if (unitexAnnotator.isLoggingEnabled(LogStream::EnWarning)) {
-				LogStream& ls = unitexAnnotator.getLogStream(LogStream::EnWarning);
-				ls << "Loading dictionary " << dictionaryPath << " file does not exist!";
-				ls.flush();
-			}
-			return false;
-		}
-
-		// If the dictionary path is not already in the set of persisted resources, persist it.
-		if (!isPersistedResourcePath(dictionaryPath)) {
-			if (unitexAnnotator.isLoggingEnabled(LogStream::EnMessage)) {
-				LogStream& ls = unitexAnnotator.getLogStream(LogStream::EnMessage);
-				ls << "Loading persistent dictionary " << dictionaryPath;
-				ls.flush();
-			}
-
-			path persistedDictionaryPath = persistedPath(dictionaryPath);
-#ifdef MY_ABSTRACT_SPACES
-			// Preload the BIN dictionary and store it in cache
-			const VersatileEncodingConfig vec = VEC_DEFAULT;
-			long binSize = 0L;
-			BIN_free_info binFreeInfo;
-			const unsigned char* binDictionary = load_abstract_BIN_file(dictionaryPath.string().c_str(), &binSize, &binFreeInfo);
-			m_persistedBinDictionaries[persistedDictionaryPath] = binDictionary;
-
-			// Preload the INF dictionary and store it in cache
-			path persistedInfPath = change_extension(persistedDictionaryPath, ".inf");
-			struct unitex::INF_codes* infCodes = load_INF_file(&vec, persistedInfPath.string().c_str());
-			m_persistedInfCodes[persistedInfPath] = infCodes;
+#ifdef DEBUG_UIMA_CPP
+		cout << "Loading persistent dictionary " << dictionaryPath << endl;
 #endif
-			if (!unitex::load_persistent_dictionary(persistedDictionaryPath.string().c_str())) {
-				ostringstream oss;
-				oss << "Error while persisting dictionary " << dictionaryPath;
-				engine.getAnnotator().logError(oss.str());
-				return false;
-			} else {
-				ms_persistedResources[dictionaryPath] = DICTIONARY;
-				if (addToDictionaries)
-					m_dictionaryPaths.insert(persistedDictionaryPath);
-			}
+		if (unitexAnnotator.isLoggingEnabled(LogStream::EnMessage)) {
+			LogStream& ls = unitexAnnotator.getLogStream(LogStream::EnMessage);
+			ls << "Loading persistent dictionary " << dictionaryPath << endl;
+			ls.flush();
 		}
+
+		char newPath[MAX_PATH];
+		if (!unitex::standard_load_persistence_dictionary(dictionaryPath.string().c_str(), newPath, MAX_PATH - 1)) {
+#ifdef DEBUG_UIMA_CPP
+			cerr << "Error while persisting dictionary " << dictionaryPath << endl;
+#endif
+			LogStream& ls = unitexAnnotator.getLogStream(LogStream::EnError);
+			ls << "Error while persisting dictionary " << dictionaryPath << endl;
+			ls.flush();
+			return false;
+		} 
+
+		// if (addToDictionaries)
+		//	m_dictionaryPaths.insert(persistedDictionaryPath);
+		ms_persistedResources[newPath] = ResourceType::DICTIONARY;
+		if (addToDictionaries)
+			m_dictionaryPaths.insert(dictionaryPath);
+		persistedPath = newPath;
 
 		return true;
 	}
@@ -643,34 +722,64 @@ namespace unitexcpp
 	* @return
 	* 				true if ok, false if a problem occurred.
 	*/
-	bool LanguageResources::persistAlphabet(path const& alphabetPath)
+	bool LanguageResources::persistAlphabet(path const& alphabetPath, path& persistedPath)
 	{
 		UnitexAnnotatorCpp const& annotator = engine.getAnnotator();
 
+		/*
 		if (!exists(alphabetPath)) {
-			if (annotator.isLoggingEnabled(LogStream::EnWarning)) {
-				LogStream& ls = annotator.getLogStream(LogStream::EnWarning);
-				ls << "Loading alphabet " << alphabetPath << " file does not exist!";
-				ls.flush();
-			}
-			return false;
+		#ifdef DEBUG_UIMA_CPP
+		cout << "Loading alphabet " << alphabetPath << " file does not exist!";
+		#endif
+		if (annotator.isLoggingEnabled(LogStream::EnWarning)) {
+		LogStream& ls = annotator.getLogStream(LogStream::EnWarning);
+		ls << "Loading alphabet " << alphabetPath << " file does not exist!";
+		ls.flush();
 		}
+		return false;
+		}
+		*/
 
 		// If the path is not already in the set of persisted resources, persist it.
+		/*
 		path persistedAlphabetPath = persistedPath(alphabetPath);
 		if (!isPersistedResourcePath(persistedAlphabetPath)) {
-			ostringstream oss;
-			oss << "Loading persistent alphabet " << alphabetPath;
-			engine.getAnnotator().logMessage(oss.str());
+		ostringstream oss;
+		oss << "Loading persistent alphabet " << alphabetPath;
+		engine.getAnnotator().logMessage(oss.str());
 
-			if (!unitex::load_persistent_alphabet(alphabetPath.string().c_str())) {
-				ostringstream oss;
-				oss << "Error while persisting alphabet " << alphabetPath;
-				engine.getAnnotator().logError(oss.str());
-				return false;
-			} else {
-				ms_persistedResources[persistedAlphabetPath] = ALPHABET;
-			}
+		if (!unitex::load_persistent_alphabet(alphabetPath.string().c_str())) {
+		ostringstream oss;
+		oss << "Error while persisting alphabet " << alphabetPath;
+		engine.getAnnotator().logError(oss.str());
+		return false;
+		} else {
+		ms_persistedResources[persistedAlphabetPath] = ResourceType::ALPHABET;
+		}
+		}
+		*/
+
+#ifdef DEBUG_UIMA_CPP
+		cout << "Loading persistent alphabet " << alphabetPath << endl;
+#endif
+		if (annotator.isLoggingEnabled(LogStream::EnMessage)) {
+			LogStream& ls = annotator.getLogStream(LogStream::EnMessage);
+			ls << "Loading persistent alphabet " << alphabetPath << endl;
+			ls.flush();
+		}
+
+		char newPath[MAX_PATH];
+		if (!unitex::standard_load_persistence_alphabet(alphabetPath.string().c_str(), newPath, MAX_PATH - 1)) {
+#ifdef DEBUG_UIMA_CPP
+			cout << "Error while persisting alphabet " << alphabetPath << endl;
+#endif
+			LogStream& ls = annotator.getLogStream(LogStream::EnError);
+			ls << "Error while persisting alphabet " << alphabetPath << endl;
+			ls.flush();
+			return false;
+		} else {
+			ms_persistedResources[newPath] = ResourceType::ALPHABET;
+			persistedPath = newPath;
 		}
 
 		return true;
@@ -750,236 +859,7 @@ namespace unitexcpp
 			throw UnitexException(oss.str());
 		}
 	}
-
-	///////////////////////////////////////////////////////////////////////////////
-	//
-	// Helper methods for interface AbstractDelaSpace
-	//
-	///////////////////////////////////////////////////////////////////////////////
-
-#ifdef MY_ABSTRACT_SPACES
-	bool LanguageResources::initDelaSpace()
-	{
-		m_persistedInfCodes.clear();
-		m_persistedBinDictionaries.clear();
-		m_persistedFst2Automata.clear();
-		return true;
-	}
-
-	void LanguageResources::uninitDelaSpace()
-	{
-		m_persistedInfCodes.clear();
-		m_persistedBinDictionaries.clear();
-		m_persistedFst2Automata.clear();
-	}
-
-	bool LanguageResources::isPersistedInfCodes(const path& path) const
-	{
-		return m_persistedInfCodes.find(path) != m_persistedInfCodes.end();
-	}
-
-	bool LanguageResources::isPersistedBinDictionary(const path& path) const
-	{
-		return m_persistedBinDictionaries.find(path) != m_persistedBinDictionaries.end();
-	}
-
-	bool LanguageResources::isPersistedFst2Automaton(const path& path) const
-	{
-		return m_persistedFst2Automata.find(path) != m_persistedFst2Automata.end();
-	}
-
-	bool LanguageResources::isPersistedDelaOrFst2(const string& name) const
-	{
-		path objectPath = persistedPath(name);
-		string extension = objectPath.extension().string();
-		boost::to_lower(extension);
-		if (extension == ".inf")
-			return isPersistedInfCodes(objectPath);
-		else if (extension == ".bin")
-			return isPersistedBinDictionary(objectPath);
-		else if (extension == ".fst2")
-			return isPersistedFst2Automaton(objectPath);
-		return false;
-	}
-
-	struct unitex::INF_codes* LanguageResources::getPersistedInfCodes(const path& infPath) const
-	{
-		struct unitex::INF_codes* result = NULL;
-		PersistedInfCodesMap::const_iterator it = m_persistedInfCodes.find(infPath);
-		if (it != m_persistedInfCodes.end())
-			result = it->second;
-		return result;
-	}
-
-	const unsigned char* LanguageResources::getPersistedBinDictionary(const boost::filesystem::path& binPath) const
-	{
-		const unsigned char* result = NULL;
-		PersistedBinDictionariesMap::const_iterator it = m_persistedBinDictionaries.find(binPath);
-		if (it != m_persistedBinDictionaries.end())
-			result = it->second;
-		return result;
-	}
-
-	bool LanguageResources::initFst2Space()
-	{
-		m_persistedFst2Automata.clear();
-		return true;
-	}
-
-	void LanguageResources::uninitFst2Space()
-	{
-		m_persistedFst2Automata.clear();
-	}
-
-	Fst2* LanguageResources::getPersistedFst2(const path& fst2Path) const
-	{
-		Fst2* result = NULL;
-		PersistedFst2Map::const_iterator it = m_persistedFst2Automata.find(fst2Path);
-		if (it != m_persistedFst2Automata.end())
-			result = new_Fst2_clone(it->second);
-		return result;
-
-	}
-#endif
 }
-
-///////////////////////////////////////////////////////////////////////////////
-//
-// Implementation of callbacks for interface AbstractDelaSpace
-//
-///////////////////////////////////////////////////////////////////////////////
-
-#ifdef MY_ABSTRACT_SPACES
-extern "C" 
-{
-	/*!
-	* Initializes the abstract Dela space.
-	*/
-	int ABSTRACT_CALLBACK_UNITEX initDelaSpace(void* privateSpacePtr)
-	{
-		int result = 0;
-		unitexcpp::LanguageResources* pLanguageResources = (unitexcpp::LanguageResources*)privateSpacePtr;
-		if (pLanguageResources)
-			result = pLanguageResources->initDelaSpace() ? 1 : 0;
-		return result;
-	}
-
-	/*!
-	* Uninitializes the abstract Dela space.
-	*/
-	void ABSTRACT_CALLBACK_UNITEX uninitDelaSpace(void* privateSpacePtr)
-	{
-		unitexcpp::LanguageResources* pLanguageResources = (unitexcpp::LanguageResources*)privateSpacePtr;
-		if (pLanguageResources)
-			pLanguageResources->uninitDelaSpace();
-	}
-
-	/*!
-	* Checks if a filename is found in the abstract Dela space
-	*/
-	int ABSTRACT_CALLBACK_UNITEX isFilenameDelaSpaceObject(const char* name, void* privateSpacePtr)
-	{
-		int result = 0;
-		unitexcpp::LanguageResources* pLanguageResources = (unitexcpp::LanguageResources*)privateSpacePtr;
-		if (pLanguageResources) 
-			result = pLanguageResources->isPersistedDelaOrFst2(name);
-		return result;
-	}
-
-	struct unitex::INF_codes* ABSTRACT_CALLBACK_UNITEX loadAbstractInfFile(const VersatileEncodingConfig* vec, const char* name, struct INF_free_info* p_inf_free_info, void* privateSpacePtr)
-	{
-		struct unitex::INF_codes* result = NULL;
-		unitexcpp::LanguageResources* pLanguageResources = (unitexcpp::LanguageResources*)privateSpacePtr;
-		if (pLanguageResources) {
-			path infPath = persistedPath(name);
-			return pLanguageResources->getPersistedInfCodes(infPath);
-		}
-		return result;
-	}
-
-	void ABSTRACT_CALLBACK_UNITEX freeAbstractInf(struct unitex::INF_codes* INF, struct INF_free_info* p_inf_free_info, void* privateSpacePtr)
-	{
-		// Do nothing
-	}
-
-	unsigned char* ABSTRACT_CALLBACK_UNITEX loadAbstractBinFile(const char* name, long* file_size, struct BIN_free_info* p_bin_free_info, void* privateSpacePtr)
-	{
-		unsigned char* result = NULL;
-		unitexcpp::LanguageResources* pLanguageResources = (unitexcpp::LanguageResources*)privateSpacePtr;
-		if (pLanguageResources) {
-			path infPath = persistedPath(name);
-			return (unsigned char*)(pLanguageResources->getPersistedBinDictionary(infPath));
-		}
-		return result;
-	}
-
-	void ABSTRACT_CALLBACK_UNITEX freeAbstractBin(unsigned char* BIN, struct BIN_free_info* p_bin_free_info, void* privateSpacePtr)
-	{
-		// Do nothing
-	}
-}
-#endif
-
-///////////////////////////////////////////////////////////////////////////////
-//
-// Implementation of callbacks for interface AbstractFst2Space
-//
-///////////////////////////////////////////////////////////////////////////////
-
-#ifdef MY_ABSTRACT_SPACES
-extern "C" 
-{
-	/*!
-	* Initializes the abstract FST2 space.
-	*/
-	int ABSTRACT_CALLBACK_UNITEX initFst2Space(void* privateSpacePtr)
-	{
-		int result = 0;
-		unitexcpp::LanguageResources* pLanguageResources = (unitexcpp::LanguageResources*)privateSpacePtr;
-		if (pLanguageResources)
-			result = pLanguageResources->initFst2Space() ? 1 : 0;
-		return result;
-	}
-
-	/*!
-	* Uninitializes the abstract FST2 space.
-	*/
-	void ABSTRACT_CALLBACK_UNITEX uninitFst2Space(void* privateSpacePtr)
-	{
-		unitexcpp::LanguageResources* pLanguageResources = (unitexcpp::LanguageResources*)privateSpacePtr;
-		if (pLanguageResources)
-			pLanguageResources->uninitFst2Space();
-	}
-
-	/*!
-	* Checks if a filename is found in the abstract FST2 space
-	*/
-	int ABSTRACT_CALLBACK_UNITEX isFilenameFst2SpaceObject(const char* name, void* privateSpacePtr)
-	{
-		int result = 0;
-		unitexcpp::LanguageResources* pLanguageResources = (unitexcpp::LanguageResources*)privateSpacePtr;
-		if (pLanguageResources) 
-			result = pLanguageResources->isPersistedDelaOrFst2(name);
-		return result;
-	}
-
-	Fst2* ABSTRACT_CALLBACK_UNITEX loadAbstractFst2(const VersatileEncodingConfig* vec,const char* name,int read_names,struct FST2_free_info* p_fst2_free_info,void* privateSpacePtr)
-	{
-		Fst2* result = NULL;
-		unitexcpp::LanguageResources* pLanguageResources = (unitexcpp::LanguageResources*)privateSpacePtr;
-		if (pLanguageResources) {
-			path infPath = persistedPath(name);
-			return pLanguageResources->getPersistedFst2(infPath);
-		}
-		return result;
-	}
-
-	void ABSTRACT_CALLBACK_UNITEX freeAbstractFst2(Fst2* fst2,struct FST2_free_info* p_inf_free_info,void* privateSpacePtr)
-	{
-		// Do nothing
-	}
-}
-#endif
 
 #ifdef _MSC_VER
 #pragma warning(pop)

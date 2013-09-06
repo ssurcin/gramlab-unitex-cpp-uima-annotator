@@ -192,7 +192,8 @@ namespace unitexcpp
 			list.clear();
 			set<path> dictionaryPaths = m_languageResources.getBinDictionariesPath();
 			BOOST_FOREACH(const path& binPath, dictionaryPaths) {
-				list.push_back(binPath.string());
+				path actualPath = m_languageResources[binPath];
+				list.push_back(actualPath.string());
 			}
 			return list.size();
 		}
@@ -393,7 +394,7 @@ namespace unitexcpp
 #ifdef DEBUG_UIMA_CPP
 			cout << "Input-------------" << endl;
 			UnicodeString uString;
-			if (!getStringFromFile(inputFile, uString))
+			if (!getStringFromUnitexFile(inputFile, uString))
 				cout << "!!!! ERROR !!!!" << endl << "Cannot read " << inputFile << endl;
 			else
 				cout << uString << endl;
@@ -409,7 +410,8 @@ namespace unitexcpp
 			m_sntFilename = change_extension(m_inputFilename, ".snt").string();
 
 			BOOST_FOREACH(path const& automatonPath, m_languageResources.getAutomataPaths()) {
-				string automaton = automatonPath.string();
+				path actualAutomatonPath = m_languageResources[automatonPath];
+				string automaton = actualAutomatonPath.string();
 				if (getAnnotator().isLoggingEnabled())
 					getAnnotator().logMessage("Applying automaton %s", automaton.c_str());
 

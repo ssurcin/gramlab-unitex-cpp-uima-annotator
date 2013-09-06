@@ -24,12 +24,6 @@
 
 extern const std::string UNITEX_VIRTUAL_PATH_PREFIX;
 
-bool isAbsolutePath(const boost::filesystem::path& path);
-bool isPersistedPath(const boost::filesystem::path& aPath);
-boost::filesystem::path persistedPath(const boost::filesystem::path& aPath);
-boost::filesystem::path unpersistedPath(const boost::filesystem::path& aPath);
-std::string quotePath(const boost::filesystem::path& path);
-
 boost::optional<std::string> get_env(const std::string& varname);
 
 // String tools

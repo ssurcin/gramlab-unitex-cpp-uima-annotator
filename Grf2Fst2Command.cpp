@@ -14,6 +14,7 @@
 #include "UnitexEngine.h"
 #include "Unitex-C++/Grf2Fst2.h"
 #include <boost/filesystem.hpp>
+#include "FileUtils.h"
 
 #if defined(_MSC_VER) && defined(_DEBUG) && defined(DEBUG_MEMORY_LEAKS)
 #define _CRTDBG_MAP_ALLOC
@@ -52,7 +53,7 @@ namespace unitexcpp
 			if (!alphabet.empty())
 				m_alphabetPath = absolutePathnameOf(alphabet);
 			else
-				m_alphabetPath = persistedPath(getUnitexEngine().getAlphabetFile());
+				m_alphabetPath = virtualizedPath(getUnitexEngine().getAlphabetFile());
 
 			if (!repositoryFolder.empty())
 				m_graphRepositoryPath = absolutePathnameOf(repositoryFolder);

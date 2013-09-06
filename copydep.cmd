@@ -67,6 +67,12 @@ if "%~1" == "Debug" (
 REM echo Copying libraries from Boost
 REM xcopy /Q /Y %BOOST_ROOT%\lib\boost_filesystem-vc100-mt-1_51.lib;boost_system-vc100-mt-1_51.lib;boost_date_time-vc100-mt-1_51.lib;boost_thread-vc100-mt-1_51.lib
 
+if "%~1" == "Debug" (
+	echo DEBUG mode
+	echo Copying UnitexAnnotatorCpp.dll into %DEP_DIR%
+	xcopy /Q /Y %TARGET_DIR%\UnitexAnnotatorCpp*.* %DEP_DIR%\
+)
+
 echo Done copying UimaAnnotatorCpp's dependency libraries
 goto end
 

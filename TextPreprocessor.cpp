@@ -39,6 +39,7 @@ using namespace unitexcpp;
 using namespace unitexcpp::command;
 using namespace uima;
 using namespace icu;
+using namespace boost::filesystem;
 
 namespace unitexcpp
 {
@@ -73,46 +74,39 @@ namespace unitexcpp
 		bool TextPreprocessor::preprocess(const string& inputFilename)
 		{
 #ifdef DEBUG_UIMA_CPP
-			ostringstream oss;
-			UnicodeString ustr;
-
-			oss << "----------------------------------------------------------------------" << endl;
-			oss << "1) Preprocessing for " << getEngine().getAnnotator().getDocumentIdAsString() << " (" << inputFilename << ")" << endl;
-			oss << "----------------------------------------------------------------------" << endl;
-			logMessage(oss.str());
+			cout << "----------------------------------------------------------------------" << endl;
+			cout << "1) Preprocessing for " << getEngine().getAnnotator().getDocumentIdAsString() << " (" << inputFilename << ")" << endl;
+			cout << "----------------------------------------------------------------------" << endl;
 #endif
 			string sntName = UnitexEngine::buildSntFileNameFrom(inputFilename);
-			boost::filesystem::path sntPath = UnitexEngine::buildSntDirNameFrom(inputFilename);
+			path sntPath = UnitexEngine::buildSntDirNameFrom(inputFilename);
 
 			// Create the subdirectory for SNT normalized files
-			if (!isPersistedPath(sntPath)) {
-				if (!boost::filesystem::exists(sntPath)) {
-					boost::filesystem::create_directory(sntPath);
+			if (!isVirtualPath(sntPath)) {
+				if (!exists(sntPath)) {
+					create_directory(sntPath);
 				}
 			}
 
 #ifdef DEBUG_UIMA_CPP
-			logMessage("Normalizing input text");
+			cout << "Normalizing input text" << endl;
 #endif
-			boost::filesystem::path normOffsets = sntPath / "normoffsets.txt";
+			path normOffsets = sntPath / "normoffsets.txt";
 			if (!normalize(inputFilename, getEngine().getNormalizationDictionaryFile(), false, true, normOffsets.string())) {
 				ostringstream oss;
 				oss << "TextPreprocessor error while normalizing input file " << inputFilename;
 				throw new UnitexException(oss.str());
 			}
 #ifdef DEBUG_UIMA_CPP
-			oss.str("");
-			oss << "Contents of " << normOffsets << ":" << endl;
-			getStringFromFile(normOffsets, ustr);
-			oss << ustr;
-			logMessage(oss.str());
+			cout << "Contents of " << normOffsets << ":" << endl;
+			UnicodeString ustr;
+			getStringFromUnitexFile(normOffsets, ustr);
+			cout << ustr << endl;
 #endif
 
-			boost::filesystem::path sntOffsetsPathAfterSentence = sntPath / "sntoffsets_1.txt";
+			path sntOffsetsPathAfterSentence = sntPath / "sntoffsets_1.txt";
 #ifdef DEBUG_UIMA_CPP
-			oss.str("");
-			oss << "Sentence automaton = " << getEngine().getSentenceFstFile();
-			logMessage(oss.str());
+			cout << "Sentence automaton = " << getEngine().getSentenceFstFile() << endl;
 #endif
 			if (!fst2txt(sntName, getEngine().getAlphabetFile(), false, false, getEngine().getSentenceFstFile(), Fst2TxtMode::MERGE, normOffsets.string(), sntOffsetsPathAfterSentence.string())) {
 				ostringstream oss;
@@ -120,14 +114,12 @@ namespace unitexcpp
 				throw new UnitexException(oss.str());
 			}
 #ifdef DEBUG_UIMA_CPP
-			oss.str("");
-			oss << "Contents of " << sntOffsetsPathAfterSentence << ":" << endl;
-			getStringFromFile(sntOffsetsPathAfterSentence, ustr);
-			oss << ustr;
-			logMessage(oss.str());
+			cout << "Contents of " << sntOffsetsPathAfterSentence << ":" << endl;
+			getStringFromUnitexFile(sntOffsetsPathAfterSentence, ustr);
+			cout << ustr << endl;
 #endif
 
-			boost::filesystem::path sntOffsetsPathAfterReplace = sntPath / "sntoffsets.txt";
+			path sntOffsetsPathAfterReplace = sntPath / "sntoffsets.txt";
 			if (!fst2txt(sntName, getEngine().getAlphabetFile(), false, false, getEngine().getReplaceFstFile(), Fst2TxtMode::REPLACE, sntOffsetsPathAfterSentence.string(),
 				sntOffsetsPathAfterReplace.string())) {
 					ostringstream oss;
@@ -135,25 +127,21 @@ namespace unitexcpp
 					throw new UnitexException(oss.str());
 			}
 #ifdef DEBUG_UIMA_CPP
-			oss.str("");
-			oss << "Contents of " << sntOffsetsPathAfterReplace << ":" << endl;
-			getStringFromFile(sntOffsetsPathAfterReplace, ustr);
-			oss << ustr;
-			logMessage(oss.str());
+			cout << "Contents of " << sntOffsetsPathAfterReplace << ":" << endl;
+			getStringFromUnitexFile(sntOffsetsPathAfterReplace, ustr);
+			cout << ustr << endl;
 #endif
 
-			boost::filesystem::path sntTokensPath = sntPath / "snttokens.txt";
+			path sntTokensPath = sntPath / "snttokens.txt";
 			if (!tokenize(sntName, getEngine().getAlphabetFile(), false, sntOffsetsPathAfterReplace.string(), sntTokensPath.string())) {
 				ostringstream oss;
 				oss << "TextPreprocessor error while tokenizing input file " << inputFilename;
 				throw new UnitexException(oss.str());
 			}
 #ifdef DEBUG_UIMA_CPP
-			oss.str("");
-			oss << "Contents of " << sntTokensPath << ":" << endl;
-			getStringFromFile(sntTokensPath, ustr);
-			oss << ustr;
-			logMessage(oss.str());
+			cout << "Contents of " << sntTokensPath << ":" << endl;
+			getStringFromUnitexFile(sntTokensPath, ustr);
+			cout << ustr << endl;
 #endif
 
 			Stringlist dictionaries;
@@ -164,28 +152,24 @@ namespace unitexcpp
 				throw new UnitexException(oss.str());
 			}
 #ifdef DEBUG_UIMA_CPP
-			oss.str("");
-			oss << "Simple words:" << endl;
-			getStringFromFile(sntPath / "dlf", ustr);
-			oss << ustr << endl << endl;
-			oss << "Compound words: " << endl;
-			getStringFromFile(sntPath / "dlc", ustr);
-			oss << ustr << endl << endl;
-			oss << "Unknown words: " << endl;
-			getStringFromFile(sntPath / "err", ustr);
-			oss << ustr << endl << endl;
-			oss << "Tags: " << endl;
-			getStringFromFile(sntPath / "tags.ind", ustr);
-			oss << ustr << endl;
-			logMessage(oss.str());
+			cout << "Simple words:" << endl;
+			getStringFromUnitexFile(sntPath / "dlf", ustr);
+			cout << ustr << endl << endl;
+			cout<< "Compound words: " << endl;
+			getStringFromUnitexFile(sntPath / "dlc", ustr);
+			cout << ustr << endl << endl;
+			cout << "Unknown words: " << endl;
+			getStringFromUnitexFile(sntPath / "err", ustr);
+			cout << ustr << endl << endl;
+			cout << "Tags: " << endl;
+			getStringFromUnitexFile(sntPath / "tags.ind", ustr);
+			cout << ustr << endl;
 #endif
 
 #ifdef DEBUG_UIMA_CPP
-			oss.str("");
-			oss << "----------------------------------------------------------------------" << endl;
-			oss << "End of preprocessing for " << getEngine().getAnnotator().getDocumentIdAsString() << endl;
-			oss << "----------------------------------------------------------------------" << endl;
-			logMessage(oss.str());
+			cout << "----------------------------------------------------------------------" << endl;
+			cout << "End of preprocessing for " << getEngine().getAnnotator().getDocumentIdAsString() << endl;
+			cout << "----------------------------------------------------------------------" << endl;
 #endif
 			return true;
 		}

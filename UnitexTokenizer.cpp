@@ -284,23 +284,20 @@ namespace unitexcpp
 		void UnitexTokenizer::readSntTokens()
 		{
 #ifdef DEBUG_UIMA_CPP
-			ostringstream oss;
-			m_annotator.logMessage("Reading SNT tokens");
+			cout << "Reading SNT tokens" << endl;
 #endif
 
 			path sntPath(m_unitexEngine.getSntDirectory());
 			UnicodeStringRef rmb = m_annotator.getView().getDocumentText();
 #ifdef DEBUG_UIMA_CPP
-			m_annotator.logMessage("RMB characters:");
+			cout << "RMB characters:" << endl;
 			int32_t max = 100;
 			if (max > rmb.length())
 				max = rmb.length();
 			for (int32_t i = m_offset; i < m_offset + max; i++) {
 				UChar32 uc = rmb.char32At(i);
 				UnicodeString us = uc;
-				oss.str("");
-				oss << "  rmb[" << i << "] = '" << us << "' (" << uc << ")";
-				m_annotator.logMessage(oss.str());
+				cout << "  rmb[" << i << "] = '" << us << "' (" << uc << ")" << endl;
 			}
 #endif
 
@@ -309,9 +306,7 @@ namespace unitexcpp
 			UnicodeString ustrTokens;
 			getStringFromFile(tokensPath.string(), ustrTokens);
 #ifdef DEBUG_UIMA_CPP
-			oss.str("");
-			oss << "snttokens.txt=" << endl << ustrTokens << endl;
-			m_annotator.logMessage(oss.str());
+			cout << "snttokens.txt=" << endl << ustrTokens << endl;
 #endif
 
 			// Split it into lines without blank or empty lines
@@ -330,13 +325,15 @@ namespace unitexcpp
 			bool panic = false;
 			int32_t panicEndOfLastToken = -1;
 
+			// We keep an offset for (erroneous?) tokens coordinates given by Unitex
+			// where the end is shorter than the form's length.
+			int32_t offsetTooShortForms = 0;
+
 			// Iterate over the lines of snttokens.txt
 			int32_t nbLines = lines.size();
 			for (int32_t tokenIndex = 0; tokenIndex < nbLines; tokenIndex++) {
 #ifdef DEBUG_UIMA_CPP
-				oss.str("");
-				oss << "reading token " << tokenIndex << "/" << nbLines - 1 << ": \"" << lines[tokenIndex] << "\"" << endl;
-				m_annotator.logMessage(oss.str());
+				cout << "reading token " << tokenIndex << "/" << nbLines - 1 << ": \"" << lines[tokenIndex] << "\"" << endl;
 #endif
 
 				// Parse the current line to extract:
@@ -347,6 +344,19 @@ namespace unitexcpp
 				int32_t formIndex = currentCoord.get<0>();
 				int32_t start = currentCoord.get<1>();
 				int32_t end = currentCoord.get<2>();
+
+				// Fix for too short forms found until now
+#ifdef DEBUG_UIMA_CPP
+				cout << "offsetTooShortForms=" << offsetTooShortForms << endl;
+#endif
+				if (offsetTooShortForms > 0) {
+					start += offsetTooShortForms;
+					end += offsetTooShortForms;
+#ifdef DEBUG_UIMA_CPP
+					cout << "fixed start=" << start << endl;
+					cout << "fixed end=" << end << endl;
+#endif
+				}
 
 				// If something has gone wrong in Unitex Tokenizer, we can detect it
 				// here.
@@ -371,9 +381,7 @@ namespace unitexcpp
 					if (tokenLength % 2 == 0) {
 						int32_t pos = start - offsetWithoutFakeTokens, nbLfInRmb = 0, rmbLen = rmb.length();
 #ifdef DEBUG_UIMA_CPP
-						oss.str("");
-						oss << "Investigating possible CRLF / LF mismatch starting at " << pos;
-						m_annotator.logMessage(oss.str());
+						cout << "Investigating possible CRLF / LF mismatch starting at " << pos << endl;
 #endif
 						while ((pos < rmbLen) && (rmb.char32At(pos) == 10)) {
 							pos++;
@@ -383,24 +391,37 @@ namespace unitexcpp
 							int32_t offsetIncrement = 0;
 							offsetWithoutFakeTokens += nbLfInRmb;
 #ifdef DEBUG_UIMA_CPP
-							oss.str("");
-							oss << "increment offset to RMB by " << nbLfInRmb << " because it has LF instead of CRLF";
-							m_annotator.logMessage(oss.str());
+							cout << "increment offset to RMB by " << nbLfInRmb << " because it has LF instead of CRLF" << endl;
 #endif
 						}
 					}
 				}
+
+				if (!drop) {
+					// The token's form is not blank.
+					// Check if end is correct corresponding to the token form's length
+					if (end < start + form.length()) {
+#ifdef DEBUG_UIMA_CPP
+						cout << "The end=" << end << " differs from expected " << start + form.length() << "!" << endl;
+#endif
+						offsetTooShortForms += start + form.length() - end;
+						end += offsetTooShortForms;
+#ifdef DEBUG_UIMA_CPP
+						cout << "Fix end=" << end << endl;
+						cout << "offsetTooShortForms=" << offsetTooShortForms << endl;
+#endif
+					}
+				}
+
 #ifdef DEBUG_UIMA_CPP
 				if (drop) {
-					oss.str("");
-					oss << "drop token '" << form << "' because ";
+					cout << "drop token '" << form << "' because ";
 					if (tokenIndex < m_firstLineToKeep)
-						oss << "line " << tokenIndex << " is before first line to keep " << m_firstLineToKeep;
+						cout << "line " << tokenIndex << " is before first line to keep " << m_firstLineToKeep << endl;
 					else if (form == UNICODE_STRING_SIMPLE("{S}"))
-						oss << "is is a sentence marker";
+						cout << "is is a sentence marker" << endl;
 					else
-						oss << "the form is blank";
-					m_annotator.logMessage(oss.str());
+						cout << "the form is blank" << endl;
 				}
 #endif
 
@@ -412,9 +433,11 @@ namespace unitexcpp
 					if (!drop) {
 						int pos = m_text.indexOf(form, panicEndOfLastToken);
 						if (pos == -1) {
-							ostringstream oss;
-							oss << "Reach end of input text without finding token form \"" << form << "\" after pos " << panicEndOfLastToken << "!";
-							m_annotator.logWarning(oss.str());
+							if (m_annotator.isLoggingEnabled(LogStream::EnWarning)) {
+								LogStream& ls = m_annotator.getLogStream(LogStream::EnWarning);
+								ls << "Reach end of input text without finding token form \"" << form << "\" after pos " << panicEndOfLastToken << "!" << endl;
+								ls.flush();
+							}
 						} else {
 							start = pos + offsetWithoutFakeTokens;
 							end = start + form.length();
@@ -424,21 +447,18 @@ namespace unitexcpp
 				}
 
 				int deltaOffset = 0;
-				if (!drop) {
+				if (!drop) 
 					deltaOffset = fakeTokenStartingAtLine(lines, tokenIndex);
-					offsetWithoutFakeTokens += deltaOffset;
-				}
+
 				if (deltaOffset > 0) {
+					offsetWithoutFakeTokens += deltaOffset;
 					drop = true;
 #ifdef DEBUG_UIMA_CPP
-					oss.str("");
-					oss << "drop token '" << form << "' because it is a fake token of length " << deltaOffset;
-					m_annotator.logMessage(oss.str());
+					cout << "drop token '" << form << "' because it is a fake token of length " << deltaOffset << endl;
 #endif
 				}
 #ifdef DEBUG_UIMA_CPP
-				oss.str("");
-				oss << "(" << start << ", " << end << ") =\t\"" << form << "\" offset =" << offsetWithoutFakeTokens << " firstLineToKeep=" << m_firstLineToKeep << " ";
+				cout << "(" << start << ", " << end << ") =\t\"" << form << "\" offset =" << offsetWithoutFakeTokens << " firstLineToKeep=" << m_firstLineToKeep << " ";
 #endif
 
 				if (!drop) {
@@ -450,42 +470,34 @@ namespace unitexcpp
 					SntToken token(tokenIndex, formIndex, start, end, form);
 					m_tokens.push_back(token);
 #ifdef DEBUG_UIMA_CPP
-					oss << "=> (" << start << ", " << end << ") " << (drop ? "drop" : "keep") << " ";
+					cout << "=> (" << start << ", " << end << ") " << (drop ? "drop" : "keep") << " ";
 					UnicodeString substring;
 					rmb.extract(start + m_offset, end - start, substring);
-					oss << "in RMB=\"" << substring << "\"" << endl;
+					cout << "in RMB=\"" << substring << "\"" << endl;
 					if (form != substring)
-						oss << "Divergence!" << endl;
-					m_annotator.logMessage(oss.str());
+						cout << "Divergence!" << endl;
 
-					oss.str("");
-					oss << "first token in sentence = " << firstTokenInSentence;
-					m_annotator.logMessage(oss.str());
+					cout << "first token in sentence = " << firstTokenInSentence << endl;
 #endif
 					if (firstTokenInSentence.isEmpty()) {
 						firstTokenInSentence = token;
 #ifdef DEBUG_UIMA_CPP
-						oss.str("");
-						oss << "firstTokenInSentence = " << firstTokenInSentence;
-						m_annotator.logMessage(oss.str());
+						cout << "firstTokenInSentence = " << firstTokenInSentence << endl;
 #endif
 					}
 					lastNonDropToken = token;
-				} else {
+				} 
 #ifdef DEBUG_UIMA_CPP
-					oss << "drop";
-					m_annotator.logMessage(oss.str());
+				else
+					cout << "drop" << endl;
 #endif
-				}
 
 				if ((form == UNICODE_STRING_SIMPLE("{S}")) || (tokenIndex == lines.size() - 1)) {
 					pair<SntToken, SntToken> sentenceMarker = make_pair(firstTokenInSentence, lastNonDropToken);
 					m_sentenceMarkers.push_back(sentenceMarker);
 					if (!firstTokenInSentence.isEmpty()) {
 #ifdef DEBUG_UIMA_CPP
-						oss.str("");
-						oss << "added sentence marker (" << sentenceMarker.first << ", " << sentenceMarker.second << ")";
-						m_annotator.logMessage(oss.str());
+						cout << "added sentence marker (" << sentenceMarker.first << ", " << sentenceMarker.second << ")" << endl;
 #endif
 						firstTokenInSentence = SntToken::EmptyToken;
 					}
@@ -493,9 +505,7 @@ namespace unitexcpp
 			}
 
 #ifdef DEBUG_UIMA_CPP
-			oss.str("");
-			cout << "Leaving read SNT tokens";
-			m_annotator.logMessage(oss.str());
+			cout << "Leaving read SNT tokens" << endl;
 #endif
 		}
 
@@ -525,7 +535,7 @@ namespace unitexcpp
 			readSntTokens();
 
 #ifdef DEBUG_UIMA_CPP
-			m_annotator.logMessage("There are %d tokens in SNT", m_tokens.size());
+			cout << "There are " << m_tokens.size() << " tokens in SNT" << endl;
 #endif
 
 			vector<TokenAnnotation> rmbTokens;
@@ -534,7 +544,7 @@ namespace unitexcpp
 			for (size_t i = 0; i < m_tokens.size(); i++) {
 				SntToken& sntToken = m_tokens[i];
 				const UnicodeString& tokenForm = sntToken.form();
-#ifdef _DEBUG
+#ifdef DEBUG_UIMA_CPP
 				cout << "Processing token[" << i << "]=" << sntToken << endl;
 #endif
 
@@ -543,7 +553,7 @@ namespace unitexcpp
 
 				TokenAnnotation rmbToken(m_view, tokenBegin, tokenEnd, tokenForm, sntToken.tokenIndex() + tokenIndexOffset);
 				rmbTokens.push_back(rmbToken);
-#ifdef _DEBUG
+#ifdef DEBUG_UIMA_CPP
 				cout << "create RMB token " << rmbToken << endl;
 #endif
 

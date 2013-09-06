@@ -8,8 +8,9 @@
 #include <sys/stat.h>
 #endif
 
-#include "Unitex-C++/Unicode.h"
+#include "FileUtils.h"
 #include "Unitex-C++/UnitexLibIO.h"
+#include "Unitex-C++/Unicode.h"
 #include "Unitex-C++/File.h"
 
 // ICU
@@ -56,57 +57,9 @@ using namespace xercesc;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-/*
-#if VFSIMPL == 0
-const string UNITEX_VIRTUAL_PATH_PREFIX = "";
-#elif VFSIMPL == 1
-const string UNITEX_VIRTUAL_PATH_PREFIX = "$:";
-#else
-const string UNITEX_VIRTUAL_PATH_PREFIX = "*";
-#endif
-*/
-const string UNITEX_VIRTUAL_PATH_PREFIX = "$:";
-
-bool isAbsolutePath(const path& path)
-{
-	return unitex::is_absolute_path(path.string().c_str());
-}
-
-/**
-* Tests if a path starts with the native Unitex persistence mark.
-*/
-bool isPersistedPath(const path& aPath)
-{
-	return boost::starts_with(aPath.string(), UNITEX_VIRTUAL_PATH_PREFIX);
-}
-
-/**
-* Generates and return a new path with the native Unitex persistence mark.
-* If the path already has the mark, returns a copy.
-*/
-path persistedPath(const path& aPath)
-{
-	if (!isPersistedPath(aPath))
-		return path(UNITEX_VIRTUAL_PATH_PREFIX + aPath.string());
-	return aPath;
-}
-
-/**
-* Generates and return a new path without the native Unitex persistence mark.
-* If the path already has no mark, returns a copy.
-*/
-path unpersistedPath(const path& aPath)
-{
-	if (isPersistedPath(aPath))
-		return path(aPath.string().substr(UNITEX_VIRTUAL_PATH_PREFIX.length()));
-	return aPath;
-}
-string quotePath(const path& path)
-{
-	ostringstream oss;
-	oss << path;
-	return oss.str();
-}
+// Use the adequate VFS prefix depending on the preprocessor symbol VFSUFO 
+// defined for the project or not.
+const string UNITEX_VIRTUAL_PATH_PREFIX = unitexcpp::getVirtualFilePfx();
 
 /**
 * Gets the value of an environment variable.
