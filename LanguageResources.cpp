@@ -177,11 +177,8 @@ namespace unitexcpp
 			return false;
 		}
 
-		path virtualPath;
-		if (!virtualizeFile(diskPath, virtualPath)) return false;
-
 		path persistedPath;
-		if (!persistAutomaton(virtualPath, persistedPath, true)) {
+		if (!persistAutomaton(diskPath, persistedPath, true)) {
 #ifdef DEBUG_UIMA_CPP
 			cerr << "Could not persist " << description << " " << diskPath << endl;
 #endif
@@ -321,38 +318,17 @@ namespace unitexcpp
 
 		BOOST_FOREACH(UnicodeString const& dictionary, dictionaries) {
 			path binDicPath = getDictionaryDirectoryPath() / convertUnicodeStringToRawString(dictionary);
+#ifdef DEBUG_UIMA_CPP
+			cout << "Getting dictionary " << binDicPath << endl;
+#endif
 			if (annotator.isLoggingEnabled(LogStream::EnMessage)) {
 				LogStream& ls = annotator.getLogStream(LogStream::EnMessage);
 				ls << "Getting dictionary " << binDicPath << endl;
 				ls.flush();
 			}
 
-			// we are provided with the .BIN dictionary name
-			path virtualBinDicPath;
-			if (!virtualizeFile(binDicPath, virtualBinDicPath)) {
-				if (annotator.isLoggingEnabled(LogStream::EnWarning)) {
-					LogStream& ls = annotator.getLogStream(LogStream::EnWarning);
-					ls << "Could not virtualize " << binDicPath << endl;
-					ls.flush();
-				}
-				continue;
-			}
-
-			//m_dictionaryPaths.insert(binDicPath);
-			// we also store the corresponding .INF dictionary name
-			path infDicPath = change_extension(binDicPath, ".inf");
-			path virtualInfDicPath;
-			if (!virtualizeFile(infDicPath, virtualInfDicPath)) {
-				if (annotator.isLoggingEnabled(LogStream::EnWarning)) {
-					LogStream& ls = annotator.getLogStream(LogStream::EnWarning);
-					ls << "Could not virtualize " << infDicPath << endl;
-					ls.flush();
-				}
-				continue;
-			}
-
 			path persistedPath;
-			if (!persistDictionary(virtualBinDicPath, persistedPath)) {
+			if (!persistDictionary(binDicPath, persistedPath)) {
 				UnitexAnnotatorCpp const& annotator = engine.getAnnotator();
 				if (annotator.isLoggingEnabled(LogStream::EnWarning)) {
 					LogStream& ls = annotator.getLogStream(LogStream::EnWarning);
@@ -484,11 +460,8 @@ namespace unitexcpp
 		BOOST_FOREACH(UnicodeString const& automaton, automata) {
 			path automatonPath = graphPath / convertUnicodeStringToRawString(automaton);
 
-			path virtualPath;
-			if (!virtualizeFile(automatonPath, virtualPath)) continue;
-
 			path persistedPath;
-			if (!persistAutomaton(virtualPath, persistedPath)) continue;
+			if (!persistAutomaton(automatonPath, persistedPath)) continue;
 
 			m_automataPaths.insert(automatonPath);
 			mapPath(automatonPath, persistedPath);
@@ -517,13 +490,41 @@ namespace unitexcpp
 		return change_extension(automatonPath, ".fst2");
 	}
 
+	/// <summary>
+	/// Gets the path for source dictionary (i.e. the .dic).
+	/// </summary>
+	path LanguageResources::getSourceDictionaryPath(const path& dictionaryPath)
+	{
+		if (dictionaryPath.extension() == ".dic")
+			return dictionaryPath;
+		return change_extension(dictionaryPath, ".dic");
+	}
+
+	/// <summary>
+	/// Gets the path for compiled dictionary (i.e. the .bin).
+	/// </summary>
+	path LanguageResources::getCompiledDictionaryPath(const path& dictionaryPath)
+	{
+		if (dictionaryPath.extension() == ".bin")
+			return dictionaryPath;
+		return change_extension(dictionaryPath, ".bin");
+	}
+
+	/// <summary>
+	/// Tells if a source file for resource needs compilation.
+	/// </summary>
+	/// <param name='sourceFile'>The source file.</param>
+	/// <param name='compiledFile'>The corresponding compiled file.</param>
+	/// <remarks>
+	/// A source file needs compilation if the compiled file does not exist, or if it was last touched before the source file.
+	/// </remarks>
 	bool LanguageResources::needsCompilation(const path& sourceFile, const path& compiledFile)
 	{
 		if (!exists(sourceFile))
 			return false;
 		if (!exists(compiledFile))
 			return true;
-		if (last_write_time(compiledFile) > last_write_time(sourceFile))
+		if (last_write_time(compiledFile) < last_write_time(sourceFile))
 			return true;
 		return false;
 	}
@@ -614,7 +615,7 @@ namespace unitexcpp
 		path sourcePath = getSourceAutomatonPath(automatonPath);
 		path compiledPath = getCompiledAutomatonPath(automatonPath);
 
-		if (engine.getAnnotator().forceGraphCompilation() || needsCompilation(sourcePath, compiledPath)) {
+		if (annotator.forceGraphCompilation() || needsCompilation(sourcePath, compiledPath)) {
 #ifdef DEBUG_UIMA_CPP
 			cout << "Compiling graph " << sourcePath << " into " << compiledPath << endl;
 #endif
@@ -637,18 +638,24 @@ namespace unitexcpp
 		}
 
 #ifdef DEBUG_UIMA_CPP
-		cout << "Loading persistent FST2 " << automatonPath << endl;
+		cout << "Virtualizing FST2 " << automatonPath << endl;
+#endif
+		path virtualPath;
+		if (!virtualizeFile(automatonPath, virtualPath)) return false;
+
+#ifdef DEBUG_UIMA_CPP
+		cout << "Loading persistent FST2 from " << virtualPath << endl;
 #endif
 		if (annotator.isLoggingEnabled(LogStream::EnMessage))
 			annotator.logMessage("Loading persistent FST2 %s", automatonPath.string().c_str());
 		char newPath[MAX_PATH];
-		if (!unitex::standard_load_persistence_fst2(automatonPath.string().c_str(), newPath, MAX_PATH)) {
+		if (!unitex::standard_load_persistence_fst2(virtualPath.string().c_str(), newPath, MAX_PATH)) {
 			// VFS
 			// if (!unitex::load_persistent_fst2(automatonPath.string().c_str())) {
 #ifdef DEBUG_UIMA_CPP
-			cerr << "Error while persisting FST2 " << automatonPath << endl;
+			cerr << "Error while persisting FST2 " << virtualPath << endl;
 #endif
-			annotator.logError("Error while persisting FST2 %s", automatonPath.string().c_str());
+			annotator.logError("Error while persisting FST2 %s", virtualPath.string().c_str());
 			return false;
 		} else {
 			// VFS
@@ -682,24 +689,84 @@ namespace unitexcpp
 	*/
 	bool LanguageResources::persistDictionary(path const& dictionaryPath, path& persistedPath, bool addToDictionaries)
 	{
-		UnitexAnnotatorCpp const& unitexAnnotator = engine.getAnnotator();
+		UnitexAnnotatorCpp const& annotator = engine.getAnnotator();
 
 #ifdef DEBUG_UIMA_CPP
-		cout << "Loading persistent dictionary " << dictionaryPath << endl;
+		cout << "Persisting dictionary " << dictionaryPath << endl;
 #endif
-		if (unitexAnnotator.isLoggingEnabled(LogStream::EnMessage)) {
-			LogStream& ls = unitexAnnotator.getLogStream(LogStream::EnMessage);
-			ls << "Loading persistent dictionary " << dictionaryPath << endl;
+		if (annotator.isLoggingEnabled())
+			annotator.logMessage("Persisting automaton %s", dictionaryPath.string().c_str());
+
+		path sourcePath = getSourceDictionaryPath(dictionaryPath);
+		path compiledPath = getCompiledDictionaryPath(dictionaryPath);
+
+		if (annotator.forceGraphCompilation() || needsCompilation(sourcePath, compiledPath)) {
+#ifdef DEBUG_UIMA_CPP
+			cout << "Compiling dictionary " << sourcePath << " into " << compiledPath << endl;
+#endif
+			if (annotator.isLoggingEnabled(LogStream::EnMessage))
+				annotator.logMessage("Compiling dictionary %s into %s", sourcePath.string().c_str(), compiledPath.string().c_str());
+			if (!exists(unvirtualizedPath(sourcePath))) {
+#ifdef DEBUG_UIMA_CPP
+				cout << "Source dictionary " << sourcePath << " does not exist!";
+#endif
+				if (annotator.isLoggingEnabled(LogStream::EnWarning)) {
+					LogStream& ls = annotator.getLogStream(LogStream::EnWarning);
+					ls << "Source dictionary " << sourcePath << " file does not exist!";
+					ls.flush();
+				}
+				return false;
+			}
+
+			if (!engine.getDictionaryCompiler().compile(sourcePath, getAlphabetPath()))
+				return false;
+		}
+
+		// we are provided with the .BIN dictionary name
+#ifdef DEBUG_UIMA_CPP
+		cout << "Virtualizing BIN dictionary " << compiledPath << endl;
+#endif
+			path virtualBinDicPath;
+			if (!virtualizeFile(compiledPath, virtualBinDicPath)) {
+				if (annotator.isLoggingEnabled(LogStream::EnWarning)) {
+					LogStream& ls = annotator.getLogStream(LogStream::EnWarning);
+					ls << "Could not virtualize " << compiledPath << endl;
+					ls.flush();
+				}
+				return false;
+			}
+
+			// we also store the corresponding .INF dictionary name
+			path infDicPath = change_extension(compiledPath, ".inf");
+#ifdef DEBUG_UIMA_CPP
+		cout << "Virtualizing INF dictionary " << infDicPath << endl;
+#endif
+			path virtualInfDicPath;
+			if (!virtualizeFile(infDicPath, virtualInfDicPath)) {
+				if (annotator.isLoggingEnabled(LogStream::EnWarning)) {
+					LogStream& ls = annotator.getLogStream(LogStream::EnWarning);
+					ls << "Could not virtualize " << infDicPath << endl;
+					ls.flush();
+				}
+				return false;
+			}
+
+#ifdef DEBUG_UIMA_CPP
+		cout << "Loading persistent dictionary " << virtualBinDicPath << endl;
+#endif
+		if (annotator.isLoggingEnabled(LogStream::EnMessage)) {
+			LogStream& ls = annotator.getLogStream(LogStream::EnMessage);
+			ls << "Loading persistent dictionary " << virtualBinDicPath << endl;
 			ls.flush();
 		}
 
 		char newPath[MAX_PATH];
-		if (!unitex::standard_load_persistence_dictionary(dictionaryPath.string().c_str(), newPath, MAX_PATH - 1)) {
+		if (!unitex::standard_load_persistence_dictionary(virtualBinDicPath.string().c_str(), newPath, MAX_PATH - 1)) {
 #ifdef DEBUG_UIMA_CPP
-			cerr << "Error while persisting dictionary " << dictionaryPath << endl;
+			cerr << "Error while persisting dictionary " << virtualBinDicPath << endl;
 #endif
-			LogStream& ls = unitexAnnotator.getLogStream(LogStream::EnError);
-			ls << "Error while persisting dictionary " << dictionaryPath << endl;
+			LogStream& ls = annotator.getLogStream(LogStream::EnError);
+			ls << "Error while persisting dictionary " << virtualBinDicPath << endl;
 			ls.flush();
 			return false;
 		} 

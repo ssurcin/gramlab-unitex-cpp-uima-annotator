@@ -10,6 +10,7 @@
 
 #include "UnitexCommand.h"
 #include <string>
+#include <boost/filesystem.hpp>
 
 namespace unitexcpp
 {
@@ -26,7 +27,8 @@ namespace unitexcpp
 		class CheckDicCommand: public UnitexCommand
 		{
 		public:
-			CheckDicCommand(unitexcpp::engine::UnitexEngine& unitexEngine, const std::string& dictName, const unitexcpp::DictionaryType& dictType);
+			CheckDicCommand(unitexcpp::engine::UnitexEngine& unitexEngine, const std::string& dictName, const unitexcpp::DictionaryType& dictType, const std::string& alphName);
+			CheckDicCommand(unitexcpp::engine::UnitexEngine& unitexEngine, const boost::filesystem::path& dictPath, const unitexcpp::DictionaryType& dictType, const boost::filesystem::path& alphabetPath);
 			virtual ~CheckDicCommand();
 
 			UnitexCommand::fnUnitexMainCommand getUnitexCommandFunction() const;
@@ -35,6 +37,7 @@ namespace unitexcpp
 		private:
 			std::string dictionaryName;
 			const unitexcpp::DictionaryType& dictionaryType;
+			std::string alphabetName;
 		};
 
 	}

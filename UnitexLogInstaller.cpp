@@ -31,6 +31,7 @@ namespace unitexcpp
 
 		/* we want "mini log" with only list */
 
+		ule.size_of_struct = sizeof(struct unitex::logger::UniLoggerSpace);
 		ule.privateUnloggerData = NULL;
 		ule.szPathLog = NULL;
 		ule.store_file_out_content = bStoreFileOutContent ? 1 : 0;
@@ -52,16 +53,17 @@ namespace unitexcpp
 
 		/* we want "mini log" with only list */
 
+		ule.size_of_struct = sizeof(struct unitex::logger::UniLoggerSpace);
 		ule.privateUnloggerData = NULL;
 		ule.szPathLog = strdup(strPathLog.c_str());
+		ule.szNameLog = NULL;
 		ule.store_file_out_content = bStoreFileOutContent ? 1 : 0;
 		ule.store_list_file_out_content = 1;
-
-		ule.store_file_in_content = 0 + 1;
+		ule.store_file_in_content = 1;
 		ule.store_list_file_in_content = 1;
-
-		/* we dont want "auto generate" log */
-		ule.auto_increment_logfilename = 0;
+		ule.store_std_out_content = 0;
+		ule.store_std_err_content = 0;
+		ule.auto_increment_logfilename = 1;
 
 		if (AddActivityLogger(&ule) != 0)
 			init_done = 1;

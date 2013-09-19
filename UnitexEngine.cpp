@@ -248,7 +248,7 @@ namespace unitexcpp
 		*/
 		bool UnitexEngine::addDynamicDictionary(string const& strDictName, DictionaryType const& dictionaryType)
 		{
-			bool compileOk = m_dictionaryCompiler.compile(strDictName, dictionaryType);
+			bool compileOk = m_dictionaryCompiler.compile(strDictName, getAlphabetFile(), dictionaryType);
 
 			// Add this dictionary to the given language list
 			if (compileOk)
@@ -294,13 +294,13 @@ namespace unitexcpp
 		void UnitexEngine::getNormalizedText(UnicodeString& normalizedText, const string& aFileName) const
 		{
 			const string& filename = aFileName.empty() ? m_sntFilename : aFileName;
-			getStringFromFile(filename, normalizedText);
+			getStringFromUnitexFile(filename, normalizedText);
 		}
 
 		void UnitexEngine::getInputText(UnicodeString& inputText, const string& aFileName) const
 		{
 			const string& filename = aFileName.empty() ? m_inputFilename : aFileName;
-			getStringFromFile(filename, inputText);
+			getStringFromUnitexFile(filename, inputText);
 		}
 
 		///////////////////////////////////////////////////////////////////////

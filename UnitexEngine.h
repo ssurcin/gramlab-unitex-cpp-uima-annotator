@@ -138,6 +138,7 @@ namespace unitexcpp
 			void getInputText(UnicodeString& inputText, const std::string& aFileName = "") const;
 
 			GraphCompiler& getGraphCompiler() { return m_graphCompiler; }
+			DictionaryCompiler& getDictionaryCompiler() { return m_dictionaryCompiler; }
 
 		public:
 			void clearPerformanceCache();

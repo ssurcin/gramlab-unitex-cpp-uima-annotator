@@ -64,6 +64,7 @@ namespace unitexcpp
 		private:
 			void printArguments(size_t argc, char** argv);
 			void printUsage(fnUnitexMainCommand pfnCommand);
+			void printUsage();
 #endif
 		};
 

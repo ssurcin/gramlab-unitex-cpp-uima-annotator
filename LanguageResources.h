@@ -105,6 +105,8 @@ namespace unitexcpp
 
 		static boost::filesystem::path getSourceAutomatonPath(const boost::filesystem::path& automatonPath);
 		static boost::filesystem::path getCompiledAutomatonPath(const boost::filesystem::path& automatonPath);
+		static boost::filesystem::path getSourceDictionaryPath(const boost::filesystem::path& dictionaryPath);
+		static boost::filesystem::path getCompiledDictionaryPath(const boost::filesystem::path& dictionaryPath);
 		static bool needsCompilation(const boost::filesystem::path& sourceFile, const boost::filesystem::path& compiledFile);
 
 		bool virtualizeFile(boost::filesystem::path const& diskPath, boost::filesystem::path& virtualPath);

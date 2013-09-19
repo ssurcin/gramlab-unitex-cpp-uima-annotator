@@ -1,9 +1,9 @@
 /*
- * NormalizeCommand.cpp
- *
- *  Created on: 7 janv. 2011
- *      Author: sylvainsurcin
- */
+* NormalizeCommand.cpp
+*
+*  Created on: 7 janv. 2011
+*      Author: sylvainsurcin
+*/
 
 #ifdef _MSC_VER
 #pragma warning(push,0)
@@ -35,19 +35,33 @@ namespace unitexcpp
 	namespace command
 	{
 
-		/**
-		 * Builds the argument list to call Normalize according to the Unitex
-		 * version.
-		 *
-		 * \param unitexEngine an instance of UnitexEngine
-		 * \param inputName the name of the input file
-		 * \param equivFileName the name of the normalization file
-		 * \param bNoCR flag to replace or not CR/LF
-		 * \param offsetsName a file where to store offset mappings from original input to normalized output (null if none)
-		 */
-		NormalizeCommand::NormalizeCommand(UnitexEngine& unitexEngine, const string& inputName, const string& equivFileName, bool bNoCR, bool bNoCRLFNormalization, const string& offsetsName) :
-				UnitexCommand(unitexEngine, "Normalize"), m_inputFilename(inputName), m_equivalenceFile(equivFileName), m_noCR(bNoCR), m_noCRLFNormalization(bNoCRLFNormalization), m_offsetsFilename(
-						offsetsName)
+		/// <summary>
+		/// Builds the argument list to call Normalize according to the Unitex
+		/// version.
+		/// </summary>
+		/// <param name='unitexEngine'>An instance of UnitexEngine.</param>
+		/// <param name='inputName'>The name (path) of the input file.</param>
+		/// <param name='equivFileName'>The name (path) of the normalization file.</param>
+		/// <param name='bConvertCRtoSpace'>Flag to replace CR by space.</param>
+		/// <param name='bNormalizeSeparators'>Flag to normalize separators.</param>
+		/// <param name='bConvertLFtoCRLF'>Flag to convert LF into CRLF.</param>
+		/// <param name='offsetsName'>A file where to store offset mappings from original input to normalized output (null if none).</param>
+		///
+		NormalizeCommand::NormalizeCommand(
+			UnitexEngine& unitexEngine, 
+			const string& inputName, 
+			const string& equivFileName, 
+			bool bConvertCRtoSpace,
+			bool bNormalizeSeparators,
+			bool bConvertLFtoCRLF, 
+			const string& offsetsName) :
+		UnitexCommand(unitexEngine, "Normalize"), 
+			m_inputFilename(inputName), 
+			m_equivalenceFile(equivFileName), 
+			m_noCR(bConvertCRtoSpace), 
+			m_noSeparatorNormalization(!bNormalizeSeparators), 
+			m_noLFtoCRLF(!bConvertLFtoCRLF),
+			m_offsetsFilename(offsetsName)
 		{
 		}
 
@@ -75,8 +89,10 @@ namespace unitexcpp
 			arguments.push_back(absolutePathnameOf(m_equivalenceFile));
 			if (m_noCR)
 				arguments.push_back("-n");
-			if (m_noCRLFNormalization)
+			if (m_noSeparatorNormalization)
 				arguments.push_back("--no_separator_normalization");
+			if (m_noLFtoCRLF)
+				arguments.push_back("-l");
 			if (!m_offsetsFilename.empty()) {
 				arguments.push_back("--output_offsets");
 				arguments.push_back(m_offsetsFilename);

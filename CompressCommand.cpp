@@ -56,11 +56,10 @@ namespace unitexcpp
 		void CompressCommand::buildArguments(Stringlist& arguments) const
 		{
 			arguments.clear();
-
-			Stringlist subargs;
+			arguments.push_back(getCommandName());
 			if (m_swapForms)
-				subargs.push_back("--flip");
-			subargs.push_back(absolutePathnameOf(m_dictionaryName));
+				arguments.push_back("--flip");
+			arguments.push_back(absolutePathnameOf(m_dictionaryName));
 		}
 
 	}

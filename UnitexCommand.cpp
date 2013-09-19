@@ -18,6 +18,7 @@
 #include "UnitexToolCommand.h"
 #include "UnitexException.h"
 #include <sstream>
+#include "Unitex-C++/UnitexTool.h"
 
 #if (defined(_WIN32) || defined(_WIN64))
 #define WINDOWS
@@ -94,20 +95,25 @@ namespace unitexcpp
 			Stringlist arguments;
 			buildArguments(arguments);
 
+			//arguments.pop_front();
+
 			size_t argc = arguments.size();
 			char** argv = stringListToCharStarArray(arguments);
 #ifdef DEBUG_UIMA_CPP
 			printArguments(argc, argv);
 #endif
 
-			fnUnitexMainCommand pfnCommand = getUnitexCommandFunction();
-			int ret = (pfnCommand == NULL) ? 0 : (*pfnCommand)(argc, argv);
+			// fnUnitexMainCommand pfnCommand = getUnitexCommandFunction();
+			// int ret = (pfnCommand == NULL) ? 0 : (*pfnCommand)(argc, argv);
+
+			int ret = unitex::UnitexTool_public_run_one_tool(m_command.c_str(), argc, argv);
 
 			deleteCharStarArray(argc, argv);
 
 #ifdef DEBUG_UIMA_CPP
 			if (ret != 0) 
-				printUsage(pfnCommand);
+				//printUsage(pfnCommand);
+					printUsage();
 #endif
 			return (ret == 0);
 		}
@@ -184,6 +190,16 @@ namespace unitexcpp
 			char** helpArgv = stringListToCharStarArray(help);
 			(*pfnCommand)(2, helpArgv);
 			deleteCharStarArray(2, helpArgv);
+		}
+
+		void UnitexCommand::printUsage()
+		{
+			string const& commandName = getCommandName();
+			Stringlist help;
+			help.push_back("--help");
+			char** helpArgv = stringListToCharStarArray(help);
+			UnitexTool_public_run_one_tool(commandName.c_str(), 1, helpArgv);
+			deleteCharStarArray(1, helpArgv);
 		}
 #endif
 	}

@@ -18,6 +18,7 @@
 #include "Utils.h"
 #include "FileUtils.h"
 #include <sstream>
+#include <boost/filesystem.hpp>
 
 #if defined(_MSC_VER) && defined(_DEBUG) && defined(DEBUG_MEMORY_LEAKS)
 #define _CRTDBG_MAP_ALLOC
@@ -30,11 +31,14 @@ static char THIS_FILE[] = __FILE__;
 #endif
 
 using namespace std;
+using namespace boost::filesystem;
 
 namespace unitexcpp
 {
 	namespace engine
 	{
+
+		set<path> DictionaryCompiler::compiledDictionaries;
 
 		DictionaryCompiler::DictionaryCompiler(UnitexEngine& engine) :
 			UnitexSubengine(engine)
@@ -64,29 +68,40 @@ namespace unitexcpp
 		 *            Unitex binary resources dictionary
 		 * @return true if everything went well
 		 */
-		bool DictionaryCompiler::compile(const string& dictionaryName, const DictionaryType& dictionaryType, bool moveFile)
+		bool DictionaryCompiler::compile(const path& dictionaryPath, const path& alphabetPath, const DictionaryType& dictionaryType, bool moveFile)
 		{
-			command::CheckDicCommand checkDic(getEngine(), dictionaryName, dictionaryType);
-			if (!checkDic.execute()) {
+#ifdef DEBUG_UIMA_CPP
+			cout << "Compiling dictionary " << dictionaryPath << " with alphabet " << alphabetPath << endl;
+#endif
+
+			set<path>::const_iterator it = compiledDictionaries.find(dictionaryPath);
+			if (it != compiledDictionaries.end()) {
+#ifdef DEBUG_UIMA_CPP
+				cout << "  already compiled" << endl;
+#endif
+				return true;
+			}
+
+			if (!checkDictionary(dictionaryPath, alphabetPath)) {
 				ostringstream oss;
 				oss << typeid(*this).name() << " error in CheckDic";
 				throw UnitexException(oss.str());
 			}
 
-			command::CompressCommand compress(getEngine(), dictionaryName);
-			if (!compress.execute()) {
+			if (!compressDictionary(dictionaryPath)) {
 				ostringstream oss;
 				oss << typeid(*this).name() << " error in Compress";
 				throw UnitexException(oss.str());
 			}
+
+			compiledDictionaries.insert(dictionaryPath);
 
 			if (!moveFile)
 				return true;
 
 			// Move the compiled dictionary into the corresponding bin directory
 			try {
-				boost::filesystem::path sourcePath(dictionaryName);
-				boost::filesystem::path binaryPath = boost::filesystem::change_extension(sourcePath, ".bin");
+				boost::filesystem::path binaryPath = boost::filesystem::change_extension(dictionaryPath, ".bin");
 				boost::filesystem::path relativePath = getRelativePathFrom(getEngine().getUnitexSrcResourcesDir(), binaryPath);
 				boost::filesystem::path newBinaryPath = createPathRelativeTo(getEngine().getUnitexBinResourcesDir(), relativePath);
 				boost::filesystem::copy_file(binaryPath, newBinaryPath);
@@ -111,9 +126,9 @@ namespace unitexcpp
 		 * @return true if ok
 		 * @throws UnitexException
 		 */
-		bool DictionaryCompiler::checkDictionary(const std::string& dictionaryName, const DictionaryType& dictionaryType)
+		bool DictionaryCompiler::checkDictionary(const path& dictionaryPath, const path& alphabetPath, const DictionaryType& dictionaryType)
 		{
-			command::CheckDicCommand checkDic(getEngine(), dictionaryName, dictionaryType);
+			command::CheckDicCommand checkDic(getEngine(), dictionaryPath.string(), dictionaryType, alphabetPath);
 			return checkDic.execute();
 		}
 
@@ -128,9 +143,9 @@ namespace unitexcpp
 		 * @return true if ok
 		 * @throws UnitexException
 		 */
-		bool DictionaryCompiler::compressDictionary(const std::string& dictionaryName, bool swapInflectedAndLemmaForms)
+		bool DictionaryCompiler::compressDictionary(const path& dictionaryPath, bool swapInflectedAndLemmaForms)
 		{
-			command::CompressCommand compress(getEngine(), dictionaryName, swapInflectedAndLemmaForms);
+			command::CompressCommand compress(getEngine(), dictionaryPath.string(), swapInflectedAndLemmaForms);
 			return compress.execute();
 		}
 	}

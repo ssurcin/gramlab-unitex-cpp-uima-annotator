@@ -190,7 +190,7 @@ namespace unitexcpp
 			// Read the file contents
 			path tokensPath = sntPath / "tokens.txt";
 			UnicodeString ustrTokens;
-			getStringFromFile(tokensPath.string(), ustrTokens);
+			getStringFromUnitexFile(tokensPath.string(), ustrTokens);
 #ifdef _DEBUG
 			cout << "tokens.txt=" << endl << ustrTokens << endl << endl;
 #endif
@@ -304,7 +304,7 @@ namespace unitexcpp
 			// Read the file contents
 			path tokensPath = sntPath / "snttokens.txt";
 			UnicodeString ustrTokens;
-			getStringFromFile(tokensPath.string(), ustrTokens);
+			getStringFromUnitexFile(tokensPath.string(), ustrTokens);
 #ifdef DEBUG_UIMA_CPP
 			cout << "snttokens.txt=" << endl << ustrTokens << endl;
 #endif
@@ -333,7 +333,7 @@ namespace unitexcpp
 			int32_t nbLines = lines.size();
 			for (int32_t tokenIndex = 0; tokenIndex < nbLines; tokenIndex++) {
 #ifdef DEBUG_UIMA_CPP
-				cout << "reading token " << tokenIndex << "/" << nbLines - 1 << ": \"" << lines[tokenIndex] << "\"" << endl;
+				cout << "reading token " << tokenIndex << "/" << nbLines - 1 << ": " << lines[tokenIndex];
 #endif
 
 				// Parse the current line to extract:
@@ -345,6 +345,10 @@ namespace unitexcpp
 				int32_t start = currentCoord.get<1>();
 				int32_t end = currentCoord.get<2>();
 
+#ifdef DEBUG_UIMA_CPP
+				if ((start == 160) && (m_tokenForms[formIndex] == "is"))
+					cout << "coucou" << endl;
+#endif
 				// Fix for too short forms found until now
 #ifdef DEBUG_UIMA_CPP
 				cout << "offsetTooShortForms=" << offsetTooShortForms << endl;
@@ -353,8 +357,7 @@ namespace unitexcpp
 					start += offsetTooShortForms;
 					end += offsetTooShortForms;
 #ifdef DEBUG_UIMA_CPP
-					cout << "fixed start=" << start << endl;
-					cout << "fixed end=" << end << endl;
+					cout << "fixed start=" << start << " end=" << end << endl;
 #endif
 				}
 
@@ -363,7 +366,8 @@ namespace unitexcpp
 				if (!panic && tokenIndex > 0) {
 					tuple<int32_t, int32_t, int32_t> previousCoord = tokenCoordinates(lines[tokenIndex - 1]);
 					UnicodeString previousForm = m_tokenForms[previousCoord.get<0>()];
-					if ((previousForm == UNICODE_STRING_SIMPLE("{S}")) && (start > previousCoord.get<1>())) {
+					int32_t fixedPreviousStart = previousCoord.get<1>() + offsetTooShortForms;
+					if ((previousForm == UNICODE_STRING_SIMPLE("{S}")) && (start > fixedPreviousStart)) {
 						panic = true;
 						if (!lastNonDropToken.isEmpty())
 							panicEndOfLastToken = lastNonDropToken.end();
@@ -526,8 +530,7 @@ namespace unitexcpp
 		size_t UnitexTokenizer::tokenize(size_t tokenIndexOffset)
 		{
 #ifdef DEBUG_UIMA_CPP
-			ostringstream oss;
-			m_annotator.logMessage("Creating token annotations... starting with tokenIndexOffset = %d", tokenIndexOffset);
+			cout << "Creating token annotations... starting with tokenIndexOffset = " << tokenIndexOffset << endl;
 #endif
 			m_tokens.clear();
 
@@ -577,7 +580,7 @@ namespace unitexcpp
 
 		void UnitexTokenizer::createParagraphAnnotations()
 		{
-#ifdef _DEBUG
+#ifdef DEBUG_UIMA_CPP
 			cout << "Creating paragraph annotations" << endl;
 #endif
 
@@ -588,9 +591,8 @@ namespace unitexcpp
 			TextArea::getParagraphAreas(m_text, paragraphAreas);
 
 			vector<ParagraphAnnotation> rmbParagraphs;
-			for (vector<TextArea>::const_iterator it = paragraphAreas.begin(); it != paragraphAreas.end(); it++) {
-				const TextArea& paragraph = *it;
-#ifdef _DEBUG
+			BOOST_FOREACH(TextArea const& paragraph, paragraphAreas) {
+#ifdef DEBUG_UIMA_CPP
 				cout << "Processing paragraph " << paragraph << endl;
 #endif
 
@@ -599,13 +601,13 @@ namespace unitexcpp
 				paragraph.getText(paragraphText);
 				if (isBlank(paragraphText))
 					continue;
-#ifdef _DEBUG
+#ifdef DEBUG_UIMA_CPP
 				cout << "Paragraph is not blank" << endl;
 #endif
 
 				int32_t start = paragraph.getBegin() + m_offset;
 				int32_t end = paragraph.getEnd() + m_offset;
-#ifdef _DEBUG
+#ifdef DEBUG_UIMA_CPP
 				cout << "start=" << start << ", end=" << end << endl;
 #endif
 
@@ -615,7 +617,7 @@ namespace unitexcpp
 					oss << "Cannot create paragraph because cannot find token starting at " << paragraph.getBegin() << " in RMB";
 					throw UnitexException(oss.str());
 				}
-#ifdef _DEBUG
+#ifdef DEBUG_UIMA_CPP
 				cout << "First token = " << firstToken << endl;
 #endif
 
@@ -639,13 +641,13 @@ namespace unitexcpp
 					oss << "Cannot find token ending at " << end << " in RMB";
 					throw UnitexException(oss.str());
 				}
-#ifdef _DEBUG
+#ifdef DEBUG_UIMA_CPP
 				cout << "Last token = " << lastToken << endl;
 #endif
 
 				ParagraphAnnotation rmbPar(view, firstToken.getBegin(), lastToken.getEnd(), firstToken, lastToken);
 				rmbParagraphs.push_back(rmbPar);
-#ifdef _DEBUG
+#ifdef DEBUG_UIMA_CPP
 				cout << "Create paragraph " << rmbPar << endl;
 #endif
 			}

@@ -61,6 +61,7 @@ namespace uima
 		static const icu::UnicodeString PARAM_LONGEST_MATCH_OUTPUT;
 		static const icu::UnicodeString PARAM_LOG_PROFILING_INFO;
 		static const icu::UnicodeString PARAM_FORCE_GRAPH_COMPILATION;
+		static const icu::UnicodeString PARAM_FORCE_DICTIONARY_COMPILATION;
 		static const icu::UnicodeString PARAM_HIDE_UNITEX_OUTPUT;
 
 	private:
@@ -97,6 +98,7 @@ namespace uima
 	private:
 		UnitexInstanceMap unitexInstances;
 		bool m_forceGraphCompilation;
+		bool m_forceDictionaryCompilation;
 
 		// Parameters
 		int m_timeoutDelay;
@@ -191,6 +193,7 @@ namespace uima
 		UnicodeStringRef getAnalysisStrategy() const;
 		bool skip() const;
 		bool forceGraphCompilation() const;
+		bool forceDictionaryCompilation() const;
 		const UnitexInstanceMap& getUnitexInstances() const;
 
 	private:

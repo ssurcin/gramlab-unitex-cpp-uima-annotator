@@ -92,7 +92,7 @@ namespace unitexcpp
 			cout << "Normalizing input text" << endl;
 #endif
 			path normOffsets = sntPath / "normoffsets.txt";
-			if (!normalize(inputFilename, getEngine().getNormalizationDictionaryFile(), false, true, normOffsets.string())) {
+			if (!normalize(inputFilename, getEngine().getNormalizationDictionaryFile(), false, false, false, normOffsets.string())) {
 				ostringstream oss;
 				oss << "TextPreprocessor error while normalizing input file " << inputFilename;
 				throw new UnitexException(oss.str());
@@ -101,6 +101,11 @@ namespace unitexcpp
 			cout << "Contents of " << normOffsets << ":" << endl;
 			UnicodeString ustr;
 			getStringFromUnitexFile(normOffsets, ustr);
+			cout << ustr << endl;
+
+			cout << "Normalized input = " << endl;
+			ustr = "";
+			getStringFromUnitexFile(sntName, ustr);
 			cout << ustr << endl;
 #endif
 
@@ -117,6 +122,11 @@ namespace unitexcpp
 			cout << "Contents of " << sntOffsetsPathAfterSentence << ":" << endl;
 			getStringFromUnitexFile(sntOffsetsPathAfterSentence, ustr);
 			cout << ustr << endl;
+
+			cout << "Normalized input = " << endl;
+			ustr = "";
+			getStringFromUnitexFile(sntName, ustr);
+			cout << ustr << endl;
 #endif
 
 			path sntOffsetsPathAfterReplace = sntPath / "sntoffsets.txt";
@@ -129,6 +139,11 @@ namespace unitexcpp
 #ifdef DEBUG_UIMA_CPP
 			cout << "Contents of " << sntOffsetsPathAfterReplace << ":" << endl;
 			getStringFromUnitexFile(sntOffsetsPathAfterReplace, ustr);
+			cout << ustr << endl;
+
+			cout << "Normalized input = " << endl;
+			ustr = "";
+			getStringFromUnitexFile(sntName, ustr);
 			cout << ustr << endl;
 #endif
 
@@ -190,9 +205,9 @@ namespace unitexcpp
 		* @return true if the process executed ok
 		* @throws UnitexException
 		*/
-		bool TextPreprocessor::normalize(const string& inputName, const string& equivFileName, bool bNoCR, bool noSeparatorNormalization, const string& offsetsFileName)
+		bool TextPreprocessor::normalize(const string& inputName, const string& equivFileName, bool bConvertCRtoSpace, bool bNormalizeSeparators, bool bConvertLFtoCRLF, const string& offsetsFileName)
 		{
-			NormalizeCommand command(getEngine(), inputName, equivFileName, bNoCR, noSeparatorNormalization, offsetsFileName);
+			NormalizeCommand command(getEngine(), inputName, equivFileName, bConvertCRtoSpace, bNormalizeSeparators, bConvertLFtoCRLF, offsetsFileName);
 			return command.execute();
 		}
 
@@ -344,7 +359,7 @@ namespace unitexcpp
 		*/
 		void TextPreprocessor::setNormalizedText(const string& sntFilename, const UnicodeStringRef& normalizedText)
 		{
-			writeStringToFile(sntFilename, normalizedText);
+			writeUnitexFileFastWithBOM(sntFilename, normalizedText);
 		}
 
 	}

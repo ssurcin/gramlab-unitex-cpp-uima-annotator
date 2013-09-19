@@ -27,7 +27,7 @@ namespace unitexcpp
 			virtual ~TextPreprocessor();
 
 			bool preprocess(const std::string& inputFilename);
-			bool normalize(const std::string& inputName, const std::string& equivFileName = "", bool bNoCR = false, bool noSeparatorNormalization =true, const std::string& offsetsFileName = "normoffsets.txt");
+			bool normalize(const std::string& inputName, const std::string& equivFileName = "", bool bConvertCRtoSpace = false, bool bNormalizeSeparators = false, bool bConvertLFtoCRLF = false, const std::string& offsetsFileName = "normoffsets.txt");
 			bool fst2txt(	const std::string& inputName,
 							const std::string& alphabet = "",
 							bool startOnSpace = false,

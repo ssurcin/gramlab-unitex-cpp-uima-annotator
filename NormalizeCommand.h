@@ -28,8 +28,9 @@ namespace unitexcpp
 			NormalizeCommand(unitexcpp::engine::UnitexEngine& unitexEngine,
 			                 const std::string& inputName,
 			                 const std::string& equivFileName,
-			                 bool bNoCR,
-			                 bool bNoCRLFNormalization,
+			                 bool bConvertCRtoSpace,
+			                 bool bNormalizeSeparators,
+							 bool bConvertLFtoCRLF,
 			                 const std::string& offsetsName ="");
 			virtual ~NormalizeCommand();
 
@@ -40,7 +41,8 @@ namespace unitexcpp
 			const std::string m_inputFilename;
 			const std::string m_equivalenceFile;
 		    const bool m_noCR;
-		    const bool m_noCRLFNormalization;
+		    const bool m_noSeparatorNormalization;
+			const bool m_noLFtoCRLF;
 		    const std::string m_offsetsFilename;
 		};
 

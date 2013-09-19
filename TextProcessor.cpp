@@ -215,7 +215,7 @@ namespace unitexcpp
 
 			// Get the file contents
 			UnicodeString contents;
-			getStringFromFile(indexPath.string(), contents);
+			getStringFromUnitexFile(indexPath.string(), contents);
 #ifdef DEBUG_UIMA_CPP
 			cout << "Contents of index file " << indexPath << "=" << endl << contents << endl;
 #endif

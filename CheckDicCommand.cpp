@@ -29,6 +29,7 @@ static char THIS_FILE[] = __FILE__;
 using namespace std;
 using namespace unitexcpp;
 using namespace unitexcpp::engine;
+using namespace boost::filesystem;
 
 namespace unitexcpp
 {
@@ -36,8 +37,13 @@ namespace unitexcpp
 	namespace command
 	{
 
-		CheckDicCommand::CheckDicCommand(UnitexEngine& unitexEngine, const string& dictName, const DictionaryType& dictType) :
-			UnitexCommand(unitexEngine, "CheckDic"), dictionaryName(dictName), dictionaryType(dictType)
+		CheckDicCommand::CheckDicCommand(UnitexEngine& unitexEngine, const string& dictName, const DictionaryType& dictType, const string& alphName) :
+			UnitexCommand(unitexEngine, "CheckDic"), dictionaryName(dictName), dictionaryType(dictType), alphabetName(alphName)
+		{
+		}
+
+		CheckDicCommand::CheckDicCommand(UnitexEngine& unitexEngine, const path& dictPath, const DictionaryType& dictType, const path& alphabetPath) :
+			UnitexCommand(unitexEngine, "CheckDic"), dictionaryName(dictPath.string()), dictionaryType(dictType), alphabetName(alphabetPath.string())
 		{
 		}
 
@@ -58,13 +64,14 @@ namespace unitexcpp
 		void CheckDicCommand::buildArguments(Stringlist& arguments) const
 		{
 			arguments.clear();
-
-			Stringlist subargs;
+			arguments.push_back(getCommandName());
 			if (dictionaryType == DictionaryType::DELAF)
-				subargs.push_back("-f");
+				arguments.push_back("-f");
 			else if (dictionaryType == DictionaryType::DELAS)
-				subargs.push_back("-s");
-			subargs.push_back(absolutePathnameOf(dictionaryName));
+				arguments.push_back("-s");
+			arguments.push_back("-a");
+			arguments.push_back(absolutePathnameOf(alphabetName));
+			arguments.push_back(absolutePathnameOf(dictionaryName));
 		}
 
 	}

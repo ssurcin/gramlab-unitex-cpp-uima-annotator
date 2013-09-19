@@ -79,7 +79,7 @@ using namespace unitexcpp::annotation;
 #include <stdlib.h>
 #include <crtdbg.h>
 #define DEBUG_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__)
-#define new DEBUG_NEW
+#define new DEBUG_NEWss
 #undef THIS_FILE
 static char THIS_FILE[] = __FILE__;
 #endif
@@ -104,7 +104,8 @@ namespace uima
 	const UnicodeString UnitexAnnotatorCpp::PARAM_FAKE_TOKENS = UNICODE_STRING_SIMPLE("fakeTokens");
 	const UnicodeString UnitexAnnotatorCpp::PARAM_LONGEST_MATCH_OUTPUT = UNICODE_STRING_SIMPLE("LongestMatchOutput");
 	const UnicodeString UnitexAnnotatorCpp::PARAM_LOG_PROFILING_INFO = UNICODE_STRING_SIMPLE("logProfilingInfo");
-	const UnicodeString UnitexAnnotatorCpp::PARAM_FORCE_GRAPH_COMPILATION = UNICODE_STRING_SIMPLE("ForceGraphCompilation");
+	const UnicodeString UnitexAnnotatorCpp::PARAM_FORCE_GRAPH_COMPILATION = UNICODE_STRING_SIMPLE("ForceGraphCompilation"); 
+	const UnicodeString UnitexAnnotatorCpp::PARAM_FORCE_DICTIONARY_COMPILATION = UNICODE_STRING_SIMPLE("ForceDictionaryCompilation");
 	const UnicodeString UnitexAnnotatorCpp::PARAM_HIDE_UNITEX_OUTPUT = "HideUnitexOutput";
 
 	/////////////////////////////////////////////////////////////////////////
@@ -448,7 +449,7 @@ namespace uima
 				return UIMA_ERR_USER_ANNOTATOR_COULD_NOT_INIT;
 			}
 
-			if (!iequals(strLogPath, "no")) {
+			if (iequals(strLogPath, "no")) {
 				logMessage("No Unitex logging");
 				return UIMA_ERR_NONE;
 			}
@@ -562,6 +563,7 @@ namespace uima
 	*/
 	TyErrorId UnitexAnnotatorCpp::initializeUnitexInstances()
 	{
+		const AnnotatorContext& context = getAnnotatorContext();
 		ostringstream oss;
 
 		// If the parameter -Dunitex.log=true was passed to the JVM, we want
@@ -576,7 +578,7 @@ namespace uima
 		bool isFirstLanguage = true;
 		TyErrorId uimaError = UIMA_ERR_NONE;
 
-		const set<UnicodeString> supportedLanguages = getAnnotatorContext().getGroupNamesForParameter(PARAM_DICTIONARIES);
+		const set<UnicodeString> supportedLanguages = context.getGroupNamesForParameter(PARAM_DICTIONARIES);
 
 		BOOST_FOREACH(const UnicodeString& language, supportedLanguages) {
 #ifdef DEBUG_UIMA_CPP
@@ -584,7 +586,8 @@ namespace uima
 #endif
 
 			if (isFirstLanguage) {
-				uimaError = getAnnotatorContext().extractValue(PARAM_FORCE_GRAPH_COMPILATION, m_forceGraphCompilation);
+				// Get descriptor parameter to enforce graph compilation
+				uimaError = context.extractValue(PARAM_FORCE_GRAPH_COMPILATION, m_forceGraphCompilation);
 				if (uimaError != UIMA_ERR_NONE) {
 					if (isLoggingEnabled()) {
 						LogStream& ls = getLogStream(LogStream::EnError);
@@ -593,8 +596,27 @@ namespace uima
 					}
 					return uimaError;
 				}
+#ifdef DEBUG_UIMA_CPP
+				cout << "Initializing force graph compilations to " << m_forceGraphCompilation << endl;
+#endif
 				if (isLoggingEnabled())
 					logMessage("Initializing force graph compilations to %s", m_forceGraphCompilation ? "TRUE" : "FALSE");
+
+				// Get descriptor parameter to enforce dictionary compilation
+				uimaError = context.extractValue(PARAM_FORCE_DICTIONARY_COMPILATION, m_forceDictionaryCompilation);
+				if (uimaError != UIMA_ERR_NONE) {
+					if (isLoggingEnabled()) {
+						LogStream& ls = getLogStream(LogStream::EnError);
+						ls << "Cannot read parameter " << PARAM_FORCE_DICTIONARY_COMPILATION;
+						ls.flush();
+					}
+					return uimaError;
+				}
+#ifdef DEBUG_UIMA_CPP
+				cout << "Initializing force dictionary compilations to " << m_forceDictionaryCompilation << endl;
+#endif
+				if (isLoggingEnabled())
+					logMessage("Initializing force dictionary compilations to %s", m_forceDictionaryCompilation ? "TRUE" : "FALSE");
 			}
 
 			set<UnicodeString> supportedStrategies;
@@ -612,8 +634,7 @@ namespace uima
 
 			bool manyStrategies = (supportedStrategies.size() > 1); 
 
-			for (set<UnicodeString>::const_iterator itStrategy = supportedStrategies.begin(); itStrategy != supportedStrategies.end(); itStrategy++) {
-				const UnicodeString& strategy = *itStrategy;
+			BOOST_FOREACH(const UnicodeString& strategy, supportedStrategies) {
 #ifdef DEBUG_UIMA_CPP
 				cout << "Language= " << language << " / Strategy= " << strategy << endl;
 #endif
@@ -675,8 +696,7 @@ namespace uima
 					}
 
 					// Adapt the Sentence graph to the actual graphs in the descriptor
-					for (vector<UnicodeString>::const_iterator itGraph = graphs.begin(); itGraph != graphs.end(); itGraph++) {
-						const UnicodeString& graph = *itGraph;
+					BOOST_FOREACH(const UnicodeString& graph, graphs) {
 						if (graph.indexOf("Sentence") >= 0) {
 							path p = pEngine->getGraphsDir() / convertUnicodeStringToRawString(graph);
 							p.make_preferred();
@@ -896,7 +916,7 @@ namespace uima
 	void UnitexAnnotatorCpp::readDictionariesDefinitionFile(const path& defFilePath, vector<UnicodeString>& dictionaries)
 	{
 		UnicodeString fileContents;
-		getStringFromFile(defFilePath, fileContents);
+		getStringFromUnitexFile(defFilePath, fileContents);
 
 		if (!isEmpty(fileContents) && !isBlank(fileContents)) {
 			// Split it into lines non empty lines
@@ -1202,7 +1222,7 @@ namespace uima
 #ifdef DEBUG_UIMA_CPP
 			cout << "Input for Unitex is ready" << endl;
 			UnicodeString ustrInputFileContent;
-			getStringFromFile(inputPath, ustrInputFileContent);
+			getStringFromUnitexFile(inputPath, ustrInputFileContent);
 			cout << ustrInputFileContent << endl;
 #endif
 			VirtualFolderCleaner vfsSntCleaner(unitexEngine.getSntDirectory());
@@ -1420,7 +1440,7 @@ namespace uima
 			inputText.removeBetween(pos + 1, len);
 
 		inputPath = corpusPath / "unitexInput.txt";
-		if (!writeUnitexFile(inputPath, inputText)) {
+		if (!writeUnitexFileFastWithBOM(inputPath, inputText)) {
 			LogStream& ls = getLogStream(LogStream::EnError);
 			ls << "Cannot write input to file " << inputPath << endl;
 			ls.flush();
@@ -1459,7 +1479,7 @@ namespace uima
 				}
 
 				string strDictFile("*dyndic.dic");
-				writeStringToFile(strDictFile, ustring);
+				writeUnitexFileFastWithBOM(strDictFile, ustring);
 
 				// check and compress the dynamic dictionary
 				try {
@@ -1664,6 +1684,11 @@ namespace uima
 	bool UnitexAnnotatorCpp::forceGraphCompilation() const
 	{
 		return m_forceGraphCompilation;
+	}
+
+	bool UnitexAnnotatorCpp::forceDictionaryCompilation() const
+	{
+		return m_forceDictionaryCompilation;
 	}
 
 	/**
