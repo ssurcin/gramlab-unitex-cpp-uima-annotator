@@ -1209,7 +1209,8 @@ namespace uima
 			UnitexEngine& unitexEngine = selectUnitexLanguageInstance(language, strategy);
 
 			// Clear automaton performances from previous document???
-			// unitexEngine.clearPerformanceCache();
+			if (!cumulateAutomatonPerformances())
+				unitexEngine.clearPerformanceCache();
 
 			if (isLoggingEnabled(LogStream::EnMessage)) {
 				LogStream& ls = getLogStream(LogStream::EnMessage);
