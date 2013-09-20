@@ -26,7 +26,6 @@ namespace unitexcpp
 			CompressCommand(unitexcpp::engine::UnitexEngine& unitexEngine, std::string const& dictName, bool swapInflectedAndLemmaForms = false);
 			virtual ~CompressCommand();
 
-			UnitexCommand::fnUnitexMainCommand getUnitexCommandFunction() const;
 			void buildArguments(unitexcpp::Stringlist& arguments) const;
 
 		private:

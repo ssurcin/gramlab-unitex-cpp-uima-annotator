@@ -30,7 +30,6 @@ namespace unitexcpp
 					40, int nRightContext = 255, const std::string& aFontName = "Courier New", int nFontSize = 12, bool bThai = false, const std::string& mergeInFile = "");
 			virtual ~ConcordCommand();
 
-			UnitexCommand::fnUnitexMainCommand getUnitexCommandFunction() const;
 			void buildArguments(unitexcpp::Stringlist& arguments) const;
 
 		private:

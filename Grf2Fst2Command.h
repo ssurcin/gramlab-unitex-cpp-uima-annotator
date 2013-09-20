@@ -38,7 +38,6 @@ namespace unitexcpp
 							bool silentMode);
 			virtual ~Grf2Fst2Command();
 
-			UnitexCommand::fnUnitexMainCommand getUnitexCommandFunction() const;
 			void buildArguments(unitexcpp::Stringlist& arguments) const;
 
 		private:

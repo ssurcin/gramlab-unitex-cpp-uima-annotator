@@ -56,13 +56,16 @@ namespace unitexcpp
 	}
 #endif
 
+	/// <remarks>
+	/// This is called at the end of each UnitexAnnotatorCpp::process, i.e. after each document.
+	/// </remarks>
 	void ProfilingLogger::storeAutomataProfilingInformation()
 	{
 #ifdef DEBUG_UIMA_CPP
 		cout << "Enter ProfilingLogger::storeAutomataProfilingInformation" << endl;
 		cout << "Build an empty performance map for each language " << endl;
 #endif
-		map<string, map<string, long> > performanceMap;
+		Language2AutomatonPerformanceMap performanceMap;
 
 		UnitexAnnotatorCpp::UnicodeStringPair langStrategy;
 		engine::UnitexEngine* pEngine;
@@ -128,8 +131,13 @@ namespace unitexcpp
 			}
 		}
 
+		createCumulatedPerformanceAutomatonAnnotations(performanceMap);
+	}
+
+	void ProfilingLogger::createCumulatedPerformanceAutomatonAnnotations(const Language2AutomatonPerformanceMap& performanceMap) 
+	{
 #ifdef DEBUG_UIMA_CPP
-		cout << "Creating annotations " << endl;
+		cout << "Creating cumulated performances annotations " << endl;
 #endif
 		string language;
 		map<string, long> langPerformances;

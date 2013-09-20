@@ -820,8 +820,9 @@
     <ClCompile Include="GraphCompiler.cpp">
       <Filter>Engine</Filter>
     </ClCompile>
+    <ClCompile Include="RunLogCommand.cpp" />
     <ClCompile Include="ProfilingLogger.cpp">
-      <Filter>Utils</Filter>
+      <Filter>Performances</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -960,8 +961,9 @@
     <ClInclude Include="GraphCompiler.h">
       <Filter>Engine</Filter>
     </ClInclude>
+    <ClInclude Include="RunLogCommand.h" />
     <ClInclude Include="ProfilingLogger.h">
-      <Filter>Utils</Filter>
+      <Filter>Performances</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -987,6 +989,9 @@
     </Filter>
     <Filter Include="Tokenizer">
       <UniqueIdentifier>{bd737fc3-9465-491e-8163-3ab65a641282}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Performances">
+      <UniqueIdentifier>{4583d310-47ce-4844-9ceb-010554be0554}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

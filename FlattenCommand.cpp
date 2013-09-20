@@ -12,7 +12,6 @@
 
 #include "FlattenCommand.h"
 #include "UnitexEngine.h"
-#include "Unitex-C++/Flatten.h"
 
 #if defined(_MSC_VER) && defined(_DEBUG) && defined(DEBUG_MEMORY_LEAKS)
 #define _CRTDBG_MAP_ALLOC
@@ -52,11 +51,6 @@ namespace unitexcpp
 		// Implementation of abstract methods
 		//
 		///////////////////////////////////////////////////////////////////////////
-
-		UnitexCommand::fnUnitexMainCommand FlattenCommand::getUnitexCommandFunction() const 
-		{
-			return &unitex::main_Flatten;
-		}
 
 		void FlattenCommand::buildArguments(Stringlist& arguments) const
 		{

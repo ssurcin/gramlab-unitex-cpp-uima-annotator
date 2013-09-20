@@ -12,7 +12,6 @@
 
 #include "Grf2Fst2Command.h"
 #include "UnitexEngine.h"
-#include "Unitex-C++/Grf2Fst2.h"
 #include <boost/filesystem.hpp>
 #include "FileUtils.h"
 
@@ -77,12 +76,6 @@ namespace unitexcpp
 		// Implementation of abstract methods
 		//
 		///////////////////////////////////////////////////////////////////////////
-
-		UnitexCommand::fnUnitexMainCommand Grf2Fst2Command::getUnitexCommandFunction() const
-		{
-			return &unitex::main_Grf2Fst2;
-			//return NULL;
-		}
 
 		void Grf2Fst2Command::buildArguments(Stringlist& arguments) const
 		{

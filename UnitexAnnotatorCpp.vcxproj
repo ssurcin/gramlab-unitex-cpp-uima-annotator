@@ -37,6 +37,7 @@
     <ClCompile Include="ParagraphAnnotation.cpp" />
     <ClCompile Include="ProfilingLogger.cpp" />
     <ClCompile Include="QualifiedString.cpp" />
+    <ClCompile Include="RunLogCommand.cpp" />
     <ClCompile Include="SentenceAnnotation.cpp" />
     <ClCompile Include="TextArea.cpp" />
     <ClCompile Include="TextAreaAnnotation.cpp" />
@@ -377,6 +378,7 @@
     <ClInclude Include="ParagraphAnnotation.h" />
     <ClInclude Include="ProfilingLogger.h" />
     <ClInclude Include="QualifiedString.h" />
+    <ClInclude Include="RunLogCommand.h" />
     <ClInclude Include="SentenceAnnotation.h" />
     <ClInclude Include="Singleton.h" />
     <ClInclude Include="TextArea.h" />
@@ -502,7 +504,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>$(ProjectDir);$(UIMACPP_HOME)\include;$(APR_HOME)\include;Unitex-C++;Unitex-C++\include_tre;Unitex-C++\build\tre-0.8.0\lib;Unitex-C++\build\tre-0.8.0\win32;Unitex-C++\logger;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>DEBUG_UIMA_CPP;UNITEX_LIBRARY;TRACEOFF;NDEBUG;WIN32;_WINDOWS;_USRDLL;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>UNITEX_LIBRARY;TRACEOFF;NDEBUG;WIN32;_WINDOWS;_USRDLL;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <ExceptionHandling>Sync</ExceptionHandling>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>

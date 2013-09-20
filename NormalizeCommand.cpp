@@ -13,7 +13,6 @@
 #include "NormalizeCommand.h"
 #include "UnitexEngine.h"
 #include "UnitexToolCommand.h"
-#include "Unitex-C++/Normalize.h"
 
 #if defined(_MSC_VER) && defined(_DEBUG) && defined(DEBUG_MEMORY_LEAKS)
 #define _CRTDBG_MAP_ALLOC
@@ -74,12 +73,6 @@ namespace unitexcpp
 		// Implementation of abstract methods
 		//
 		///////////////////////////////////////////////////////////////////////////
-
-		UnitexCommand::fnUnitexMainCommand NormalizeCommand::getUnitexCommandFunction() const
-		{
-			return &unitex::main_Normalize;
-			//return NULL;
-		}
 
 		void NormalizeCommand::buildArguments(Stringlist& arguments) const
 		{

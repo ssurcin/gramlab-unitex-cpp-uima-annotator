@@ -107,6 +107,7 @@ namespace uima
 	const UnicodeString UnitexAnnotatorCpp::PARAM_FORCE_GRAPH_COMPILATION = UNICODE_STRING_SIMPLE("ForceGraphCompilation"); 
 	const UnicodeString UnitexAnnotatorCpp::PARAM_FORCE_DICTIONARY_COMPILATION = UNICODE_STRING_SIMPLE("ForceDictionaryCompilation");
 	const UnicodeString UnitexAnnotatorCpp::PARAM_HIDE_UNITEX_OUTPUT = "HideUnitexOutput";
+	const UnicodeString UnitexAnnotatorCpp::PARAM_CUMULATE_AUTOMATON_PERFORMANCES = "CumulateAutomatonPerformances";
 
 	/////////////////////////////////////////////////////////////////////////
 	//
@@ -303,7 +304,7 @@ namespace uima
 		bool logEnabled = true;
 		LogStream::EnEntryType logLevel = LogStream::EnMessage;
 
-		ifstream file("conf/log4j.properties", ios_base::in);
+		std::ifstream file("conf/log4j.properties", ios_base::in);
 		if (file.good()) {
 			string line;
 			while (getline(file, line)) {
@@ -396,12 +397,24 @@ namespace uima
 	TyErrorId UnitexAnnotatorCpp::initializeLogProfilingInformation()
 	{
 		m_logProfilingInformation = false;
+		m_cumulateAutomatonPerformances = true;
 
 		if (getAnnotatorContext().isParameterDefined(PARAM_LOG_PROFILING_INFO)) {
 			if (getAnnotatorContext().extractValue(PARAM_LOG_PROFILING_INFO, m_logProfilingInformation) != UIMA_ERR_NONE) {
 				if (isLoggingEnabled()) {
 					LogStream& ls = getLogStream(LogStream::EnError);
 					ls << "Cannot extract value of configuration parameter " << PARAM_LOG_PROFILING_INFO << " in component descriptor";
+					ls.flush();
+				}
+				return UIMA_ERR_USER_ANNOTATOR_COULD_NOT_INIT;
+			}
+		} 
+
+		if (getAnnotatorContext().isParameterDefined(PARAM_CUMULATE_AUTOMATON_PERFORMANCES)) {
+			if (getAnnotatorContext().extractValue(PARAM_CUMULATE_AUTOMATON_PERFORMANCES, m_cumulateAutomatonPerformances) != UIMA_ERR_NONE) {
+				if (isLoggingEnabled()) {
+					LogStream& ls = getLogStream(LogStream::EnError);
+					ls << "Cannot extract value of configuration parameter " << PARAM_CUMULATE_AUTOMATON_PERFORMANCES << " in component descriptor";
 					ls.flush();
 				}
 				return UIMA_ERR_USER_ANNOTATOR_COULD_NOT_INIT;
@@ -916,7 +929,7 @@ namespace uima
 	void UnitexAnnotatorCpp::readDictionariesDefinitionFile(const path& defFilePath, vector<UnicodeString>& dictionaries)
 	{
 		UnicodeString fileContents;
-		getStringFromUnitexFile(defFilePath, fileContents);
+		getUnicodeStringFromUnitexFile(defFilePath, fileContents);
 
 		if (!isEmpty(fileContents) && !isBlank(fileContents)) {
 			// Split it into lines non empty lines
@@ -1196,7 +1209,7 @@ namespace uima
 			UnitexEngine& unitexEngine = selectUnitexLanguageInstance(language, strategy);
 
 			// Clear automaton performances from previous document???
-			unitexEngine.clearPerformanceCache();
+			// unitexEngine.clearPerformanceCache();
 
 			if (isLoggingEnabled(LogStream::EnMessage)) {
 				LogStream& ls = getLogStream(LogStream::EnMessage);
@@ -1222,7 +1235,7 @@ namespace uima
 #ifdef DEBUG_UIMA_CPP
 			cout << "Input for Unitex is ready" << endl;
 			UnicodeString ustrInputFileContent;
-			getStringFromUnitexFile(inputPath, ustrInputFileContent);
+			getUnicodeStringFromUnitexFile(inputPath, ustrInputFileContent);
 			cout << ustrInputFileContent << endl;
 #endif
 			VirtualFolderCleaner vfsSntCleaner(unitexEngine.getSntDirectory());
@@ -1440,7 +1453,7 @@ namespace uima
 			inputText.removeBetween(pos + 1, len);
 
 		inputPath = corpusPath / "unitexInput.txt";
-		if (!writeUnitexFileFastWithBOM(inputPath, inputText)) {
+		if (!writeUnitexFile(inputPath, inputText)) {
 			LogStream& ls = getLogStream(LogStream::EnError);
 			ls << "Cannot write input to file " << inputPath << endl;
 			ls.flush();
@@ -1479,7 +1492,7 @@ namespace uima
 				}
 
 				string strDictFile("*dyndic.dic");
-				writeUnitexFileFastWithBOM(strDictFile, ustring);
+				writeUnitexFile(strDictFile, ustring);
 
 				// check and compress the dynamic dictionary
 				try {
@@ -1490,6 +1503,21 @@ namespace uima
 				}
 			}
 		}
+	}
+
+	/////////////////////////////////////////////////////////////////////////
+	//
+	// End of processing
+	//
+	/////////////////////////////////////////////////////////////////////////
+
+	TyErrorId UnitexAnnotatorCpp::collectionProcessComplete() 
+	{
+#ifdef DEBUG_UIMA_CPP
+		cout << "Collection Process Complete" << endl;
+#endif
+
+		return UIMA_ERR_NONE;
 	}
 
 	/////////////////////////////////////////////////////////////////////////
@@ -1736,6 +1764,11 @@ namespace uima
 	const UnitexAnnotatorCpp::UnitexInstanceMap& UnitexAnnotatorCpp::getUnitexInstances() const
 	{
 		return unitexInstances;
+	}
+
+	bool UnitexAnnotatorCpp::cumulateAutomatonPerformances() const
+	{
+		return m_cumulateAutomatonPerformances;
 	}
 
 	/////////////////////////////////////////////////////////////////////////

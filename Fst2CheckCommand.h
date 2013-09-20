@@ -30,7 +30,6 @@ namespace unitexcpp
 					         const std::string outputEncoding ="utf8-no-bom");
 			virtual ~Fst2CheckCommand();
 
-			UnitexCommand::fnUnitexMainCommand getUnitexCommandFunction() const;
 			void buildArguments(unitexcpp::Stringlist& arguments) const;
 
 		private:

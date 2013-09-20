@@ -37,7 +37,6 @@ namespace unitexcpp
 							);
 			virtual ~Fst2TxtCommand();
 
-			UnitexCommand::fnUnitexMainCommand getUnitexCommandFunction() const;
 			void buildArguments(unitexcpp::Stringlist& arguments) const;
 
 		private:

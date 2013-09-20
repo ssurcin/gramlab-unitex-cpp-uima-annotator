@@ -294,13 +294,13 @@ namespace unitexcpp
 		void UnitexEngine::getNormalizedText(UnicodeString& normalizedText, const string& aFileName) const
 		{
 			const string& filename = aFileName.empty() ? m_sntFilename : aFileName;
-			getStringFromUnitexFile(filename, normalizedText);
+			getUnicodeStringFromUnitexFile(filename, normalizedText);
 		}
 
 		void UnitexEngine::getInputText(UnicodeString& inputText, const string& aFileName) const
 		{
 			const string& filename = aFileName.empty() ? m_inputFilename : aFileName;
-			getStringFromUnitexFile(filename, inputText);
+			getUnicodeStringFromUnitexFile(filename, inputText);
 		}
 
 		///////////////////////////////////////////////////////////////////////
@@ -394,7 +394,7 @@ namespace unitexcpp
 #ifdef DEBUG_UIMA_CPP
 			cout << "Input-------------" << endl;
 			UnicodeString uString;
-			if (!getStringFromUnitexFile(inputFile, uString))
+			if (!getUnicodeStringFromUnitexFile(inputFile, uString))
 				cout << "!!!! ERROR !!!!" << endl << "Cannot read " << inputFile << endl;
 			else
 				cout << uString << endl;

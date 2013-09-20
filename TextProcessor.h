@@ -61,8 +61,8 @@ namespace unitexcpp
 						const unitexcpp::NegationOperator& negOperator = unitexcpp::NegationOperator::TILDE,
 						bool allowsAmbiguousOutput = true,
 						const unitexcpp::LocateVariableErrorBehaviour& errorBehaviour = unitexcpp::LocateVariableErrorBehaviour::IGNORE,
-						int warnTokenCount = -1,
-						int stopTokenCount = -1);
+						int warnTokenCount = 20000,
+						int stopTokenCount = 50000);
 			boost::filesystem::path concordance(const boost::filesystem::path& concordFile,
 												const unitexcpp::ConcordanceMode& mode = unitexcpp::ConcordanceMode::HTML,
 												const std::string& sortedAlphabet = "",

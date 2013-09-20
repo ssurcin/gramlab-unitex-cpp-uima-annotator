@@ -12,7 +12,6 @@
 
 #include "Fst2CheckCommand.h"
 #include "UnitexEngine.h"
-#include "Unitex-C++/Fst2Check.h"
 
 #if defined(_MSC_VER) && defined(_DEBUG) && defined(DEBUG_MEMORY_LEAKS)
 #define _CRTDBG_MAP_ALLOC
@@ -66,12 +65,6 @@ namespace unitexcpp
 		// Implementation of abstract methods
 		//
 		///////////////////////////////////////////////////////////////////////////
-
-		UnitexCommand::fnUnitexMainCommand Fst2CheckCommand::getUnitexCommandFunction() const
-		{
-			return &unitex::main_Fst2Check;
-			//return NULL;
-		}
 
 		void Fst2CheckCommand::buildArguments(Stringlist& arguments) const
 		{

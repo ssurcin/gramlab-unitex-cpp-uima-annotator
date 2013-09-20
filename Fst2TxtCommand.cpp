@@ -12,7 +12,6 @@
 
 #include "Fst2TxtCommand.h"
 #include "UnitexEngine.h"
-#include "Unitex-C++/Fst2Txt.h"
 
 #if defined(_MSC_VER) && defined(_DEBUG) && defined(DEBUG_MEMORY_LEAKS)
 #define _CRTDBG_MAP_ALLOC
@@ -57,12 +56,6 @@ namespace unitexcpp
 		// Implementation of abstract methods
 		//
 		///////////////////////////////////////////////////////////////////////////
-
-		UnitexCommand::fnUnitexMainCommand Fst2TxtCommand::getUnitexCommandFunction() const 
-		{
-			return &unitex::main_Fst2Txt;
-			//return NULL;
-		}
 
 		void Fst2TxtCommand::buildArguments(Stringlist& arguments) const
 		{

@@ -12,7 +12,6 @@
 
 #include "TokenizeCommand.h"
 #include "UnitexEngine.h"
-#include "Unitex-C++/Tokenize.h"
 
 #if defined(_MSC_VER) && defined(_DEBUG) && defined(DEBUG_MEMORY_LEAKS)
 #define _CRTDBG_MAP_ALLOC
@@ -48,12 +47,6 @@ namespace unitexcpp
 		// Implementation of abstract methods
 		//
 		///////////////////////////////////////////////////////////////////////////
-
-		UnitexCommand::fnUnitexMainCommand TokenizeCommand::getUnitexCommandFunction() const 
-		{
-			return &unitex::main_Tokenize;
-			//return NULL;
-		}
 
 		void TokenizeCommand::buildArguments(Stringlist& arguments) const
 		{

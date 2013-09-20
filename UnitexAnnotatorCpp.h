@@ -63,6 +63,7 @@ namespace uima
 		static const icu::UnicodeString PARAM_FORCE_GRAPH_COMPILATION;
 		static const icu::UnicodeString PARAM_FORCE_DICTIONARY_COMPILATION;
 		static const icu::UnicodeString PARAM_HIDE_UNITEX_OUTPUT;
+		static const icu::UnicodeString PARAM_CUMULATE_AUTOMATON_PERFORMANCES;
 
 	private:
 		LogFacility* pLogger;
@@ -108,6 +109,7 @@ namespace uima
 		boost::filesystem::path m_pathUnitexResourcesDir;
 		boost::filesystem::path m_pathUnitexAppDir;
 		bool m_logProfilingInformation;
+		bool m_cumulateAutomatonPerformances;
 
 		boost::timer m_processTimer;
 
@@ -123,6 +125,8 @@ namespace uima
 		std::size_t m_nbTokensForOutputProcessing;
 		std::size_t m_nbProcessedDocuments;
 
+	public:
+		
 #if defined(_MSC_VER) && defined(DEBUG_MEMORY_LEAKS)
 		unitexcpp::MemoryLeaksDumper m_memoryLeaksDumper;
 #endif
@@ -145,7 +149,7 @@ namespace uima
 		TyErrorId initializeUnitexFakeTokens();
 		TyErrorId initializeUnitexResourcePath();
 		TyErrorId initializeLogProfilingInformation();
-		
+
 		boost::filesystem::path getUnitexHomePath() const;
 		boost::filesystem::path getUnitexResourcePath() const;
 		TyErrorId getStrategiesInDescriptor(const icu::UnicodeString& language, std::set<icu::UnicodeString>& strategies) const;
@@ -175,6 +179,9 @@ namespace uima
 		void storeAutomataProfilingInformation();
 
 	public:
+		TyErrorId collectionProcessComplete();
+
+	public:
 		void logMessage(const char* szFormat, ...) const;
 		void logMessage(const std::string& format, ...) const;
 		void logWarning(const char* szFormat, ...) const;
@@ -195,6 +202,7 @@ namespace uima
 		bool forceGraphCompilation() const;
 		bool forceDictionaryCompilation() const;
 		const UnitexInstanceMap& getUnitexInstances() const;
+		bool cumulateAutomatonPerformances() const;
 
 	private:
 		unitexcpp::annotation::UnitexDocumentParameters getUnitexDocumentParameters() const;

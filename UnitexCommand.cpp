@@ -95,16 +95,11 @@ namespace unitexcpp
 			Stringlist arguments;
 			buildArguments(arguments);
 
-			//arguments.pop_front();
-
 			size_t argc = arguments.size();
 			char** argv = stringListToCharStarArray(arguments);
 #ifdef DEBUG_UIMA_CPP
 			printArguments(argc, argv);
 #endif
-
-			// fnUnitexMainCommand pfnCommand = getUnitexCommandFunction();
-			// int ret = (pfnCommand == NULL) ? 0 : (*pfnCommand)(argc, argv);
 
 			int ret = unitex::UnitexTool_public_run_one_tool(m_command.c_str(), argc, argv);
 
@@ -112,8 +107,7 @@ namespace unitexcpp
 
 #ifdef DEBUG_UIMA_CPP
 			if (ret != 0) 
-				//printUsage(pfnCommand);
-					printUsage();
+				printUsage();
 #endif
 			return (ret == 0);
 		}
@@ -172,24 +166,13 @@ namespace unitexcpp
 #ifdef DEBUG_UIMA_CPP
 		void UnitexCommand::printArguments(size_t argc, char** argv)
 		{
-			ostringstream oss;
-			oss << "UnitexCommand: ";
+			cout << "UnitexCommand: ";
 			for (size_t i = 0; i < argc; i++) {
 				if (i > 0)
-					oss << " ";
-				oss << argv[i];
+					cout << " ";
+				cout << argv[i];
 			}
-			getUnitexEngine().getAnnotator().logMessage(oss.str());
-		}
-
-		void UnitexCommand::printUsage(fnUnitexMainCommand pfnCommand)
-		{
-			Stringlist help;
-			help.push_back(getCommandName());
-			help.push_back("--help");
-			char** helpArgv = stringListToCharStarArray(help);
-			(*pfnCommand)(2, helpArgv);
-			deleteCharStarArray(2, helpArgv);
+			cout << endl;
 		}
 
 		void UnitexCommand::printUsage()

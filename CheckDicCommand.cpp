@@ -14,7 +14,6 @@
 #include "UnitexTypes.h"
 #include "UnitexEngine.h"
 #include "UnitexToolCommand.h"
-#include "Unitex-C++/CheckDic.h"
 
 #if defined(_MSC_VER) && defined(_DEBUG) && defined(DEBUG_MEMORY_LEAKS)
 #define _CRTDBG_MAP_ALLOC
@@ -56,10 +55,6 @@ namespace unitexcpp
 		// Implementation of abstract methods
 		//
 		///////////////////////////////////////////////////////////////////////////
-
-		UnitexCommand::fnUnitexMainCommand CheckDicCommand::getUnitexCommandFunction() const {
-			return &unitex::main_CheckDic;
-		}
 
 		void CheckDicCommand::buildArguments(Stringlist& arguments) const
 		{

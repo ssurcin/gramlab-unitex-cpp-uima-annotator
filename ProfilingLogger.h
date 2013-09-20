@@ -17,6 +17,11 @@ namespace unitexcpp
 		void storeProfilingInformation();
 		void storeAutomataProfilingInformation();
 
+		typedef std::map<std::string, long> AutomatonPerformanceMap;
+		typedef std::map<std::string, AutomatonPerformanceMap> Language2AutomatonPerformanceMap;
+
+		void createCumulatedPerformanceAutomatonAnnotations(const Language2AutomatonPerformanceMap& performanceMap);
+
 	private:
 		uima::CAS& m_cas;
 		uima::UnitexAnnotatorCpp& m_annotator;

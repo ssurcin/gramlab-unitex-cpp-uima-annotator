@@ -12,7 +12,6 @@
 
 #include "DicoCommand.h"
 #include "UnitexEngine.h"
-#include "Unitex-C++/Dico.h"
 #include <boost/foreach.hpp>
 
 #if defined(_MSC_VER) && defined(_DEBUG) && defined(DEBUG_MEMORY_LEAKS)
@@ -68,11 +67,6 @@ namespace unitexcpp
 		// Implementation of abstract methods
 		//
 		///////////////////////////////////////////////////////////////////////////
-
-		UnitexCommand::fnUnitexMainCommand DicoCommand::getUnitexCommandFunction() const 
-		{
-			return &unitex::main_Dico;
-		}
 
 		void DicoCommand::buildArguments(Stringlist& arguments) const
 		{

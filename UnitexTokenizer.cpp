@@ -190,7 +190,7 @@ namespace unitexcpp
 			// Read the file contents
 			path tokensPath = sntPath / "tokens.txt";
 			UnicodeString ustrTokens;
-			getStringFromUnitexFile(tokensPath.string(), ustrTokens);
+			getUnicodeStringFromUnitexFile(tokensPath.string(), ustrTokens);
 #ifdef _DEBUG
 			cout << "tokens.txt=" << endl << ustrTokens << endl << endl;
 #endif
@@ -304,7 +304,7 @@ namespace unitexcpp
 			// Read the file contents
 			path tokensPath = sntPath / "snttokens.txt";
 			UnicodeString ustrTokens;
-			getStringFromUnitexFile(tokensPath.string(), ustrTokens);
+			getUnicodeStringFromUnitexFile(tokensPath.string(), ustrTokens);
 #ifdef DEBUG_UIMA_CPP
 			cout << "snttokens.txt=" << endl << ustrTokens << endl;
 #endif

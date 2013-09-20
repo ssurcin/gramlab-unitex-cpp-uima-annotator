@@ -49,11 +49,16 @@ namespace unitexcpp
 							int stopTokenCount = -1);
 			virtual ~LocateCommand();
 
-			UnitexCommand::fnUnitexMainCommand getUnitexCommandFunction() const;
 			void buildArguments(unitexcpp::Stringlist& arguments) const;
 
 			bool getStartOnSpace() const { return bStartOnSpace; }
 			void setStartOnSpace(bool flag) { bStartOnSpace = flag; }
+
+			int getWarnAfterTokenCount() const { return m_warnAfterTokenCount; }
+			void setWarnAfterTokenCount(int count) { m_warnAfterTokenCount = count; }
+
+			int getStopAfterTokenCount() const { return m_stopAfterTokenCount; }
+			void setStopAfterTokenCount(int count) { m_stopAfterTokenCount = count; }
 
 		private:
 			const std::string automatonName;
@@ -74,8 +79,8 @@ namespace unitexcpp
 			const unitexcpp::NegationOperator& negationOperator;
 			const bool bAmbiguousOutputAllowed;
 			const unitexcpp::LocateVariableErrorBehaviour& variableErrorBehaviour;
-			const int warnAfterTokenCount;
-			const int stopAfterTokenCount;
+			int m_warnAfterTokenCount;
+			int m_stopAfterTokenCount;
 		};
 
 	}

@@ -31,7 +31,6 @@ namespace unitexcpp
 			CheckDicCommand(unitexcpp::engine::UnitexEngine& unitexEngine, const boost::filesystem::path& dictPath, const unitexcpp::DictionaryType& dictType, const boost::filesystem::path& alphabetPath);
 			virtual ~CheckDicCommand();
 
-			UnitexCommand::fnUnitexMainCommand getUnitexCommandFunction() const;
 			void buildArguments(unitexcpp::Stringlist& arguments) const;
 
 		private:

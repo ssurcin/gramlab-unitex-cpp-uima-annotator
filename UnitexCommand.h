@@ -47,9 +47,6 @@ namespace unitexcpp
 			friend std::ostream& operator <<(std::ostream& os, const UnitexCommand& command);
 
 		protected:
-			typedef int (*fnUnitexMainCommand)(int argc, char* const argv[]);
-			virtual fnUnitexMainCommand getUnitexCommandFunction() const =0;
-
 			virtual void buildArguments(unitexcpp::Stringlist& arguments) const =0;
 			std::string absolutePathnameOf(const std::string& argument) const;
 			static boost::filesystem::path absolutePathnameOf(const boost::filesystem::path& path);
@@ -63,7 +60,6 @@ namespace unitexcpp
 #ifdef DEBUG_UIMA_CPP
 		private:
 			void printArguments(size_t argc, char** argv);
-			void printUsage(fnUnitexMainCommand pfnCommand);
 			void printUsage();
 #endif
 		};

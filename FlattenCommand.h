@@ -32,7 +32,6 @@ namespace unitexcpp
 					       int depth);
 			virtual ~FlattenCommand();
 
-			UnitexCommand::fnUnitexMainCommand getUnitexCommandFunction() const;
 			void buildArguments(unitexcpp::Stringlist& arguments) const;
 
 		private:

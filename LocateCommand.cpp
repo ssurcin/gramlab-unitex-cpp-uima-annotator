@@ -12,8 +12,8 @@
 
 #include "LocateCommand.h"
 #include "UnitexEngine.h"
-#include "Unitex-C++/Locate.h"
 #include <boost/foreach.hpp>
+#include <boost/algorithm/string.hpp>
 
 #if defined(_MSC_VER) && defined(_DEBUG) && defined(DEBUG_MEMORY_LEAKS)
 #define _CRTDBG_MAP_ALLOC
@@ -105,7 +105,7 @@ namespace unitexcpp
 			UnitexCommand(unitexEngine, "Locate"), automatonName(automaton), inputName(inputFilename), mode(matchMode), transMode(transductionMode), bProtectDicChars(protectDicChars),
 					maxNumberOfMatches(maxMatchNumber), alphabetName(alphabet.empty() ? unitexEngine.getAlphabetFile() : alphabet), morphoBinDics(morphoDics), bStartOnSpace(startOnSpace),
 					bNoStartOnSpaceMatching(noStartOnSpaceMatching), bCharByChar(charByChar), bWordByWord(wordByWord), outputSntDir(sntDir), bKorean(korean), arabicTypoName(arabicTypoRulesFile),
-					negationOperator(negOperator), bAmbiguousOutputAllowed(allowsAmbiguousOutput), variableErrorBehaviour(errorBehaviour), warnAfterTokenCount(warnTokenCount), stopAfterTokenCount(
+					negationOperator(negOperator), bAmbiguousOutputAllowed(allowsAmbiguousOutput), variableErrorBehaviour(errorBehaviour), m_warnAfterTokenCount(warnTokenCount), m_stopAfterTokenCount(
 							stopTokenCount)
 		{
 		}
@@ -119,12 +119,6 @@ namespace unitexcpp
 		// Implementation of abstract methods
 		//
 		///////////////////////////////////////////////////////////////////////////
-
-		UnitexCommand::fnUnitexMainCommand LocateCommand::getUnitexCommandFunction() const 
-		{
-			return &unitex::main_Locate;
-			//return NULL;
-		}
 
 		void LocateCommand::buildArguments(Stringlist& arguments) const
 		{
@@ -185,16 +179,16 @@ namespace unitexcpp
 			else
 				arguments.push_back("--all");
 
-			if (stopAfterTokenCount >= 0) {
+			if (m_stopAfterTokenCount >= 0) {
 				arguments.push_back("-o");
-				if (warnAfterTokenCount >= 0) {
+				if (m_warnAfterTokenCount >= 0) {
 					ostringstream oss;
-					oss << warnAfterTokenCount << "," << stopAfterTokenCount;
+					oss << m_warnAfterTokenCount << "," << m_stopAfterTokenCount;
 					arguments.push_back(oss.str());
 				}
 				else {
 					ostringstream oss;
-					oss << stopAfterTokenCount;
+					oss << m_stopAfterTokenCount;
 					arguments.push_back(oss.str());
 				}
 			}

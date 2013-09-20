@@ -131,63 +131,33 @@ namespace unitexcpp {
 	/// <returns>True if ok, false if failed.</returns>
 	bool writeUnitexFile(path const& fileName, UnicodeStringRef const& uString)
 	{
+		UChar uBom = 0xfeff;
+
+		const UChar * uBuffer = uString.getBuffer();
 		int32_t uLength = uString.length();
-		unsigned char* rawBuffer = new unsigned char[(uLength + 1) * U_SIZEOF_WCHAR_T];
-		UChar* uBuffer = (UChar*) rawBuffer;
 
-		UErrorCode errorCode = U_ZERO_ERROR ;
-		uString.extract(uBuffer ,uLength + 1, errorCode);
-
-		size_t length = uLength * U_SIZEOF_WCHAR_T;
-
-		bool result = writeUnitexFile(fileName, rawBuffer, length);
-
-		delete[] rawBuffer;
+		bool result = WriteUnitexFile(fileName.string().c_str(), &uBom, sizeof(UChar), uBuffer, uLength * sizeof(UChar)) == 0;
 
 		return result;
 	}
 
-	bool writeUnitexFileFastWithBOM(path const& fileName, UnicodeStringRef const& uString)
-	{
-		int32_t uLength = uString.length();
-		unsigned char* rawBuffer = new unsigned char[(uLength + 2) * U_SIZEOF_WCHAR_T];
-		UChar * uBuffer = (UChar*) rawBuffer;
-		*uBuffer = 0xfeff;
-		UErrorCode errorCode = U_ZERO_ERROR ;
-		uString.extract(uBuffer+1,uLength+1,errorCode);
+	//bool writeUnitexFileFastWithBOM(path const& fileName, UnicodeStringRef const& uString)
+	//{
+	//	int32_t uLength = uString.length();
+	//	unsigned char* rawBuffer = new unsigned char[(uLength + 2) * U_SIZEOF_WCHAR_T];
+	//	UChar * uBuffer = (UChar*) rawBuffer;
+	//	*uBuffer = 0xfeff;
+	//	UErrorCode errorCode = U_ZERO_ERROR ;
+	//	uString.extract(uBuffer+1,uLength+1,errorCode);
 
-		size_t length = (uLength+1) * U_SIZEOF_WCHAR_T;
+	//	size_t length = (uLength+1) * U_SIZEOF_WCHAR_T;
 
-		bool result = writeUnitexFile(fileName, rawBuffer, length);
+	//	bool result = writeUnitexFile(fileName, rawBuffer, length);
 
-		delete[] rawBuffer;
+	//	delete[] rawBuffer;
 
-		return result;
-	}
-
-#if ((defined(WIN32) || defined(_WIN32) || defined (_WIN64) || defined (_M_IX86)  || \
-	defined(__i386) || defined(__i386__) || defined(__x86_64) || defined(__x86_64__) || \
-	defined(_M_X64) || defined(_M_X86) || defined(TARGET_CPU_X86) || defined(TARGET_CPU_X86_64) || \
-	defined(__arm__) || defined(_ARM_) || defined(__CC_ARM) || defined(_M_ARM) || defined(_M_ARMT) || \
-	defined(__LITTLE_ENDIAN__) \
-	) && (!(defined(INTEL_X86_LIKE_LITTLE_ENDIAN))))
-#define INTEL_X86_LIKE_LITTLE_ENDIAN 1
-#endif
-
-#ifdef INTEL_X86_LIKE_LITTLE_ENDIAN
-	static bool is_little_endian()
-	{
-		return true;
-	}
-#else
-	static bool is_little_endian()
-	{
-		const jchar i=1;
-		const char *c=(const char*)&i;
-		bool little_endian = ((*c) != 0);
-		return little_endian;
-	}
-#endif
+	//	return result;
+	//}
 
 #define GetUtf8_Size(ch)  \
 	(((((unsigned char)(ch)) & ((unsigned char)0x80))==((unsigned char)0x00)) ? 1 : \
@@ -214,7 +184,11 @@ namespace unitexcpp {
 		for (;;)
 		{
 			if ((src_walk==NULL) || (buf_size==0))
+			{				
+				if (p_size_this_string_written!=NULL)
+					*p_size_this_string_written = size_this_string_written;
 				return 0;
+			}
 			unsigned char ch = *(src_walk++);
 			buf_size--;
 			nb_pack_read++;
@@ -232,7 +206,11 @@ namespace unitexcpp {
 				c=ch & GetUtf8_Mask(ch);
 				int nbbyte=GetUtf8_Size(ch);
 				if (((int)buf_size)+1 < nbbyte)
+				{
+					if (p_size_this_string_written!=NULL)
+						*p_size_this_string_written = size_this_string_written;
 					return 0;
+				}
 
 				for(;;)
 				{
@@ -259,24 +237,141 @@ namespace unitexcpp {
 		}
 	}
 
-	/// <summary>
-	/// Gets the whole contents of a (virtual) file into a Unicode string.
-	/// </summary>
-	/// <param name='fileName'>The file name.</param>
-	/// <param name='uString'>The Unicode string where to store the file contents.</param>
-	/// <returns>True if ok, false if failed.</returns>
-	bool getStringFromUnitexFile(path const& fileName, UnicodeString& uString)
-	{
-		uString.remove();
+	///// <summary>
+	///// Gets the whole contents of a (virtual) file into a Unicode string.
+	///// </summary>
+	///// <param name='fileName'>The file name.</param>
+	///// <param name='uString'>The Unicode string where to store the file contents.</param>
+	///// <returns>True if ok, false if failed.</returns>
+	//bool getStringFromUnitexFile(path const& fileName, UnicodeString& uString)
+	//{
+	//	uString.remove();
 
-		if (!isVirtualPath(fileName) && !exists(fileName))return false;
+	//	if (!isVirtualPath(fileName) && !exists(fileName))return false;
+
+	//	UNITEXFILEMAPPED* pFileHandle;
+	//	const void* buffer = NULL;
+	//	size_t bufferSize = 0;
+	//	GetUnitexFileReadBuffer(fileName.string().c_str(), &pFileHandle, &buffer, &bufferSize);
+
+	//	if (buffer != NULL) {
+	//		if (bufferSize > 0) {
+	//			const unsigned char* bufchar= (const unsigned char*) buffer;
+	//			size_t size_bom = 0;
+	//			bool is_utf16_native_endianess = false;
+	//			bool is_utf16_swap_endianess = false;
+
+	//			if (bufferSize > 1) {
+	//				if (((*(bufchar)) == 0xff) && ((*(bufchar + 1)) == 0xfe))
+	//				{
+	//					// little endian
+	//					is_utf16_native_endianess = is_little_endian();
+	//					is_utf16_swap_endianess = ! is_utf16_native_endianess;
+	//					size_bom = 2;
+	//				}
+	//			}
+
+	//			if (bufferSize > 1) {
+	//				if (((*(bufchar)) == 0xfe) && ((*(bufchar + 1)) == 0xff))
+	//				{
+	//					// big endian
+	//					is_utf16_native_endianess = ! is_little_endian();
+	//					is_utf16_swap_endianess = ! is_utf16_native_endianess;
+	//					size_bom = 2;
+	//				}
+	//			}
+
+	//			if (bufferSize > 2) {
+	//				if (((*(bufchar)) == 0xef) && ((*(bufchar + 1)) == 0xbb) && ((*(bufchar + 2)) == 0xbf))
+	//				{
+	//					size_bom = 3;
+	//				}
+	//			}
+
+	//			if (is_utf16_native_endianess)
+	//			{
+	//				const UChar* uBuffer = (const UChar*)(bufchar + size_bom);
+	//				size_t uSize = (bufferSize - size_bom) / U_SIZEOF_UCHAR;
+	//				uString.setTo(uBuffer, uSize);
+	//			}
+	//			else if (is_utf16_swap_endianess)
+	//			{
+	//				unsigned char* returnedUTF16buffer = (unsigned char*) malloc(bufferSize);
+	//				if (returnedUTF16buffer != NULL)
+	//				{
+	//					for (size_t i = 0; i<bufferSize; i += 2)
+	//					{
+	//						unsigned char c1 = *(bufchar + i);
+	//						unsigned char c2 = *(bufchar + i + 1);
+	//						*(returnedUTF16buffer + i) = c2;
+	//						*(returnedUTF16buffer + i + 1) = c1;
+	//					}
+	//					const UChar* uBuffer = (const UChar*)(returnedUTF16buffer + size_bom);
+	//					size_t uSize = (bufferSize - size_bom) / U_SIZEOF_UCHAR;
+	//					uString.setTo(uBuffer, uSize);
+	//					free(returnedUTF16buffer);
+	//				}
+	//			}
+	//			else
+	//			{
+	//				char* stringUtf = (char*) malloc(bufferSize + 1);
+	//				memcpy(stringUtf, bufchar + size_bom, bufferSize - size_bom);
+	//				*(stringUtf + bufferSize - size_bom) = '\0';
+	//				uString = UnicodeString(stringUtf);
+	//				free(stringUtf);
+	//			}
+	//		}
+	//		CloseUnitexFileReadBuffer(pFileHandle, buffer, bufferSize);
+	//		return true;
+	//	}
+
+	//	//if (buffer != NULL) {
+
+	//	//	bool isUtf16 = false;
+	//	//	
+	//	//	if (bufferSize > 0) {
+	//	//		const UChar* browseBuffer = (const UChar*)buffer;
+	//	//		size_t bufferSizeWithoutBom = bufferSize;
+	//	//		if (bufferSize >= sizeof(UChar))
+	//	//			if ((*browseBuffer) == 0xfeff)
+	//	//			{
+	//	//				browseBuffer += 1;
+	//	//				bufferSizeWithoutBom -= sizeof(UChar);
+	//	//				isUtf16 = true;
+	//	//			}
+	//	//			uString.setTo(browseBuffer,(bufferSizeWithoutBom/sizeof(UChar)));
+	//	//	}
+
+	//	//	if (!isUtf16)
+	//	//	{
+	//	//		size_t buffer_alloc_size = (bufferSize + 1) * 2;
+	//	//		UChar* outBuffer = new UChar[buffer_alloc_size];
+	//	//		size_t size_this_string_written = 0;
+	//	//		unpack_utf8_string(outBuffer,buffer_alloc_size,&size_this_string_written,
+	//	//			(const unsigned char*)buffer,bufferSize);
+	//	//		uString.setTo(outBuffer,size_this_string_written);
+	//	//		delete[] outBuffer;
+	//	//	}
+
+	//	//	CloseUnitexFileReadBuffer(pFileHandle, buffer, bufferSize);
+	//	//	return true;
+	//	//}
+
+	//	return false;
+	//}
+
+	bool getUnicodeStringFromUnitexFile(path const& fileName, UnicodeString& uString)
+	{
+		if (!exists(fileName)) return false;
+
+		uString.remove();
 
 		UNITEXFILEMAPPED* pFileHandle;
 		const void* buffer = NULL;
 		size_t bufferSize = 0;
 		GetUnitexFileReadBuffer(fileName.string().c_str(), &pFileHandle, &buffer, &bufferSize);
 
-		if (buffer != NULL) {
+		if (pFileHandle != NULL) {
 			if (bufferSize > 0) {
 				const unsigned char* bufchar= (const unsigned char*) buffer;
 				size_t size_bom = 0;
@@ -284,24 +379,23 @@ namespace unitexcpp {
 				bool is_utf16_swap_endianess = false;
 
 				if (bufferSize > 1) {
-					if (((*(bufchar)) == 0xff) && ((*(bufchar + 1)) == 0xfe))
+					UChar UTF16Bom = *((const UChar*)buffer);
+
+					if (UTF16Bom == 0xfeff)
 					{
-						// little endian
-						is_utf16_native_endianess = is_little_endian();
-						is_utf16_swap_endianess = ! is_utf16_native_endianess;
+						// native endian
+						is_utf16_native_endianess = true;
+						size_bom = 2;
+					}
+
+					if (UTF16Bom == 0xfffe)
+					{
+						// reverse endian
+						is_utf16_swap_endianess = true;
 						size_bom = 2;
 					}
 				}
 
-				if (bufferSize > 1) {
-					if (((*(bufchar)) == 0xfe) && ((*(bufchar + 1)) == 0xff))
-					{
-						// big endian
-						is_utf16_native_endianess = ! is_little_endian();
-						is_utf16_swap_endianess = ! is_utf16_native_endianess;
-						size_bom = 2;
-					}
-				}
 
 				if (bufferSize > 2) {
 					if (((*(bufchar)) == 0xef) && ((*(bufchar + 1)) == 0xbb) && ((*(bufchar + 2)) == 0xbf))
@@ -318,7 +412,7 @@ namespace unitexcpp {
 				}
 				else if (is_utf16_swap_endianess)
 				{
-					unsigned char* returnedUTF16buffer = (unsigned char*) malloc(bufferSize);
+					unsigned char* returnedUTF16buffer = new unsigned char [bufferSize];
 					if (returnedUTF16buffer != NULL)
 					{
 						for (size_t i = 0; i<bufferSize; i += 2)
@@ -331,54 +425,27 @@ namespace unitexcpp {
 						const UChar* uBuffer = (const UChar*)(returnedUTF16buffer + size_bom);
 						size_t uSize = (bufferSize - size_bom) / U_SIZEOF_UCHAR;
 						uString.setTo(uBuffer, uSize);
-						free(returnedUTF16buffer);
+						delete [] returnedUTF16buffer;
 					}
 				}
 				else
 				{
-					char* stringUtf = (char*) malloc(bufferSize + 1);
-					memcpy(stringUtf, bufchar + size_bom, bufferSize - size_bom);
-					*(stringUtf + bufferSize - size_bom) = '\0';
-					uString = UnicodeString(stringUtf);
-					free(stringUtf);
+					size_t len_buf_UChar = bufferSize+1+1;
+					UChar* stringUChar = new UChar[len_buf_UChar + 1];
+				
+
+					size_t nb_written = 0;
+					unpack_utf8_string(stringUChar,len_buf_UChar,&nb_written,bufchar + size_bom, bufferSize - size_bom);
+		
+
+					uString.setTo((const UChar*)stringUChar, nb_written);
+					delete [] stringUChar;
 				}
 			}
 			CloseUnitexFileReadBuffer(pFileHandle, buffer, bufferSize);
 			return true;
 		}
-
-		//if (buffer != NULL) {
-
-		//	bool isUtf16 = false;
-		//	
-		//	if (bufferSize > 0) {
-		//		const UChar* browseBuffer = (const UChar*)buffer;
-		//		size_t bufferSizeWithoutBom = bufferSize;
-		//		if (bufferSize >= sizeof(UChar))
-		//			if ((*browseBuffer) == 0xfeff)
-		//			{
-		//				browseBuffer += 1;
-		//				bufferSizeWithoutBom -= sizeof(UChar);
-		//				isUtf16 = true;
-		//			}
-		//			uString.setTo(browseBuffer,(bufferSizeWithoutBom/sizeof(UChar)));
-		//	}
-
-		//	if (!isUtf16)
-		//	{
-		//		size_t buffer_alloc_size = (bufferSize + 1) * 2;
-		//		UChar* outBuffer = new UChar[buffer_alloc_size];
-		//		size_t size_this_string_written = 0;
-		//		unpack_utf8_string(outBuffer,buffer_alloc_size,&size_this_string_written,
-		//			(const unsigned char*)buffer,bufferSize);
-		//		uString.setTo(outBuffer,size_this_string_written);
-		//		delete[] outBuffer;
-		//	}
-
-		//	CloseUnitexFileReadBuffer(pFileHandle, buffer, bufferSize);
-		//	return true;
-		//}
-
+		
 		return false;
 	}
 

@@ -12,7 +12,6 @@
 
 #include "ConcordCommand.h"
 #include "UnitexEngine.h"
-#include "Unitex-C++/Concord.h"
 
 #if defined(_MSC_VER) && defined(_DEBUG) && defined(DEBUG_MEMORY_LEAKS)
 #define _CRTDBG_MAP_ALLOC
@@ -94,11 +93,6 @@ namespace unitexcpp
 		// Implementation of abstract methods
 		//
 		///////////////////////////////////////////////////////////////////////////
-
-		UnitexCommand::fnUnitexMainCommand ConcordCommand::getUnitexCommandFunction() const 
-		{
-			return &unitex::main_Concord;
-		}
 
 		void ConcordCommand::buildArguments(Stringlist& arguments) const
 		{

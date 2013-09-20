@@ -32,7 +32,6 @@ namespace unitexcpp
 							const std::string& outputOffsetsName ="");
 			virtual ~TokenizeCommand();
 
-			UnitexCommand::fnUnitexMainCommand getUnitexCommandFunction() const;
 			void buildArguments(unitexcpp::Stringlist& arguments) const;
 
 		private:

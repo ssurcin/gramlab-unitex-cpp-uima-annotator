@@ -100,12 +100,12 @@ namespace unitexcpp
 #ifdef DEBUG_UIMA_CPP
 			cout << "Contents of " << normOffsets << ":" << endl;
 			UnicodeString ustr;
-			getStringFromUnitexFile(normOffsets, ustr);
+			getUnicodeStringFromUnitexFile(normOffsets, ustr);
 			cout << ustr << endl;
 
 			cout << "Normalized input = " << endl;
 			ustr = "";
-			getStringFromUnitexFile(sntName, ustr);
+			getUnicodeStringFromUnitexFile(sntName, ustr);
 			cout << ustr << endl;
 #endif
 
@@ -120,12 +120,12 @@ namespace unitexcpp
 			}
 #ifdef DEBUG_UIMA_CPP
 			cout << "Contents of " << sntOffsetsPathAfterSentence << ":" << endl;
-			getStringFromUnitexFile(sntOffsetsPathAfterSentence, ustr);
+			getUnicodeStringFromUnitexFile(sntOffsetsPathAfterSentence, ustr);
 			cout << ustr << endl;
 
 			cout << "Normalized input = " << endl;
 			ustr = "";
-			getStringFromUnitexFile(sntName, ustr);
+			getUnicodeStringFromUnitexFile(sntName, ustr);
 			cout << ustr << endl;
 #endif
 
@@ -138,12 +138,12 @@ namespace unitexcpp
 			}
 #ifdef DEBUG_UIMA_CPP
 			cout << "Contents of " << sntOffsetsPathAfterReplace << ":" << endl;
-			getStringFromUnitexFile(sntOffsetsPathAfterReplace, ustr);
+			getUnicodeStringFromUnitexFile(sntOffsetsPathAfterReplace, ustr);
 			cout << ustr << endl;
 
 			cout << "Normalized input = " << endl;
 			ustr = "";
-			getStringFromUnitexFile(sntName, ustr);
+			getUnicodeStringFromUnitexFile(sntName, ustr);
 			cout << ustr << endl;
 #endif
 
@@ -155,7 +155,7 @@ namespace unitexcpp
 			}
 #ifdef DEBUG_UIMA_CPP
 			cout << "Contents of " << sntTokensPath << ":" << endl;
-			getStringFromUnitexFile(sntTokensPath, ustr);
+			getUnicodeStringFromUnitexFile(sntTokensPath, ustr);
 			cout << ustr << endl;
 #endif
 
@@ -168,16 +168,16 @@ namespace unitexcpp
 			}
 #ifdef DEBUG_UIMA_CPP
 			cout << "Simple words:" << endl;
-			getStringFromUnitexFile(sntPath / "dlf", ustr);
+			getUnicodeStringFromUnitexFile(sntPath / "dlf", ustr);
 			cout << ustr << endl << endl;
 			cout<< "Compound words: " << endl;
-			getStringFromUnitexFile(sntPath / "dlc", ustr);
+			getUnicodeStringFromUnitexFile(sntPath / "dlc", ustr);
 			cout << ustr << endl << endl;
 			cout << "Unknown words: " << endl;
-			getStringFromUnitexFile(sntPath / "err", ustr);
+			getUnicodeStringFromUnitexFile(sntPath / "err", ustr);
 			cout << ustr << endl << endl;
 			cout << "Tags: " << endl;
-			getStringFromUnitexFile(sntPath / "tags.ind", ustr);
+			getUnicodeStringFromUnitexFile(sntPath / "tags.ind", ustr);
 			cout << ustr << endl;
 #endif
 
@@ -359,7 +359,7 @@ namespace unitexcpp
 		*/
 		void TextPreprocessor::setNormalizedText(const string& sntFilename, const UnicodeStringRef& normalizedText)
 		{
-			writeUnitexFileFastWithBOM(sntFilename, normalizedText);
+			writeUnitexFile(sntFilename, normalizedText);
 		}
 
 	}
