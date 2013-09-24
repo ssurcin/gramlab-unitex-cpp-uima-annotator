@@ -21,15 +21,10 @@
 #include <unicode/ustream.h>
 #include <iostream>
 #include <sstream>
-#include "CompressedDic.h"
-#include "Fst2.h"
-#include "Alphabet.h"
 #include <boost/algorithm/string.hpp>
 #include <boost/foreach.hpp>
-#include "Unitex-C++/UnitexLibIO.h"
+#include "Unitex-C++/AbstractCallbackFuncModifier.h"
 #include "Unitex-C++/PersistenceInterface.h"
-#include "Unitex-C++/AbstractDelaPlugCallback.h"
-#include "Unitex-C++/AbstractFst2PlugCallback.h"
 
 #if defined(_MSC_VER) && defined(_DEBUG) && defined(DEBUG_MEMORY_LEAKS)
 #define _CRTDBG_MAP_ALLOC
@@ -44,6 +39,7 @@ static char THIS_FILE[] = __FILE__;
 using namespace std;
 using namespace boost;
 using namespace boost::filesystem;
+using namespace unitex;
 
 static const UnicodeString EmptyUnicodeString = "";
 
@@ -649,7 +645,7 @@ namespace unitexcpp
 		if (annotator.isLoggingEnabled(LogStream::EnMessage))
 			annotator.logMessage("Loading persistent FST2 %s", automatonPath.string().c_str());
 		char newPath[MAX_PATH];
-		if (!unitex::standard_load_persistence_fst2(virtualPath.string().c_str(), newPath, MAX_PATH)) {
+		if (!unitex::persistence_public_load_fst2(virtualPath.string().c_str(), newPath, MAX_PATH)) {
 			// VFS
 			// if (!unitex::load_persistent_fst2(automatonPath.string().c_str())) {
 #ifdef DEBUG_UIMA_CPP
@@ -761,7 +757,7 @@ namespace unitexcpp
 		}
 
 		char newPath[MAX_PATH];
-		if (!unitex::standard_load_persistence_dictionary(virtualBinDicPath.string().c_str(), newPath, MAX_PATH - 1)) {
+		if (!unitex::persistence_public_load_dictionary(virtualBinDicPath.string().c_str(), newPath, MAX_PATH - 1)) {
 #ifdef DEBUG_UIMA_CPP
 			cerr << "Error while persisting dictionary " << virtualBinDicPath << endl;
 #endif
@@ -836,7 +832,7 @@ namespace unitexcpp
 		}
 
 		char newPath[MAX_PATH];
-		if (!unitex::standard_load_persistence_alphabet(alphabetPath.string().c_str(), newPath, MAX_PATH - 1)) {
+		if (!unitex::persistence_public_load_alphabet(alphabetPath.string().c_str(), newPath, MAX_PATH - 1)) {
 #ifdef DEBUG_UIMA_CPP
 			cout << "Error while persisting alphabet " << alphabetPath << endl;
 #endif
@@ -887,7 +883,7 @@ namespace unitexcpp
 #ifdef DEBUG_MEMORY_LEAKS
 		cout << "Free persisted alphabet" << alphabetPath << endl;
 #endif
-		free_persistent_alphabet(alphabetPath.string().c_str());
+		persistence_public_unload_alphabet(alphabetPath.string().c_str());
 	}
 
 	void LanguageResources::freePersistedAutomaton(const path& automatonPath) 
@@ -895,7 +891,7 @@ namespace unitexcpp
 #ifdef DEBUG_MEMORY_LEAKS
 		cout << "Free persisted automaton" << automatonPath << endl;
 #endif
-		free_persistent_fst2(automatonPath.string().c_str());
+		persistence_public_unload_fst2(automatonPath.string().c_str());
 	}
 
 	void LanguageResources::freePersistedDictionary(const path& dictionaryPath) 
@@ -903,7 +899,7 @@ namespace unitexcpp
 #ifdef DEBUG_MEMORY_LEAKS
 		cout << "Free persisted dictionary" << dictionaryPath << endl;
 #endif
-		free_persistent_dictionary(dictionaryPath.string().c_str());
+		persistence_public_unload_dictionary(dictionaryPath.string().c_str());
 	}
 
 	/**

@@ -214,12 +214,18 @@ namespace unitexcpp
 		*/
 		path UnitexEngine::getSntDirectory() const
 		{
+			return getSntDirectory(m_inputFilename);
+		}
+
+		path UnitexEngine::getSntDirectory(const path& inputPath) const
+		{
+			const string& inputname = inputPath.string();
 			string pathname;
-			size_t dot = m_inputFilename.find_last_of('.');
-			if ((dot != string::npos) && (dot <= m_inputFilename.length() - 2))
-				pathname = m_inputFilename.substr(0, dot) + "_snt";
+			size_t dot = inputname.find_last_of('.');
+			if ((dot != string::npos) && (dot <= inputname.length() - 2))
+				pathname = inputname.substr(0, dot) + "_snt";
 			else
-				pathname = m_inputFilename + "_snt";
+				pathname = inputname + "_snt";
 			return path(pathname);
 		}
 
@@ -351,7 +357,7 @@ namespace unitexcpp
 		size_t UnitexEngine::initializedVirtualFileSystem()
 		{
 			if (!ms_isVfsInitialized) {
-				unitex::virtualfile::init_virtual_files();
+				// unitex::virtualfile::init_virtual_files();
 				ms_isVfsInitialized = true;
 			}
 			return GetNbAbstractFileSpaceInstalled();

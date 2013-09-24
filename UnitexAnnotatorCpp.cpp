@@ -127,10 +127,7 @@ namespace uima
 	UnitexAnnotatorCpp::~UnitexAnnotatorCpp(void)
 	{
 		// Empty virtual file system
-		unitex::virtualfile::VFS_reset();
-		// Uninitialization
-		//unitex::dispose_persistence();
-		//unitex::virtualfile::dispose_virtual_files();
+		emptyVirtualFileSystem();
 	}
 
 	/////////////////////////////////////////////////////////////////////////
@@ -144,6 +141,9 @@ namespace uima
 	*/
 	TyErrorId UnitexAnnotatorCpp::initialize(AnnotatorContext& rclAnnotatorContext)
 	{
+#ifdef DEBUG_UIMA_CPP
+		cout << "Initializing UnitexAnnotatorCpp..." << endl;
+#endif
 		TyErrorId error = UIMA_ERR_NONE;
 
 		m_pAnnotatorContext = &rclAnnotatorContext;
@@ -155,10 +155,12 @@ namespace uima
 		}
 
 		initializeLogger();
-
 		logMessage("Initializing UnitexAnnotatorCpp...");
 
 		size_t nbVfsSpaces = UnitexEngine::initializedVirtualFileSystem();
+#ifdef DEBUG_UIMA_CPP
+		cout << "Unitex Virtual File System initialized with " << nbVfsSpaces << " virtual file spaces" << endl;
+#endif
 		logMessage("Unitex Virtual File System initialized with %d virtual file spaces", nbVfsSpaces);
 
 		// Prevent Unitex library to write into the standard output
@@ -1239,7 +1241,7 @@ namespace uima
 			getUnicodeStringFromUnitexFile(inputPath, ustrInputFileContent);
 			cout << ustrInputFileContent << endl;
 #endif
-			VirtualFolderCleaner vfsSntCleaner(unitexEngine.getSntDirectory());
+			VirtualFolderCleaner vfsSntCleaner(unitexEngine.getSntDirectory(inputPath));
 
 			prepareDynamicDictionary(unitexEngine);
 #ifdef DEBUG_UIMA_CPP

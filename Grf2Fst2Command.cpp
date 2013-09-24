@@ -30,7 +30,6 @@ static char THIS_FILE[] = __FILE__;
 using namespace std;
 using namespace unitexcpp::engine;
 using namespace boost::filesystem;
-using namespace unitex;
 
 namespace unitexcpp
 {

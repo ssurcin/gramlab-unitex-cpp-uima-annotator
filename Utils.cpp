@@ -9,9 +9,6 @@
 #endif
 
 #include "FileUtils.h"
-#include "Unitex-C++/UnitexLibIO.h"
-#include "Unitex-C++/Unicode.h"
-#include "Unitex-C++/File.h"
 
 // ICU
 #include <unicode/ustream.h>

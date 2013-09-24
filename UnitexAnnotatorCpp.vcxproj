@@ -46,303 +46,11 @@
     <ClCompile Include="TokenAnnotation.cpp" />
     <ClCompile Include="TokenizeCommand.cpp" />
     <ClCompile Include="TransductionOutputAnnotation.cpp" />
-    <ClCompile Include="Unitex-C++\AbstractAllocator.cpp" />
-    <ClCompile Include="Unitex-C++\AbstractDelaLoad.cpp" />
-    <ClCompile Include="Unitex-C++\AbstractFst2Load.cpp" />
-    <ClCompile Include="Unitex-C++\ActivityLogger.cpp" />
-    <ClCompile Include="Unitex-C++\Af_stdio.cpp" />
-    <ClCompile Include="Unitex-C++\Alphabet.cpp" />
-    <ClCompile Include="Unitex-C++\ApplyDic.cpp" />
-    <ClCompile Include="Unitex-C++\Arabic.cpp" />
-    <ClCompile Include="Unitex-C++\AsciiSearchTree.cpp" />
-    <ClCompile Include="Unitex-C++\AutComplementation.cpp" />
-    <ClCompile Include="Unitex-C++\AutConcat.cpp" />
-    <ClCompile Include="Unitex-C++\AutDeterminization.cpp" />
-    <ClCompile Include="Unitex-C++\AutIntersection.cpp" />
-    <ClCompile Include="Unitex-C++\AutMinimization.cpp" />
-    <ClCompile Include="Unitex-C++\AutomatonDictionary2Bin.cpp" />
-    <ClCompile Include="Unitex-C++\BitArray.cpp" />
-    <ClCompile Include="Unitex-C++\BitMasks.cpp" />
-    <ClCompile Include="Unitex-C++\Buffer.cpp" />
-    <ClCompile Include="Unitex-C++\BuildKrMwuDic.cpp" />
-    <ClCompile Include="Unitex-C++\BuildTextAutomaton.cpp" />
-    <ClCompile Include="Unitex-C++\build\tre-0.8.0\lib\regcomp.c">
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Unitex-C++\build\tre-0.8.0\win32;Unitex-C++\build\tre-0.8.0\lib;Unitex-C++\include_tre</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Unitex-C++\build\tre-0.8.0\win32;Unitex-C++\build\tre-0.8.0\lib;Unitex-C++\include_tre</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">HAVE_CONFIG_H=1;WIN32;_DEBUG;_WINDOWS;_USRDLL;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">HAVE_CONFIG_H=1;TRACEOFF;NDEBUG;WIN32;_WINDOWS;_USRDLL;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\build\tre-0.8.0\lib\regerror.c">
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Unitex-C++\build\tre-0.8.0\win32;Unitex-C++\build\tre-0.8.0\lib;Unitex-C++\include_tre</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Unitex-C++\build\tre-0.8.0\win32;Unitex-C++\build\tre-0.8.0\lib;Unitex-C++\include_tre</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">HAVE_CONFIG_H=1;WIN32;_DEBUG;_WINDOWS;_USRDLL;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">HAVE_CONFIG_H=1;TRACEOFF;NDEBUG;WIN32;_WINDOWS;_USRDLL;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\build\tre-0.8.0\lib\regexec.c">
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Unitex-C++\build\tre-0.8.0\win32;Unitex-C++\build\tre-0.8.0\lib;Unitex-C++\include_tre</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Unitex-C++\build\tre-0.8.0\win32;Unitex-C++\build\tre-0.8.0\lib;Unitex-C++\include_tre</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">HAVE_CONFIG_H=1;WIN32;_DEBUG;_WINDOWS;_USRDLL;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">HAVE_CONFIG_H=1;TRACEOFF;NDEBUG;WIN32;_WINDOWS;_USRDLL;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\build\tre-0.8.0\lib\tre-ast.c">
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Unitex-C++\build\tre-0.8.0\win32;Unitex-C++\build\tre-0.8.0\lib;Unitex-C++\include_tre</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Unitex-C++\build\tre-0.8.0\win32;Unitex-C++\build\tre-0.8.0\lib;Unitex-C++\include_tre</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">HAVE_CONFIG_H=1;WIN32;_DEBUG;_WINDOWS;_USRDLL;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">HAVE_CONFIG_H=1;TRACEOFF;NDEBUG;WIN32;_WINDOWS;_USRDLL;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\build\tre-0.8.0\lib\tre-compile.c">
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Unitex-C++\build\tre-0.8.0\win32;Unitex-C++\build\tre-0.8.0\lib;Unitex-C++\include_tre</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Unitex-C++\build\tre-0.8.0\win32;Unitex-C++\build\tre-0.8.0\lib;Unitex-C++\include_tre</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">HAVE_CONFIG_H=1;WIN32;_DEBUG;_WINDOWS;_USRDLL;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">HAVE_CONFIG_H=1;TRACEOFF;NDEBUG;WIN32;_WINDOWS;_USRDLL;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\build\tre-0.8.0\lib\tre-match-approx.c">
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Unitex-C++\build\tre-0.8.0\win32;Unitex-C++\build\tre-0.8.0\lib;Unitex-C++\include_tre</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Unitex-C++\build\tre-0.8.0\win32;Unitex-C++\build\tre-0.8.0\lib;Unitex-C++\include_tre</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">HAVE_CONFIG_H=1;WIN32;_DEBUG;_WINDOWS;_USRDLL;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">HAVE_CONFIG_H=1;TRACEOFF;NDEBUG;WIN32;_WINDOWS;_USRDLL;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\build\tre-0.8.0\lib\tre-match-backtrack.c">
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Unitex-C++\build\tre-0.8.0\win32;Unitex-C++\build\tre-0.8.0\lib;Unitex-C++\include_tre</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Unitex-C++\build\tre-0.8.0\win32;Unitex-C++\build\tre-0.8.0\lib;Unitex-C++\include_tre</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">HAVE_CONFIG_H=1;WIN32;_DEBUG;_WINDOWS;_USRDLL;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">HAVE_CONFIG_H=1;TRACEOFF;NDEBUG;WIN32;_WINDOWS;_USRDLL;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\build\tre-0.8.0\lib\tre-match-parallel.c">
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Unitex-C++\build\tre-0.8.0\win32;Unitex-C++\build\tre-0.8.0\lib;Unitex-C++\include_tre</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Unitex-C++\build\tre-0.8.0\win32;Unitex-C++\build\tre-0.8.0\lib;Unitex-C++\include_tre</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">HAVE_CONFIG_H=1;WIN32;_DEBUG;_WINDOWS;_USRDLL;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">HAVE_CONFIG_H=1;TRACEOFF;NDEBUG;WIN32;_WINDOWS;_USRDLL;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\build\tre-0.8.0\lib\tre-mem.c">
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Unitex-C++\build\tre-0.8.0\win32;Unitex-C++\build\tre-0.8.0\lib;Unitex-C++\include_tre</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Unitex-C++\build\tre-0.8.0\win32;Unitex-C++\build\tre-0.8.0\lib;Unitex-C++\include_tre</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">HAVE_CONFIG_H=1;WIN32;_DEBUG;_WINDOWS;_USRDLL;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">HAVE_CONFIG_H=1;TRACEOFF;NDEBUG;WIN32;_WINDOWS;_USRDLL;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\build\tre-0.8.0\lib\tre-parse.c">
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Unitex-C++\build\tre-0.8.0\win32;Unitex-C++\build\tre-0.8.0\lib;Unitex-C++\include_tre</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Unitex-C++\build\tre-0.8.0\win32;Unitex-C++\build\tre-0.8.0\lib;Unitex-C++\include_tre</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">HAVE_CONFIG_H=1;WIN32;_DEBUG;_WINDOWS;_USRDLL;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">HAVE_CONFIG_H=1;TRACEOFF;NDEBUG;WIN32;_WINDOWS;_USRDLL;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\build\tre-0.8.0\lib\tre-stack.c">
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Unitex-C++\build\tre-0.8.0\win32;Unitex-C++\build\tre-0.8.0\lib;Unitex-C++\include_tre</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Unitex-C++\build\tre-0.8.0\win32;Unitex-C++\build\tre-0.8.0\lib;Unitex-C++\include_tre</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">HAVE_CONFIG_H=1;WIN32;_DEBUG;_WINDOWS;_USRDLL;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">HAVE_CONFIG_H=1;TRACEOFF;NDEBUG;WIN32;_WINDOWS;_USRDLL;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\build\tre-0.8.0\lib\xmalloc.c">
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Unitex-C++\build\tre-0.8.0\win32;Unitex-C++\build\tre-0.8.0\lib;Unitex-C++\include_tre</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Unitex-C++\build\tre-0.8.0\win32;Unitex-C++\build\tre-0.8.0\lib;Unitex-C++\include_tre</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">HAVE_CONFIG_H=1;WIN32;_DEBUG;_WINDOWS;_USRDLL;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">HAVE_CONFIG_H=1;TRACEOFF;NDEBUG;WIN32;_WINDOWS;_USRDLL;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\Cassys.cpp" />
-    <ClCompile Include="Unitex-C++\Cassys_concord.cpp" />
-    <ClCompile Include="Unitex-C++\Cassys_external_program.cpp" />
-    <ClCompile Include="Unitex-C++\Cassys_io.cpp" />
-    <ClCompile Include="Unitex-C++\Cassys_lexical_tags.cpp" />
-    <ClCompile Include="Unitex-C++\Cassys_tokens.cpp" />
-    <ClCompile Include="Unitex-C++\Cassys_transducer.cpp">
-      <ProgramDataBaseFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)$(TargetName).pdb</ProgramDataBaseFileName>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\Cassys_xml_output.cpp" />
-    <ClCompile Include="Unitex-C++\CheckDic.cpp" />
-    <ClCompile Include="Unitex-C++\CodePages.cpp" />
-    <ClCompile Include="Unitex-C++\CompoundWordHashTable.cpp" />
-    <ClCompile Include="Unitex-C++\CompoundWordTree.cpp" />
-    <ClCompile Include="Unitex-C++\Compress.cpp" />
-    <ClCompile Include="Unitex-C++\CompressedDic.cpp" />
-    <ClCompile Include="Unitex-C++\Concord.cpp" />
-    <ClCompile Include="Unitex-C++\Concordance.cpp" />
-    <ClCompile Include="Unitex-C++\ConcorDiff.cpp" />
-    <ClCompile Include="Unitex-C++\Contexts.cpp" />
-    <ClCompile Include="Unitex-C++\Convert.cpp" />
-    <ClCompile Include="Unitex-C++\DebugMode.cpp" />
-    <ClCompile Include="Unitex-C++\DELA.cpp" />
-    <ClCompile Include="Unitex-C++\DELA_tree.cpp" />
-    <ClCompile Include="Unitex-C++\Dico.cpp" />
-    <ClCompile Include="Unitex-C++\DictionaryTree.cpp" />
-    <ClCompile Include="Unitex-C++\DicVariables.cpp" />
-    <ClCompile Include="Unitex-C++\Diff.cpp" />
-    <ClCompile Include="Unitex-C++\DirHelperWin.cpp" />
-    <ClCompile Include="Unitex-C++\DuplicateFile.cpp" />
-    <ClCompile Include="Unitex-C++\DutchCompounds.cpp" />
-    <ClCompile Include="Unitex-C++\Elag.cpp" />
-    <ClCompile Include="Unitex-C++\ElagComp.cpp" />
-    <ClCompile Include="Unitex-C++\ElagDebug.cpp" />
-    <ClCompile Include="Unitex-C++\ElagFstFilesIO.cpp" />
-    <ClCompile Include="Unitex-C++\ElagFunctions.cpp" />
-    <ClCompile Include="Unitex-C++\ElagRulesCompilation.cpp" />
-    <ClCompile Include="Unitex-C++\ElagStateSet.cpp" />
-    <ClCompile Include="Unitex-C++\Error.cpp" />
-    <ClCompile Include="Unitex-C++\Evamb.cpp" />
-    <ClCompile Include="Unitex-C++\Extract.cpp" />
-    <ClCompile Include="Unitex-C++\ExtractUnits.cpp" />
-    <ClCompile Include="Unitex-C++\FIFO.cpp" />
-    <ClCompile Include="Unitex-C++\File.cpp" />
-    <ClCompile Include="Unitex-C++\Flatten.cpp" />
-    <ClCompile Include="Unitex-C++\FlattenFst2.cpp" />
-    <ClCompile Include="Unitex-C++\Fst2.cpp" />
-    <ClCompile Include="Unitex-C++\Fst2Automaton.cpp" />
-    <ClCompile Include="Unitex-C++\Fst2Check.cpp" />
-    <ClCompile Include="Unitex-C++\Fst2Check_lib.cpp" />
-    <ClCompile Include="Unitex-C++\Fst2List.cpp" />
-    <ClCompile Include="Unitex-C++\Fst2Txt.cpp" />
-    <ClCompile Include="Unitex-C++\Fst2TxtAsRoutine.cpp" />
-    <ClCompile Include="Unitex-C++\Fst2Txt_TokenTree.cpp" />
-    <ClCompile Include="Unitex-C++\GeneralDerivation.cpp" />
-    <ClCompile Include="Unitex-C++\GermanCompounds.cpp" />
-    <ClCompile Include="Unitex-C++\Grf2Fst2.cpp" />
-    <ClCompile Include="Unitex-C++\Grf2Fst2_lib.cpp" />
-    <ClCompile Include="Unitex-C++\GrfBeauty.cpp" />
-    <ClCompile Include="Unitex-C++\GrfDiff.cpp" />
-    <ClCompile Include="Unitex-C++\GrfDiff3.cpp" />
-    <ClCompile Include="Unitex-C++\GrfSvn_lib.cpp" />
-    <ClCompile Include="Unitex-C++\GrfTest.cpp" />
-    <ClCompile Include="Unitex-C++\GrfTest_lib.cpp" />
-    <ClCompile Include="Unitex-C++\Grf_lib.cpp" />
-    <ClCompile Include="Unitex-C++\HashTable.cpp" />
-    <ClCompile Include="Unitex-C++\HTMLCharacters.cpp" />
-    <ClCompile Include="Unitex-C++\ImplodeTfst.cpp" />
-    <ClCompile Include="Unitex-C++\IOBuffer.cpp" />
-    <ClCompile Include="Unitex-C++\Keyboard.cpp" />
-    <ClCompile Include="Unitex-C++\KeyWords.cpp" />
-    <ClCompile Include="Unitex-C++\KeyWords_lib.cpp" />
-    <ClCompile Include="Unitex-C++\Korean.cpp" />
-    <ClCompile Include="Unitex-C++\KrMwuDic.cpp" />
-    <ClCompile Include="Unitex-C++\LanguageDefinition.cpp" />
-    <ClCompile Include="Unitex-C++\LemmaTree.cpp" />
-    <ClCompile Include="Unitex-C++\LinearAutomaton2Txt.cpp" />
-    <ClCompile Include="Unitex-C++\List_int.cpp" />
-    <ClCompile Include="Unitex-C++\List_pointer.cpp" />
-    <ClCompile Include="Unitex-C++\List_ustring.cpp" />
-    <ClCompile Include="Unitex-C++\LoadInf.cpp" />
-    <ClCompile Include="Unitex-C++\Locate.cpp" />
-    <ClCompile Include="Unitex-C++\LocateCache.cpp" />
-    <ClCompile Include="Unitex-C++\LocateFst2Tags.cpp" />
-    <ClCompile Include="Unitex-C++\LocateMatches.cpp" />
-    <ClCompile Include="Unitex-C++\LocatePattern.cpp" />
-    <ClCompile Include="Unitex-C++\LocateTfst.cpp" />
-    <ClCompile Include="Unitex-C++\LocateTfstMatches.cpp" />
-    <ClCompile Include="Unitex-C++\LocateTfst_lib.cpp" />
-    <ClCompile Include="Unitex-C++\LocateTrace.cpp" />
-    <ClCompile Include="Unitex-C++\logger\FilePack.cpp" />
-    <ClCompile Include="Unitex-C++\logger\FilePackCrc32.cpp" />
-    <ClCompile Include="Unitex-C++\logger\FilePackIo.cpp" />
-    <ClCompile Include="Unitex-C++\logger\FileUnPack.cpp" />
-    <ClCompile Include="Unitex-C++\logger\MzRepairUlp.cpp" />
-    <ClCompile Include="Unitex-C++\logger\MzToolsUlp.cpp" />
-    <ClCompile Include="Unitex-C++\logger\ReworkArg.cpp" />
-    <ClCompile Include="Unitex-C++\logger\SyncLoggerWin.cpp" />
-    <ClCompile Include="Unitex-C++\logger\UniLogger.cpp" />
-    <ClCompile Include="Unitex-C++\logger\UniLoggerAutoInstall.cpp" />
-    <ClCompile Include="Unitex-C++\logger\UniRunLogger.cpp" />
-    <ClCompile Include="Unitex-C++\MappedFileHelperWin.cpp" />
-    <ClCompile Include="Unitex-C++\Match.cpp" />
-    <ClCompile Include="Unitex-C++\MF_DicoMorpho.cpp" />
-    <ClCompile Include="Unitex-C++\MF_DLC_inflect.cpp" />
-    <ClCompile Include="Unitex-C++\MF_FormMorpho.cpp" />
-    <ClCompile Include="Unitex-C++\MF_Global.cpp" />
-    <ClCompile Include="Unitex-C++\MF_LangMorpho.cpp" />
-    <ClCompile Include="Unitex-C++\MF_MU_graph.cpp" />
-    <ClCompile Include="Unitex-C++\MF_MU_morpho.cpp" />
-    <ClCompile Include="Unitex-C++\MF_Operators_Util.cpp" />
-    <ClCompile Include="Unitex-C++\MF_SU_morpho.cpp" />
-    <ClCompile Include="Unitex-C++\MF_Unif.cpp" />
-    <ClCompile Include="Unitex-C++\MF_Util.cpp" />
-    <ClCompile Include="Unitex-C++\MorphologicalFilters.cpp" />
-    <ClCompile Include="Unitex-C++\MorphologicalLocate.cpp" />
-    <ClCompile Include="Unitex-C++\MultiFlex.cpp" />
-    <ClCompile Include="Unitex-C++\NewLineShifts.cpp" />
-    <ClCompile Include="Unitex-C++\NormalizationFst2.cpp" />
-    <ClCompile Include="Unitex-C++\Normalize.cpp" />
-    <ClCompile Include="Unitex-C++\NormalizeAsRoutine.cpp" />
-    <ClCompile Include="Unitex-C++\NorwegianCompounds.cpp" />
-    <ClCompile Include="Unitex-C++\Offsets.cpp" />
-    <ClCompile Include="Unitex-C++\OptimizedFst2.cpp" />
-    <ClCompile Include="Unitex-C++\OptimizedTfstTagMatching.cpp" />
-    <ClCompile Include="Unitex-C++\OutputTransductionVariables.cpp" />
-    <ClCompile Include="Unitex-C++\Overlap.cpp" />
-    <ClCompile Include="Unitex-C++\ParsingInfo.cpp" />
-    <ClCompile Include="Unitex-C++\Pattern.cpp" />
-    <ClCompile Include="Unitex-C++\PatternTree.cpp" />
-    <ClCompile Include="Unitex-C++\Persistence.cpp" />
-    <ClCompile Include="Unitex-C++\PersistenceInterface.cpp" />
-    <ClCompile Include="Unitex-C++\PolyLex.cpp" />
-    <ClCompile Include="Unitex-C++\PortugueseNormalization.cpp" />
-    <ClCompile Include="Unitex-C++\PRLG.cpp" />
-    <ClCompile Include="Unitex-C++\ProgramInvoker.cpp" />
-    <ClCompile Include="Unitex-C++\RebuildTfst.cpp" />
-    <ClCompile Include="Unitex-C++\Reconstrucao.cpp" />
-    <ClCompile Include="Unitex-C++\Reg2Grf.cpp" />
-    <ClCompile Include="Unitex-C++\RegExFacade.cpp" />
-    <ClCompile Include="Unitex-C++\RegularExpressions.cpp" />
-    <ClCompile Include="Unitex-C++\RussianCompounds.cpp" />
-    <ClCompile Include="Unitex-C++\Sentence2Grf.cpp" />
-    <ClCompile Include="Unitex-C++\Seq2Grf.cpp" />
-    <ClCompile Include="Unitex-C++\SingleGraph.cpp" />
-    <ClCompile Include="Unitex-C++\Snt.cpp" />
-    <ClCompile Include="Unitex-C++\SortTxt.cpp" />
-    <ClCompile Include="Unitex-C++\SpellCheck.cpp" />
-    <ClCompile Include="Unitex-C++\SpellChecking.cpp" />
-    <ClCompile Include="Unitex-C++\Stack_int.cpp" />
-    <ClCompile Include="Unitex-C++\Stack_pointer.cpp" />
-    <ClCompile Include="Unitex-C++\Stack_unichar.cpp" />
-    <ClCompile Include="Unitex-C++\Stats.cpp" />
-    <ClCompile Include="Unitex-C++\StringParsing.cpp" />
-    <ClCompile Include="Unitex-C++\String_hash.cpp" />
-    <ClCompile Include="Unitex-C++\Symbol.cpp" />
-    <ClCompile Include="Unitex-C++\SymbolAlphabet.cpp" />
-    <ClCompile Include="Unitex-C++\Symbol_op.cpp" />
-    <ClCompile Include="Unitex-C++\SyncToolWin.cpp" />
-    <ClCompile Include="Unitex-C++\Table2Grf.cpp" />
-    <ClCompile Include="Unitex-C++\Tagger.cpp" />
-    <ClCompile Include="Unitex-C++\TaggingProcess.cpp" />
-    <ClCompile Include="Unitex-C++\Tagset.cpp" />
-    <ClCompile Include="Unitex-C++\TagsetNormTfst.cpp" />
-    <ClCompile Include="Unitex-C++\TEI2Txt.cpp" />
-    <ClCompile Include="Unitex-C++\Test_lib.cpp" />
-    <ClCompile Include="Unitex-C++\Text_parsing.cpp" />
-    <ClCompile Include="Unitex-C++\Text_tokens.cpp" />
-    <ClCompile Include="Unitex-C++\Tfst.cpp" />
-    <ClCompile Include="Unitex-C++\Tfst2Grf.cpp" />
-    <ClCompile Include="Unitex-C++\Tfst2Unambig.cpp" />
-    <ClCompile Include="Unitex-C++\TfstStats.cpp" />
-    <ClCompile Include="Unitex-C++\TfstTag.cpp" />
-    <ClCompile Include="Unitex-C++\Thai.cpp" />
-    <ClCompile Include="Unitex-C++\Tokenization.cpp" />
-    <ClCompile Include="Unitex-C++\Tokenize.cpp" />
-    <ClCompile Include="Unitex-C++\TrainingProcess.cpp" />
-    <ClCompile Include="Unitex-C++\TrainingTagger.cpp" />
-    <ClCompile Include="Unitex-C++\TransductionStack.cpp" />
-    <ClCompile Include="Unitex-C++\TransductionStackTfst.cpp" />
-    <ClCompile Include="Unitex-C++\TransductionVariables.cpp" />
-    <ClCompile Include="Unitex-C++\Transitions.cpp" />
-    <ClCompile Include="Unitex-C++\Txt2Tfst.cpp" />
-    <ClCompile Include="Unitex-C++\Uncompress.cpp" />
-    <ClCompile Include="Unitex-C++\Unicode.cpp" />
-    <ClCompile Include="Unitex-C++\UnitexGetOpt.cpp" />
-    <ClCompile Include="Unitex-C++\UnitexLibDirWin.cpp" />
-    <ClCompile Include="Unitex-C++\UnitexLibIO.cpp" />
-    <ClCompile Include="Unitex-C++\UnitexRevisionInfo.cpp" />
-    <ClCompile Include="Unitex-C++\UnitexTool.cpp" />
-    <ClCompile Include="Unitex-C++\Untokenize.cpp" />
-    <ClCompile Include="Unitex-C++\Unxmlize.cpp" />
-    <ClCompile Include="Unitex-C++\UserCancelling.cpp" />
-    <ClCompile Include="Unitex-C++\Ustring.cpp" />
-    <ClCompile Include="Unitex-C++\VariableUtils.cpp" />
-    <ClCompile Include="Unitex-C++\VersionInfo.cpp" />
-    <ClCompile Include="Unitex-C++\VirtualFiles.cpp" />
-    <ClCompile Include="Unitex-C++\Xml.cpp" />
-    <ClCompile Include="Unitex-C++\XMLizer.cpp" />
     <ClCompile Include="UnitexAnnotatorCpp.cpp" />
     <ClCompile Include="UnitexCommand.cpp" />
     <ClCompile Include="UnitexDocumentParameters.cpp" />
     <ClCompile Include="UnitexEngine.cpp" />
     <ClCompile Include="UnitexException.cpp" />
-    <ClCompile Include="UnitexJNI.cpp" />
     <ClCompile Include="UnitexLogInstaller.cpp" />
     <ClCompile Include="UnitexOutputOffsetConverter.cpp" />
     <ClCompile Include="UnitexSubengine.cpp" />
@@ -367,7 +75,6 @@
     <ClInclude Include="Fst2TxtCommand.h" />
     <ClInclude Include="GraphCompiler.h" />
     <ClInclude Include="Grf2Fst2Command.h" />
-    <ClInclude Include="Incopiable.h" />
     <ClInclude Include="JavaLikeEnum.h" />
     <ClInclude Include="Language.h" />
     <ClInclude Include="LanguageArea.h" />
@@ -380,7 +87,6 @@
     <ClInclude Include="QualifiedString.h" />
     <ClInclude Include="RunLogCommand.h" />
     <ClInclude Include="SentenceAnnotation.h" />
-    <ClInclude Include="Singleton.h" />
     <ClInclude Include="TextArea.h" />
     <ClInclude Include="TextAreaAnnotation.h" />
     <ClInclude Include="TextPreprocessor.h" />
@@ -393,8 +99,6 @@
     <ClInclude Include="UnitexDocumentParameters.h" />
     <ClInclude Include="UnitexEngine.h" />
     <ClInclude Include="UnitexException.h" />
-    <ClInclude Include="UnitexJNI.h" />
-    <ClInclude Include="UnitexLogInstaller.h" />
     <ClInclude Include="UnitexOutputOffsetConverter.h" />
     <ClInclude Include="UnitexSubengine.h" />
     <ClInclude Include="UnitexTokenizer.h" />
@@ -518,9 +222,9 @@
       <EnablePREfast>false</EnablePREfast>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>libapr-1.lib;xerces-c_3.lib;icudt.lib;icuin.lib;icuio.lib;icule.lib;iculx.lib;icutu.lib;icuuc.lib;uima.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>libapr-1.lib;xerces-c_3.lib;icudt.lib;icuin.lib;icuio.lib;icule.lib;iculx.lib;icutu.lib;icuuc.lib;uima.lib;UnitexJni.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(Configuration)\UnitexAnnotatorCpp.dll</OutputFile>
-      <AdditionalLibraryDirectories>$(UIMACPP_HOME)\lib;$(XERCES_HOME)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(UIMACPP_HOME)\lib;$(XERCES_HOME)\lib;UnitexLib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>$(OutDir)$(Configuration)\UnitexAnnotatorCpp.pdb</ProgramDatabaseFile>
       <SubSystem>Windows</SubSystem>

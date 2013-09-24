@@ -127,6 +127,7 @@ namespace unitexcpp
 			const unitexcpp::Stringlist& getDynamicDictionaries() const;
 			void getMorphologicalDictionaries(const std::string& automatonPath, unitexcpp::Stringlist& morphoDictList) const;
 			boost::filesystem::path getSntDirectory() const;
+			boost::filesystem::path getSntDirectory(const boost::filesystem::path& inputPath) const;
 
 			void clearDynamicDictionaries();
 			bool addDynamicDictionary(std::string const& strDictName, DictionaryType const& dictionaryType = DictionaryType::DELAF);

@@ -6,15 +6,12 @@
 */
 
 #include "FileUtils.h"
-#include "FileEncoding.h"
-#include "Unitex-C++/UnitexLibIO.h"
-#include "Unitex-C++/File.h"
-#include "Unitex-C++/Unicode.h"
-#include "Unitex-C++/Buffer.h"
-#include "Unitex-C++/Af_stdio.h"
 #include "Utils.h"
 #include "UnitexAnnotatorCpp.h"
 #include <sstream>
+#include <boost/foreach.hpp>
+#include "Unitex-C++/UnitexLibIO.h"
+#include "Unitex-C++/File.h"
 
 #if defined(_MSC_VER) && defined(_DEBUG) && defined(DEBUG_MEMORY_LEAKS)
 #define _CRTDBG_MAP_ALLOC
@@ -29,7 +26,6 @@ static char THIS_FILE[] = __FILE__;
 using namespace std;
 using namespace uima;
 using namespace boost::filesystem;
-using namespace unitex;
 
 namespace unitexcpp {
 
@@ -54,7 +50,12 @@ namespace unitexcpp {
 
 	bool isAbsolutePath(const path& path)
 	{
-		return ::unitex::is_absolute_path(path.string().c_str());
+		const char* strpath = path.string().c_str();
+#ifdef _NOT_UNDER_WINDOWS
+		return strpath[0] == PATH_SEPARATOR_CHAR;
+#else
+		return ((strpath[0] >= 'a' && strpath[0] <= 'z') || (strpath[0] >= 'A' && strpath [0] <='Z')) && (strpath[1] == ':') && (strpath[2] == '\\');
+#endif
 	}
 
 	/**
@@ -136,28 +137,10 @@ namespace unitexcpp {
 		const UChar * uBuffer = uString.getBuffer();
 		int32_t uLength = uString.length();
 
-		bool result = WriteUnitexFile(fileName.string().c_str(), &uBom, sizeof(UChar), uBuffer, uLength * sizeof(UChar)) == 0;
+		int result = WriteUnitexFile(fileName.string().c_str(), &uBom, sizeof(UChar), uBuffer, uLength * sizeof(UChar));
 
-		return result;
+		return result == 0;
 	}
-
-	//bool writeUnitexFileFastWithBOM(path const& fileName, UnicodeStringRef const& uString)
-	//{
-	//	int32_t uLength = uString.length();
-	//	unsigned char* rawBuffer = new unsigned char[(uLength + 2) * U_SIZEOF_WCHAR_T];
-	//	UChar * uBuffer = (UChar*) rawBuffer;
-	//	*uBuffer = 0xfeff;
-	//	UErrorCode errorCode = U_ZERO_ERROR ;
-	//	uString.extract(uBuffer+1,uLength+1,errorCode);
-
-	//	size_t length = (uLength+1) * U_SIZEOF_WCHAR_T;
-
-	//	bool result = writeUnitexFile(fileName, rawBuffer, length);
-
-	//	delete[] rawBuffer;
-
-	//	return result;
-	//}
 
 #define GetUtf8_Size(ch)  \
 	(((((unsigned char)(ch)) & ((unsigned char)0x80))==((unsigned char)0x00)) ? 1 : \
@@ -237,133 +220,8 @@ namespace unitexcpp {
 		}
 	}
 
-	///// <summary>
-	///// Gets the whole contents of a (virtual) file into a Unicode string.
-	///// </summary>
-	///// <param name='fileName'>The file name.</param>
-	///// <param name='uString'>The Unicode string where to store the file contents.</param>
-	///// <returns>True if ok, false if failed.</returns>
-	//bool getStringFromUnitexFile(path const& fileName, UnicodeString& uString)
-	//{
-	//	uString.remove();
-
-	//	if (!isVirtualPath(fileName) && !exists(fileName))return false;
-
-	//	UNITEXFILEMAPPED* pFileHandle;
-	//	const void* buffer = NULL;
-	//	size_t bufferSize = 0;
-	//	GetUnitexFileReadBuffer(fileName.string().c_str(), &pFileHandle, &buffer, &bufferSize);
-
-	//	if (buffer != NULL) {
-	//		if (bufferSize > 0) {
-	//			const unsigned char* bufchar= (const unsigned char*) buffer;
-	//			size_t size_bom = 0;
-	//			bool is_utf16_native_endianess = false;
-	//			bool is_utf16_swap_endianess = false;
-
-	//			if (bufferSize > 1) {
-	//				if (((*(bufchar)) == 0xff) && ((*(bufchar + 1)) == 0xfe))
-	//				{
-	//					// little endian
-	//					is_utf16_native_endianess = is_little_endian();
-	//					is_utf16_swap_endianess = ! is_utf16_native_endianess;
-	//					size_bom = 2;
-	//				}
-	//			}
-
-	//			if (bufferSize > 1) {
-	//				if (((*(bufchar)) == 0xfe) && ((*(bufchar + 1)) == 0xff))
-	//				{
-	//					// big endian
-	//					is_utf16_native_endianess = ! is_little_endian();
-	//					is_utf16_swap_endianess = ! is_utf16_native_endianess;
-	//					size_bom = 2;
-	//				}
-	//			}
-
-	//			if (bufferSize > 2) {
-	//				if (((*(bufchar)) == 0xef) && ((*(bufchar + 1)) == 0xbb) && ((*(bufchar + 2)) == 0xbf))
-	//				{
-	//					size_bom = 3;
-	//				}
-	//			}
-
-	//			if (is_utf16_native_endianess)
-	//			{
-	//				const UChar* uBuffer = (const UChar*)(bufchar + size_bom);
-	//				size_t uSize = (bufferSize - size_bom) / U_SIZEOF_UCHAR;
-	//				uString.setTo(uBuffer, uSize);
-	//			}
-	//			else if (is_utf16_swap_endianess)
-	//			{
-	//				unsigned char* returnedUTF16buffer = (unsigned char*) malloc(bufferSize);
-	//				if (returnedUTF16buffer != NULL)
-	//				{
-	//					for (size_t i = 0; i<bufferSize; i += 2)
-	//					{
-	//						unsigned char c1 = *(bufchar + i);
-	//						unsigned char c2 = *(bufchar + i + 1);
-	//						*(returnedUTF16buffer + i) = c2;
-	//						*(returnedUTF16buffer + i + 1) = c1;
-	//					}
-	//					const UChar* uBuffer = (const UChar*)(returnedUTF16buffer + size_bom);
-	//					size_t uSize = (bufferSize - size_bom) / U_SIZEOF_UCHAR;
-	//					uString.setTo(uBuffer, uSize);
-	//					free(returnedUTF16buffer);
-	//				}
-	//			}
-	//			else
-	//			{
-	//				char* stringUtf = (char*) malloc(bufferSize + 1);
-	//				memcpy(stringUtf, bufchar + size_bom, bufferSize - size_bom);
-	//				*(stringUtf + bufferSize - size_bom) = '\0';
-	//				uString = UnicodeString(stringUtf);
-	//				free(stringUtf);
-	//			}
-	//		}
-	//		CloseUnitexFileReadBuffer(pFileHandle, buffer, bufferSize);
-	//		return true;
-	//	}
-
-	//	//if (buffer != NULL) {
-
-	//	//	bool isUtf16 = false;
-	//	//	
-	//	//	if (bufferSize > 0) {
-	//	//		const UChar* browseBuffer = (const UChar*)buffer;
-	//	//		size_t bufferSizeWithoutBom = bufferSize;
-	//	//		if (bufferSize >= sizeof(UChar))
-	//	//			if ((*browseBuffer) == 0xfeff)
-	//	//			{
-	//	//				browseBuffer += 1;
-	//	//				bufferSizeWithoutBom -= sizeof(UChar);
-	//	//				isUtf16 = true;
-	//	//			}
-	//	//			uString.setTo(browseBuffer,(bufferSizeWithoutBom/sizeof(UChar)));
-	//	//	}
-
-	//	//	if (!isUtf16)
-	//	//	{
-	//	//		size_t buffer_alloc_size = (bufferSize + 1) * 2;
-	//	//		UChar* outBuffer = new UChar[buffer_alloc_size];
-	//	//		size_t size_this_string_written = 0;
-	//	//		unpack_utf8_string(outBuffer,buffer_alloc_size,&size_this_string_written,
-	//	//			(const unsigned char*)buffer,bufferSize);
-	//	//		uString.setTo(outBuffer,size_this_string_written);
-	//	//		delete[] outBuffer;
-	//	//	}
-
-	//	//	CloseUnitexFileReadBuffer(pFileHandle, buffer, bufferSize);
-	//	//	return true;
-	//	//}
-
-	//	return false;
-	//}
-
 	bool getUnicodeStringFromUnitexFile(path const& fileName, UnicodeString& uString)
 	{
-		if (!exists(fileName)) return false;
-
 		uString.remove();
 
 		UNITEXFILEMAPPED* pFileHandle;
@@ -449,70 +307,6 @@ namespace unitexcpp {
 		return false;
 	}
 
-	/**
-	* Writes a string to a file, converting the ICU Unicode string into something
-	* understandable by Unitex.
-	* The file may be "regular" or abstract (i.e. starting with "$:").
-	*/
-	bool writeStringToFile(const string& strFilename, const UnicodeStringRef& uString)
-	{
-		VersatileEncodingConfig cfg = VEC_DEFAULT;
-		U_FILE* f = u_fopen(&cfg, strFilename.c_str(), U_WRITE);
-		if (f == NULL)
-			return false;
-
-		int32_t length = uString.length();
-		unichar* uBuffer = new unichar[length + 1];
-		for (int32_t i = 0; i < length; i++)
-			uBuffer[i] = uString.charAt(i);
-		uBuffer[length] = 0;
-
-		u_fwrite(uBuffer, length, f);
-
-		delete[] uBuffer;
-
-		u_fclose(f);
-		return true;
-	}
-
-	bool writeStringToFile(const path& filename, const UnicodeStringRef& uString)
-	{
-		return writeStringToFile(filename.string(), uString);
-	}
-
-	//bool getStringFromFile(const string& strFilename, UnicodeString& uString)
-	//{
-	//	uString.remove();
-
-	//	if (!isVirtualPath(strFilename) && !exists(path(strFilename)))
-	//		return false;
-
-	//	buffer* contents;
-
-	//	VersatileEncodingConfig cfg = VEC_DEFAULT;
-	//	U_FILE* f = u_fopen(&cfg, strFilename.c_str(), U_READ);
-	//	contents = new_buffer_for_file(UNICHAR_BUFFER, f, 0);
-	//	int ok;
-	//	contents->size = u_fread(contents->unichar_buffer, contents->MAXIMUM_BUFFER_SIZE, f, &ok);
-	//	u_fclose(f);
-
-	//	if (!ok)
-	//		return false;
-
-	//	uString.setTo((const UChar*)contents->unichar_buffer, contents->size / U_SIZEOF_UCHAR);
-	//	//for (int i = 0; i < contents->size; i++)
-	//	//	uString.append((UChar)contents->unichar_buffer[i]);
-	//	//uString.append(0);
-	//	free_buffer(contents);
-
-	//	return true;
-	//}
-
-	//bool getStringFromFile(const path& filename, UnicodeString& uString)
-	//{
-	//	return getStringFromFile(filename.string(), uString);
-	//}
-
 	path getRelativePathFrom(const path& rootPath, const path& fullPath)
 	{
 		path offsetPath, currentPath = system_complete(fullPath), stopPath = system_complete(rootPath);
@@ -546,13 +340,13 @@ namespace unitexcpp {
 	void getVirtualFilesInDirectory(const string& strDirectory, list<string>& list)
 	{
 		list.clear();
-		char** filenames = af_get_list_file(strDirectory.c_str());
+		char** filenames = GetUnitexFileList(strDirectory.c_str());
 		if (filenames != NULL) {
 			int iter = 0;
 			while ((*(filenames + iter)) != NULL)
 				list.push_back(*(filenames + iter++));
 		}
-		af_release_list_file(strDirectory.c_str(), filenames);
+		ReleaseUnitexFileList(strDirectory.c_str(), filenames);
 	}
 
 	/**
@@ -561,6 +355,15 @@ namespace unitexcpp {
 	void getVirtualFilesInDirectory(const path& directory, list<string>& list)
 	{
 		getVirtualFilesInDirectory(directory.string(), list);
+	}
+
+	void emptyVirtualFileSystem()
+	{
+		list<string> files;
+		getVirtualFilesInDirectory(getVirtualFilePfx(), files);
+		BOOST_FOREACH(const string& file, files) {
+			RemoveUnitexFile(file.c_str());
+		}
 	}
 }
 

@@ -9,114 +9,6 @@
     <ClCompile Include="CompressCommand.cpp">
       <Filter>Unitex Commands</Filter>
     </ClCompile>
-    <ClCompile Include="Unitex-C++\AbstractAllocator.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\AbstractDelaLoad.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\AbstractFst2Load.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\ActivityLogger.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\Af_stdio.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\Alphabet.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\ApplyDic.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\Arabic.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\AsciiSearchTree.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\AutComplementation.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\AutConcat.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\AutDeterminization.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\AutIntersection.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\AutMinimization.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\AutomatonDictionary2Bin.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\BitArray.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\BitMasks.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\Buffer.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\BuildKrMwuDic.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\BuildTextAutomaton.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\Cassys.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\Cassys_concord.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\Cassys_external_program.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\Cassys_io.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\Cassys_lexical_tags.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\Cassys_tokens.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\Cassys_transducer.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\Cassys_xml_output.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\CheckDic.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\CodePages.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\CompoundWordHashTable.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\CompoundWordTree.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\Compress.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\CompressedDic.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\Concord.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\Concordance.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
     <ClCompile Include="ConcordCommand.cpp">
       <Filter>Unitex Commands</Filter>
     </ClCompile>
@@ -132,335 +24,26 @@
     <ClCompile Include="ContextAreaAnnotation.cpp">
       <Filter>UIMA Annotations</Filter>
     </ClCompile>
-    <ClCompile Include="Unitex-C++\ConcorDiff.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\Contexts.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\Convert.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\DebugMode.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\DELA.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\DELA_tree.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\Dico.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
     <ClCompile Include="DicoCommand.cpp">
       <Filter>Unitex Commands</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\DictionaryTree.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\DicVariables.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\Diff.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\DirHelperWin.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\DuplicateFile.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\DutchCompounds.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\Elag.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\ElagComp.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\ElagDebug.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\ElagFstFilesIO.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\ElagFunctions.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\ElagRulesCompilation.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\ElagStateSet.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\Error.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\Evamb.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\Extract.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\ExtractUnits.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\FIFO.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\File.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\logger\FilePack.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\logger\FilePackCrc32.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\logger\FilePackIo.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\logger\FileUnPack.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\Flatten.cpp">
-      <Filter>Unitex</Filter>
     </ClCompile>
     <ClCompile Include="FlattenCommand.cpp">
       <Filter>Unitex Commands</Filter>
     </ClCompile>
-    <ClCompile Include="Unitex-C++\FlattenFst2.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\Fst2.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\Fst2Automaton.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\Fst2Check.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\Fst2Check_lib.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
     <ClCompile Include="Fst2CheckCommand.cpp">
       <Filter>Unitex Commands</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\Fst2List.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\Fst2Txt.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\Fst2Txt_TokenTree.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\Fst2TxtAsRoutine.cpp">
-      <Filter>Unitex</Filter>
     </ClCompile>
     <ClCompile Include="Fst2TxtCommand.cpp">
       <Filter>Unitex Commands</Filter>
     </ClCompile>
-    <ClCompile Include="Unitex-C++\GeneralDerivation.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\GermanCompounds.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\Grf2Fst2.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\Grf2Fst2_lib.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
     <ClCompile Include="Grf2Fst2Command.cpp">
       <Filter>Unitex Commands</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\Grf_lib.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\GrfBeauty.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\GrfDiff.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\GrfDiff3.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\GrfSvn_lib.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\GrfTest.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\GrfTest_lib.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\HashTable.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\HTMLCharacters.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\ImplodeTfst.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\IOBuffer.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\Keyboard.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\KeyWords.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\KeyWords_lib.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\Korean.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\KrMwuDic.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\LemmaTree.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\LinearAutomaton2Txt.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\List_int.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\List_pointer.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\List_ustring.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\LoadInf.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\Locate.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\LocateCache.cpp">
-      <Filter>Unitex</Filter>
     </ClCompile>
     <ClCompile Include="LocateCommand.cpp">
       <Filter>Unitex Commands</Filter>
     </ClCompile>
-    <ClCompile Include="Unitex-C++\LocateFst2Tags.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\LocateMatches.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\LocatePattern.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\LocateTfst.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\LocateTfst_lib.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\LocateTfstMatches.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\LocateTrace.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\MappedFileHelperWin.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\Match.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\MF_DicoMorpho.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\MF_DLC_inflect.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\MF_FormMorpho.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\MF_Global.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\MF_LangMorpho.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\MF_MU_graph.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\MF_MU_morpho.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\MF_Operators_Util.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\MF_SU_morpho.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\MF_Unif.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\MF_Util.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\MorphologicalFilters.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\MorphologicalLocate.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\MultiFlex.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\logger\MzRepairUlp.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\logger\MzToolsUlp.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\NewLineShifts.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\NormalizationFst2.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\Normalize.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\NormalizeAsRoutine.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
     <ClCompile Include="NormalizeCommand.cpp">
       <Filter>Unitex Commands</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\NorwegianCompounds.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\Offsets.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\OptimizedFst2.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\OptimizedTfstTagMatching.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\OutputTransductionVariables.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\Overlap.cpp">
-      <Filter>Unitex</Filter>
     </ClCompile>
     <ClCompile Include="ParagraphAnnotation.cpp">
       <Filter>UIMA Annotations</Filter>
@@ -471,146 +54,8 @@
     <ClCompile Include="JavaLikeEnum.cpp">
       <Filter>Utils</Filter>
     </ClCompile>
-    <ClCompile Include="Unitex-C++\ParsingInfo.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\Pattern.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\PatternTree.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\Persistence.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\PersistenceInterface.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\PolyLex.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\PortugueseNormalization.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\PRLG.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\ProgramInvoker.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\RebuildTfst.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\Reconstrucao.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\Reg2Grf.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\build\tre-0.8.0\lib\regcomp.c">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\build\tre-0.8.0\lib\regerror.c">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\build\tre-0.8.0\lib\regexec.c">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\RegExFacade.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\RegularExpressions.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\logger\ReworkArg.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\RussianCompounds.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\Sentence2Grf.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
     <ClCompile Include="SentenceAnnotation.cpp">
       <Filter>UIMA Annotations</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\Seq2Grf.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\SingleGraph.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\Snt.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\SortTxt.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\SpellCheck.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\SpellChecking.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\Stack_int.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\Stack_pointer.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\Stack_unichar.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\Stats.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\String_hash.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\StringParsing.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\Symbol.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\Symbol_op.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\SymbolAlphabet.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\logger\SyncLoggerWin.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\SyncToolWin.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\Table2Grf.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\Tagger.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\TaggingProcess.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\Tagset.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\TagsetNormTfst.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\TEI2Txt.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\Test_lib.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\Text_parsing.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\Text_tokens.cpp">
-      <Filter>Unitex</Filter>
     </ClCompile>
     <ClCompile Include="QualifiedString.cpp">
       <Filter>UIMA Annotations</Filter>
@@ -621,32 +66,8 @@
     <ClCompile Include="TextAreaAnnotation.cpp">
       <Filter>UIMA Annotations</Filter>
     </ClCompile>
-    <ClCompile Include="Unitex-C++\Tfst.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\Tfst2Grf.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\Tfst2Unambig.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\TfstStats.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\TfstTag.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\Thai.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
     <ClCompile Include="TokenAnnotation.cpp">
       <Filter>UIMA Annotations</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\Tokenization.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\Tokenize.cpp">
-      <Filter>Unitex</Filter>
     </ClCompile>
     <ClCompile Include="TokenizeCommand.cpp">
       <Filter>Unitex Commands</Filter>
@@ -654,119 +75,11 @@
     <ClCompile Include="TransductionOutputAnnotation.cpp">
       <Filter>UIMA Annotations</Filter>
     </ClCompile>
-    <ClCompile Include="Unitex-C++\TrainingProcess.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\TrainingTagger.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\TransductionStack.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\TransductionStackTfst.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\TransductionVariables.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\Transitions.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\build\tre-0.8.0\lib\tre-ast.c">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\build\tre-0.8.0\lib\tre-compile.c">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\build\tre-0.8.0\lib\tre-match-approx.c">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\build\tre-0.8.0\lib\tre-match-backtrack.c">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\build\tre-0.8.0\lib\tre-match-parallel.c">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\build\tre-0.8.0\lib\tre-mem.c">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\build\tre-0.8.0\lib\tre-parse.c">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\build\tre-0.8.0\lib\tre-stack.c">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\Txt2Tfst.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\Uncompress.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\Unicode.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\logger\UniLogger.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\logger\UniLoggerAutoInstall.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\logger\UniRunLogger.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
     <ClCompile Include="UnitexCommand.cpp">
       <Filter>Unitex Commands</Filter>
     </ClCompile>
-    <ClCompile Include="Unitex-C++\UnitexGetOpt.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="UnitexJNI.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\UnitexLibDirWin.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\UnitexLibIO.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="UnitexLogInstaller.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\UnitexTool.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\Untokenize.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\Unxmlize.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\UserCancelling.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\Ustring.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\VariableUtils.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\VersionInfo.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\VirtualFiles.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
     <ClCompile Include="LanguageArea.cpp">
       <Filter>UIMA Annotations</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\XMLizer.cpp">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\build\tre-0.8.0\lib\xmalloc.c">
-      <Filter>Unitex</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\Xml.cpp">
-      <Filter>Unitex</Filter>
     </ClCompile>
     <ClCompile Include="UnitexEngine.cpp">
       <Filter>Engine</Filter>
@@ -795,17 +108,11 @@
     <ClCompile Include="Language.cpp">
       <Filter>Language</Filter>
     </ClCompile>
-    <ClCompile Include="Unitex-C++\LanguageDefinition.cpp">
-      <Filter>Language</Filter>
-    </ClCompile>
     <ClCompile Include="LanguageResources.cpp">
       <Filter>Language</Filter>
     </ClCompile>
     <ClCompile Include="VirtualFolderCleaner.cpp">
       <Filter>Utils</Filter>
-    </ClCompile>
-    <ClCompile Include="Unitex-C++\UnitexRevisionInfo.cpp">
-      <Filter>Unitex</Filter>
     </ClCompile>
     <ClCompile Include="UnitexOutputOffsetConverter.cpp">
       <Filter>Tokenizer</Filter>
@@ -823,6 +130,9 @@
     <ClCompile Include="RunLogCommand.cpp" />
     <ClCompile Include="ProfilingLogger.cpp">
       <Filter>Performances</Filter>
+    </ClCompile>
+    <ClCompile Include="UnitexLogInstaller.cpp">
+      <Filter>Utils</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -864,9 +174,6 @@
     <ClInclude Include="Grf2Fst2Command.h">
       <Filter>Unitex Commands</Filter>
     </ClInclude>
-    <ClInclude Include="Incopiable.h">
-      <Filter>Unitex</Filter>
-    </ClInclude>
     <ClInclude Include="LocateCommand.h">
       <Filter>Unitex Commands</Filter>
     </ClInclude>
@@ -884,9 +191,6 @@
     </ClInclude>
     <ClInclude Include="SentenceAnnotation.h">
       <Filter>UIMA Annotations</Filter>
-    </ClInclude>
-    <ClInclude Include="Singleton.h">
-      <Filter>Unitex</Filter>
     </ClInclude>
     <ClInclude Include="QualifiedString.h">
       <Filter>UIMA Annotations</Filter>
@@ -908,12 +212,6 @@
     </ClInclude>
     <ClInclude Include="UnitexCommand.h">
       <Filter>Unitex Commands</Filter>
-    </ClInclude>
-    <ClInclude Include="UnitexJNI.h">
-      <Filter>Unitex</Filter>
-    </ClInclude>
-    <ClInclude Include="UnitexLogInstaller.h">
-      <Filter>Unitex</Filter>
     </ClInclude>
     <ClInclude Include="LanguageArea.h">
       <Filter>UIMA Annotations</Filter>

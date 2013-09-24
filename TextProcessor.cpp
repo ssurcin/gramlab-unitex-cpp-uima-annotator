@@ -28,8 +28,6 @@
 #include "uima/api.hpp"
 #include "UnitexAnnotatorCpp.h"
 
-#include "Unitex-C++/UnitexLibIO.h"
-
 #if defined(_MSC_VER) && defined(_DEBUG) && defined(DEBUG_MEMORY_LEAKS)
 #define _CRTDBG_MAP_ALLOC
 #include <stdlib.h>

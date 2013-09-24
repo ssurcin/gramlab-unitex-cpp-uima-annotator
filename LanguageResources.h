@@ -12,8 +12,6 @@
 #include "uima/api.hpp"
 #include <boost/filesystem.hpp>
 #include <set>
-#include "Unitex-C++/LoadInf.h"
-#include "Unitex-C++/Fst2.h"
 
 namespace unitexcpp
 {

@@ -36,17 +36,14 @@ namespace unitexcpp
 	bool writeUnitexFile(boost::filesystem::path const& fileName, const void* buffer, size_t bufferSize);
 	bool writeUnitexFile(boost::filesystem::path const& fileName, const uima::UnicodeStringRef& uString);
 	bool getUnicodeStringFromUnitexFile(boost::filesystem::path const& fileName, icu::UnicodeString& uString);
-	//bool writeUnitexFileFastWithBOM(boost::filesystem::path const& fileName, uima::UnicodeStringRef const& uString);
-	//bool getStringFromUnitexFile(boost::filesystem::path const& fileName, icu::UnicodeString& uString);
-
-	bool writeStringToFile(const std::string& strFilename, const uima::UnicodeStringRef& uString);
-	bool writeStringToFile(const boost::filesystem::path& filename, const uima::UnicodeStringRef& uString);
 
 	void getVirtualFilesInDirectory(const std::string& strDirectory, std::list<std::string>& list);
 	void getVirtualFilesInDirectory(const boost::filesystem::path& directory, std::list<std::string>& list);
 
 	boost::filesystem::path getRelativePathFrom(const boost::filesystem::path& rootPath, const boost::filesystem::path& fullPath);
 	boost::filesystem::path createPathRelativeTo(const boost::filesystem::path& rootPath, const boost::filesystem::path& offsetPath);
+
+	void emptyVirtualFileSystem();
 }
 
 #endif /* FILEUTILS_H_ */

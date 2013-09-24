@@ -181,7 +181,7 @@ namespace unitexcpp
 			Stringlist help;
 			help.push_back("--help");
 			char** helpArgv = stringListToCharStarArray(help);
-			UnitexTool_public_run_one_tool(commandName.c_str(), 1, helpArgv);
+			unitex::UnitexTool_public_run_one_tool(commandName.c_str(), 1, helpArgv);
 			deleteCharStarArray(1, helpArgv);
 		}
 #endif
