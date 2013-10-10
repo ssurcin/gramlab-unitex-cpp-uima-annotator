@@ -49,6 +49,14 @@
 				<include>*.xml</include>
 			</includes>
 		</fileSet>
+		<!-- Take all .lib and .exp library descriptions (useful for Windows) -->
+		<fileSet>
+			<directory>${project.basedir}/${build.mode}/uima-cpp/lib</directory>
+			<outputDirectory>/lib</outputDirectory>
+			<includes>
+				<include>*</include>
+			</includes>
+		</fileSet>
 	</fileSets>
 </assembly>
 
