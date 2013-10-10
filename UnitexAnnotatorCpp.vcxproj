@@ -238,10 +238,10 @@
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
     </Link>
     <PreBuildEvent>
-      <Command>call unziptre</Command>
+      <Command>mvn dependency:unpack</Command>
     </PreBuildEvent>
     <PreBuildEvent>
-      <Message>Unzip the TRE library if needed</Message>
+      <Message>Unpack Maven dependencies</Message>
     </PreBuildEvent>
     <PostBuildEvent>
       <Command>call copydep $(Configuration)</Command>

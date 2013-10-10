@@ -64,6 +64,10 @@ if "%~1" == "Debug" (
 	xcopy /Q /Y %DEP_SOURCE%\*.pdb %DEP_DIR%\
 )
 
+echo Copying Unitex core library
+set DEP_UNITEXJNI=%TARGET_DIR%\gramlab-unitexjni
+xcopy /Y %DEP_UNITEXJNI%\* %DEP_DIR%\
+
 REM echo Copying libraries from Boost
 REM xcopy /Q /Y %BOOST_ROOT%\lib\boost_filesystem-vc100-mt-1_51.lib;boost_system-vc100-mt-1_51.lib;boost_date_time-vc100-mt-1_51.lib;boost_thread-vc100-mt-1_51.lib
 

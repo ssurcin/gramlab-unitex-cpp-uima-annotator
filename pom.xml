@@ -2,9 +2,11 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.gramlab.kwaga</groupId>
   <artifactId>unitex-uima-cpp-${actual.platform}${artifact.buildmode.classifier}</artifactId>
-  <version>1.1.3</version>
-  <!-- <version>1.1.4.-SNAPSHOT</version> -->
-
+  
+  <version>1.1.5</version>
+  <!--Versions -->
+  <!-- 1.1.5: depend on UnitexJni library 0.0.2 -->
+  
   <!-- HOWTO: deploy a release on the repository -->
   <!-- 1. Choose a platform, and adapt the property actual.platform below 
 		(win32, linux, osx). -->
@@ -21,9 +23,16 @@
   <properties>
     <!-- Use default UTF-8 encoding -->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <!-- Default build mode is Release -->
+    <build.mode>Release</build.mode>
+    <artifact.buildmode.classifier/>
     <!-- <current.base.version>0.0.15</current.base.version> <current.version>${current.base.version}-SNAPSHOT</current.version> -->
     <!-- The version of the UIMA-C++ framework artifact we need -->
     <uima-cpp.version>0.0.10</uima-cpp.version>
+    <uima-cpp.artifactId>uima-cpp-${actual.platform}${artifact.buildmode.classifier}</uima-cpp.artifactId>
+    <!-- The artifactId and version of Unitex core library we need -->
+    <unitex-library.version>0.0.2</unitex-library.version>
+    <unitex-library.artifactId>unitexjni-${actual.platform}${artifact.buildmode.classifier}</unitex-library.artifactId>
     <!-- This is the name of the folder where the C++ compiler stores the build 
 			of UnitexAnnotatorCpp project -->
   </properties>
@@ -49,9 +58,6 @@
   <profiles>
     <profile>
       <id>release</id>
-      <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
       <properties>
         <build.mode>Release</build.mode>
         <artifact.buildmode.classifier/>
@@ -113,6 +119,7 @@
     </resources>
 
     <!-- Allow unpack in m2e -->
+    <!--
     <pluginManagement>
       <plugins>
         <plugin>
@@ -141,6 +148,7 @@
         </plugin>
       </plugins>
     </pluginManagement>
+    -->
 
     <plugins>
       <!-- Encode resources in UTF-8 -->
@@ -169,6 +177,7 @@
                 <include>libapr*</include>
                 <include>msvc*.dll</include>
                 <include>xerces-c*</include>
+                <include>UnitexJni.*</include>
               </includes>
               <excludes>
                 <exclude>UnitexAnnotatorCpp*</exclude>
@@ -181,8 +190,27 @@
 
       <!-- Unpack UIMA-C++ dependencies intro project/build/uima-cpp -->
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
-        <version>2.5.1</version>
+        <version>2.8</version>
+        <configuration>
+          <artifactItems>
+            <artifactItem>
+              <groupId>com.kwaga</groupId>
+              <artifactId>${uima-cpp.artifactId}</artifactId>
+              <version>${uima-cpp.version}</version>
+              <type>zip</type>
+              <outputDirectory>${project.basedir}/${build.mode}</outputDirectory>
+            </artifactItem>
+            <artifactItem>
+              <groupId>org.gramlab</groupId>
+              <artifactId>${unitex-library.artifactId}</artifactId>
+              <version>${unitex-library.version}</version>
+              <type>zip</type>
+              <outputDirectory>${project.basedir}/${build.mode}</outputDirectory>
+            </artifactItem>
+          </artifactItems>
+        </configuration>
         <executions>
           <execution>
             <id>unpack</id>
@@ -190,17 +218,6 @@
             <goals>
               <goal>unpack</goal>
             </goals>
-            <configuration>
-              <artifactItems>
-                <artifactItem>
-                  <groupId>com.kwaga</groupId>
-                  <artifactId>uima-cpp-${actual.platform}${artifact.buildmode.classifier}</artifactId>
-                  <version>${uima-cpp.version}</version>
-                  <type>zip</type>
-                  <outputDirectory>${project.basedir}/${build.mode}</outputDirectory>
-                </artifactItem>
-              </artifactItems>
-            </configuration>
           </execution>
         </executions>
       </plugin>
@@ -229,15 +246,9 @@
 
       <!-- Pack everything into a jar -->
       <plugin>
-        <groupId>
-          org.apache.maven.plugins
-        </groupId>
-        <artifactId>
-          maven-source-plugin
-        </artifactId>
-        <version>
-          2.1.2
-        </version>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <version>2.1.2</version>
         <executions>
           <execution>
             <phase>package</phase>
@@ -250,4 +261,18 @@
 
     </plugins>
   </build>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.maven.plugins</groupId>
+      <artifactId>maven-dependency-plugin</artifactId>
+      <version>2.8</version>
+    </dependency>
+    <dependency>
+      <groupId>org.gramlab</groupId>
+      <artifactId>${unitex-library.artifactId}</artifactId>
+      <version>${unitex-library.version}</version>
+    </dependency>
+  </dependencies>
+
 </project>

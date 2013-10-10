@@ -163,6 +163,12 @@ namespace uima
 #endif
 		logMessage("Unitex Virtual File System initialized with %d virtual file spaces", nbVfsSpaces);
 
+		// Check the VFS flavour
+#ifdef DEBUG_UIMA_CPP
+		cout << "Virtual File System prefix = " << getVirtualFilePfx() << endl;
+#endif
+		logMessage("Virtual File System prefix = %s", getVirtualFilePfx());
+
 		// Prevent Unitex library to write into the standard output
 		error = initializeHideUnitexOutput();
 		if (error != UIMA_ERR_NONE) {
