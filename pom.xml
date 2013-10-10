@@ -31,7 +31,7 @@
     <uima-cpp.version>0.0.10</uima-cpp.version>
     <uima-cpp.artifactId>uima-cpp-${actual.platform}${artifact.buildmode.classifier}</uima-cpp.artifactId>
     <!-- The artifactId and version of Unitex core library we need -->
-    <unitex-library.version>0.0.2</unitex-library.version>
+    <unitex-library.version>0.0.4</unitex-library.version>
     <unitex-library.artifactId>unitexjni-${actual.platform}${artifact.buildmode.classifier}</unitex-library.artifactId>
     <!-- This is the name of the folder where the C++ compiler stores the build 
 			of UnitexAnnotatorCpp project -->

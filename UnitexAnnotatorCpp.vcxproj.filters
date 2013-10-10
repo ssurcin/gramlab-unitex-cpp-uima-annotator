@@ -265,9 +265,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Filter Include="Unitex">
-      <UniqueIdentifier>{42ad2c28-94d6-4354-9567-e0169186132d}</UniqueIdentifier>
-    </Filter>
     <Filter Include="UIMA Annotations">
       <UniqueIdentifier>{ce11f4f2-c787-43a0-a80e-c7e25f768241}</UniqueIdentifier>
     </Filter>
