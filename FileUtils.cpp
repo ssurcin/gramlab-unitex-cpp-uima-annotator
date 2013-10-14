@@ -30,7 +30,7 @@ using namespace boost::filesystem;
 namespace unitexcpp {
 
 	// A unique instance to represent a file not found
-	static const path fileNotFoundPath;
+	const path fileNotFoundPath;
 
 	// A static variable to store only once the VFS prefix
 	static string VfsPrefix;

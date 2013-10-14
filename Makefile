@@ -23,15 +23,16 @@ VERBOSE_WRITEUNITEXFILE_ERROR=1
 .PHONY: annotator clean_annotator
 
 ifeq ($(UNAME),Darwin)
-annotator: .make_banner make_unitex all prepare_deploy
+#annotator: .make_banner make_unitex all prepare_deploy
+annotator: .make_banner maven_dependencies all prepare_deploy
 	install_name_tool -change "/install/lib/libuima.0.dylib" \
 	"$(UIMACPP_HOME)/install/lib/libuima.dylib" \
 	UnitexAnnotatorCpp.dylib
 else
-annotator: .make_banner make_unitex all prepare_deploy
+annotator: .make_banner maven_dependencies all prepare_deploy
 endif
 
-clean_annotator: .clean_banner clean_unitex clean_maven clean
+clean_annotator: .clean_banner clean_maven clean
 	
 MACOS = no
 DLL_SUFFIX = dll
@@ -64,7 +65,7 @@ endif
 #                                                                           #
 #############################################################################
 
-UNITEX_SRC = ./Unitex-C++
+UNITEX_SRC = ./Release/gramlab-unitexjni/Unitex-C++
 UNITEX_BUILD = $(UNITEX_SRC)/build
 UNITEX_BIN = $(UNITEX_SRC)/bin
 
@@ -96,16 +97,22 @@ else
 endif
 endif
 
-INCLUDE_DIRS = -I/usr/include \
-               -I$(BOOST_HOME)/include \
-          	   -I$(BOOST_ROOT) \
-		 	   -I$(ICU_HOME)/include \
-          	   -I$(UNITEX_SRC) \
-         	   -I$(UNITEX_SRC)/logger \
-         	   -I$(UNITEX_SRC)/UnitexLibAndJni \
-         	   -I$(UIMACPP_HOME)/include \
-         	   -I$(APR_INCLUDE) \
-         	   -I$(JAVA_INCLUDE)
+ifeq ($(BOOST_HOME),)
+	BOOST_INCLUDE=/lib/include
+else
+	BOOST_INCLUDE=$(BOOST_HOME)/include
+endif
+
+INCLUDE_DIRS =  -I/usr/include \
+          	-I$(BOOST_INCLUDE) \
+		-I$(ICU_HOME)/include \
+		-I./Release/gramlab-unitexjni \
+          	-I$(UNITEX_SRC) \
+         	-I$(UNITEX_SRC)/logger \
+         	-I$(UNITEX_SRC)/UnitexLibAndJni \
+         	-I$(UIMACPP_HOME)/include \
+         	-I$(APR_INCLUDE) \
+         	-I$(JAVA_INCLUDE)
  		   
 # name of the annotator to be created
 TARGET_FILE = UnitexAnnotatorCpp
@@ -128,19 +135,19 @@ OBJ_COMMANDS = UnitexCommand.o \
 OBJ_TYPES = JavaLikeEnum.o UnitexTypes.o
 
 # list of object files concerning Unitex engine and sub-engines to be linked when building the annotator 
-OBJ_ENGINES = UnitexSubengine.o \
-              DictionaryCompiler.o \
-	          GraphCompiler.o \
-	          TextPreprocessor.o \
-	          ProfilingLogger.o \
-	          TextProcessor.o \
-	          QualifiedString.o \
-	          UnitexEngine.o 
+OBJ_ENGINES =   UnitexSubengine.o \
+              	DictionaryCompiler.o \
+	      	GraphCompiler.o \
+          	TextPreprocessor.o \
+	        ProfilingLogger.o \
+		TextProcessor.o \
+		QualifiedString.o \
+		UnitexEngine.o 
 
 # list of object files concerning annotations to be linked when building the annotator 
 OBJ_ANNOTATIONS = AnnotationWrapper.o \
-			 	  UnitexDocumentParameters.o \
-				  LanguageArea.o \
+	 	  UnitexDocumentParameters.o \
+		  LanguageArea.o \
                   TextAreaAnnotation.o \
                   ContextAreaAnnotation.o \
                   ParagraphAnnotation.o \
@@ -152,12 +159,12 @@ OBJ_ANNOTATIONS = AnnotationWrapper.o \
 
 # list of object files concerning tokenization to be linked when building the annotator 
 OBJ_TOKENIZATION = UnitexTokenizer.o \
-				   TextArea.o UnitexOutputOffsetConverter.o 
+		   TextArea.o \
+		   UnitexOutputOffsetConverter.o 
 
 # list of user's object files to be linked when building the annotator
 OBJS = $(OBJ_TYPES) \
 	   UnitexException.o \
-	   UnitexLogInstaller.o \
 	   Language.o \
 	   LanguageResources.o \
 	   Utils.o FileUtils.o \
@@ -166,10 +173,20 @@ OBJS = $(OBJ_TYPES) \
 	   $(OBJ_ENGINES) \
 	   $(OBJ_ANNOTATIONS) \
 	   $(OBJ_TOKENIZATION) \
-	   UnitexJNI.o \
+#	   UnitexJNI.o \
 	   UnitexAnnotatorCpp.o
 
 LIBS = 
+
+#############################################################################
+#                                                                           #
+#                                LINKING                                    #
+#                                                                           #
+#############################################################################
+
+LIB_FOLDER = ./Release
+UIMA_LIB_FOLDER = $(LIB_FOLDER)/uima-cpp/lib
+UNITEX_LIB_FOLDER = $(LIB_FOLDER)/gramlab-unitexjni
 
 ICU_LINKFLAGS = -L$(ICU_HOME)/lib -licuuc -licuio -licui18n -licudata
 ifeq ($(MACOS),yes)
@@ -180,7 +197,8 @@ ifeq ($(MACOS),yes)
 else
 	DYNAMIC_LINK_FLAG = -Wl,-Bdynamic
 	STATIC_LINK_FLAG = -Wl,-Bstatic
-	UNITEX_LINKFLAGS = $(STATIC_LINK_FLAG) -L$(UNITEX_SRC)/bin -lunitex -L$(UNITEX_BUILD)/libtre/lib -ltre
+#	UNITEX_LINKFLAGS = $(STATIC_LINK_FLAG) -L$(UNITEX_SRC)/bin -lunitex -L$(UNITEX_BUILD)/libtre/lib -ltre
+	UNITEX_LINKFLAGS = -L$(UNITEX_LIB_FOLDER) -lUnitexJni
 	BOOST_LINKFLAGS = $(STATIC_LINK_FLAG) -L$(BOOST_ROOT)/lib -lboost_filesystem -lboost_system -lboost_date_time -lboost_thread
 endif
 
@@ -223,14 +241,14 @@ include $(UIMACPP_HOME)/lib/base.mak
 #                                                                           #
 #############################################################################
 
-.PHONY: make_unitex clean_unitex
+#.PHONY: make_unitex clean_unitex
 
-make_unitex:
-	@echo "Making Unitex under $(SYSTEM)"
-	make -C $(UNITEX_BUILD) SYSTEM=$(SYSTEM) 64BITS=$(64BITS) DEBUG=$(DEBUG) STATICLIB=yes
+#make_unitex:
+#	@echo "Making Unitex under $(SYSTEM)"
+#	make -C $(UNITEX_BUILD) SYSTEM=$(SYSTEM) 64BITS=$(64BITS) DEBUG=$(DEBUG) STATICLIB=yes
 	
-clean_unitex:
-	make -C $(UNITEX_BUILD) clean
+#clean_unitex:
+#	make -C $(UNITEX_BUILD) clean
 
 #############################################################################
 #                                                                           #
@@ -244,6 +262,10 @@ clean_maven:
 	@echo "Clean MAVEN deployment directory: Release"
 	@rm -rf Release
 	
+maven_dependencies:
+	@echo "Getting MAVEN dependencies"
+	@mvn dependency:unpack
+
 prepare_deploy:
 	@echo "Preparing for MAVEN deployment"
 	@mkdir -p Release

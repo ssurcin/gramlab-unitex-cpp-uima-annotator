@@ -36,6 +36,12 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
+// If not under Windows, use PATH_MAX instead of MAX_PATH
+#if !defined(_MSC_VER)
+#include <limits.h>
+#define MAX_PATH PATH_MAX
+#endif
+
 using namespace std;
 using namespace boost;
 using namespace boost::filesystem;
@@ -656,7 +662,7 @@ namespace unitexcpp
 		} else {
 			// VFS
 			// ms_persistedResources[automatonPath] = ResourceType::AUTOMATON;
-			ms_persistedResources[newPath] = ResourceType::AUTOMATON;
+			ms_persistedResources[newPath] = AUTOMATON;
 			bool isPreprocessingGraph = false;
 			for (path::iterator it = automatonPath.begin(); it != automatonPath.end(); it++) {
 				string item = (*it).string();
@@ -769,7 +775,7 @@ namespace unitexcpp
 
 		// if (addToDictionaries)
 		//	m_dictionaryPaths.insert(persistedDictionaryPath);
-		ms_persistedResources[newPath] = ResourceType::DICTIONARY;
+		ms_persistedResources[newPath] = DICTIONARY;
 		if (addToDictionaries)
 			m_dictionaryPaths.insert(dictionaryPath);
 		persistedPath = newPath;
@@ -841,7 +847,7 @@ namespace unitexcpp
 			ls.flush();
 			return false;
 		} else {
-			ms_persistedResources[newPath] = ResourceType::ALPHABET;
+			ms_persistedResources[newPath] = ALPHABET;
 			persistedPath = newPath;
 		}
 

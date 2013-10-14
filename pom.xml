@@ -201,6 +201,7 @@
               <version>${uima-cpp.version}</version>
               <type>zip</type>
               <outputDirectory>${project.basedir}/${build.mode}</outputDirectory>
+	      <overWrite>true</overWrite>
             </artifactItem>
             <artifactItem>
               <groupId>org.gramlab</groupId>
@@ -208,6 +209,7 @@
               <version>${unitex-library.version}</version>
               <type>zip</type>
               <outputDirectory>${project.basedir}/${build.mode}</outputDirectory>
+	      <overWrite>true</overWrite>
             </artifactItem>
           </artifactItems>
         </configuration>
