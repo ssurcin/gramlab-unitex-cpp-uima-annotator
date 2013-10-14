@@ -9,7 +9,7 @@
 #define UNITEXLOGINSTALLER_H_
 
 #include <string>
-#include "UniLogger.h"
+#include "Unitex-C++/logger/UniLogger.h"
 
 namespace unitexcpp
 {
