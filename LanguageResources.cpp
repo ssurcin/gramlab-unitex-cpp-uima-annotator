@@ -639,11 +639,15 @@ namespace unitexcpp
 				return false;
 		}
 
-#ifdef DEBUG_UIMA_CPP
-		cout << "Virtualizing FST2 " << automatonPath << endl;
-#endif
-		path virtualPath;
-		if (!virtualizeFile(automatonPath, virtualPath)) return false;
+
+//#ifdef DEBUG_UIMA_CPP
+//		cout << "Virtualizing FST2 " << automatonPath << endl;
+//#endif
+//		path virtualPath;
+//		if (!virtualizeFile(automatonPath, virtualPath)) return false;
+
+		// Get rid of virtualization because persistence already maps data into memory
+		path virtualPath = automatonPath;
 
 #ifdef DEBUG_UIMA_CPP
 		cout << "Loading persistent FST2 from " << virtualPath << endl;
@@ -724,34 +728,37 @@ namespace unitexcpp
 				return false;
 		}
 
-		// we are provided with the .BIN dictionary name
-#ifdef DEBUG_UIMA_CPP
-		cout << "Virtualizing BIN dictionary " << compiledPath << endl;
-#endif
-			path virtualBinDicPath;
-			if (!virtualizeFile(compiledPath, virtualBinDicPath)) {
-				if (annotator.isLoggingEnabled(LogStream::EnWarning)) {
-					LogStream& ls = annotator.getLogStream(LogStream::EnWarning);
-					ls << "Could not virtualize " << compiledPath << endl;
-					ls.flush();
-				}
-				return false;
-			}
+//		// we are provided with the .BIN dictionary name
+//#ifdef DEBUG_UIMA_CPP
+//		cout << "Virtualizing BIN dictionary " << compiledPath << endl;
+//#endif
+//			path virtualBinDicPath;
+//			if (!virtualizeFile(compiledPath, virtualBinDicPath)) {
+//				if (annotator.isLoggingEnabled(LogStream::EnWarning)) {
+//					LogStream& ls = annotator.getLogStream(LogStream::EnWarning);
+//					ls << "Could not virtualize " << compiledPath << endl;
+//					ls.flush();
+//				}
+//				return false;
+//			}
+//
+//			// we also store the corresponding .INF dictionary name
+//			path infDicPath = change_extension(compiledPath, ".inf");
+//#ifdef DEBUG_UIMA_CPP
+//		cout << "Virtualizing INF dictionary " << infDicPath << endl;
+//#endif
+//			path virtualInfDicPath;
+//			if (!virtualizeFile(infDicPath, virtualInfDicPath)) {
+//				if (annotator.isLoggingEnabled(LogStream::EnWarning)) {
+//					LogStream& ls = annotator.getLogStream(LogStream::EnWarning);
+//					ls << "Could not virtualize " << infDicPath << endl;
+//					ls.flush();
+//				}
+//				return false;
+//			}
 
-			// we also store the corresponding .INF dictionary name
-			path infDicPath = change_extension(compiledPath, ".inf");
-#ifdef DEBUG_UIMA_CPP
-		cout << "Virtualizing INF dictionary " << infDicPath << endl;
-#endif
-			path virtualInfDicPath;
-			if (!virtualizeFile(infDicPath, virtualInfDicPath)) {
-				if (annotator.isLoggingEnabled(LogStream::EnWarning)) {
-					LogStream& ls = annotator.getLogStream(LogStream::EnWarning);
-					ls << "Could not virtualize " << infDicPath << endl;
-					ls.flush();
-				}
-				return false;
-			}
+		// Get rid of virtualization because persistence already maps data into memory
+		path virtualBinDicPath = dictionaryPath;
 
 #ifdef DEBUG_UIMA_CPP
 		cout << "Loading persistent dictionary " << virtualBinDicPath << endl;

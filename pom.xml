@@ -3,9 +3,10 @@
   <groupId>org.gramlab.kwaga</groupId>
   <artifactId>unitex-uima-cpp-${actual.platform}${artifact.buildmode.classifier}</artifactId>
   
-  <version>1.1.5</version>
+  <version>1.1.6</version>
   <!--Versions -->
   <!-- 1.1.5: depend on UnitexJni library 0.0.2 -->
+  <!-- 1.1.6: do not virtualize fst2 and bin, redundant with persistence -->
   
   <!-- HOWTO: deploy a release on the repository -->
   <!-- 1. Choose a platform, and adapt the property actual.platform below 
