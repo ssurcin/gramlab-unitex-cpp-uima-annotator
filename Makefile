@@ -17,7 +17,7 @@
 
 UNAME = $(shell uname -s)
 
-DEBUG=yes
+DEBUG=no
 VERBOSE_WRITEUNITEXFILE_ERROR=1
 
 .PHONY: annotator clean_annotator
@@ -173,7 +173,6 @@ OBJS = $(OBJ_TYPES) \
 	   $(OBJ_ENGINES) \
 	   $(OBJ_ANNOTATIONS) \
 	   $(OBJ_TOKENIZATION) \
-#	   UnitexJNI.o \
 	   UnitexAnnotatorCpp.o
 
 LIBS = 
@@ -197,27 +196,26 @@ ifeq ($(MACOS),yes)
 else
 	DYNAMIC_LINK_FLAG = -Wl,-Bdynamic
 	STATIC_LINK_FLAG = -Wl,-Bstatic
-#	UNITEX_LINKFLAGS = $(STATIC_LINK_FLAG) -L$(UNITEX_SRC)/bin -lunitex -L$(UNITEX_BUILD)/libtre/lib -ltre
 	UNITEX_LINKFLAGS = -L$(UNITEX_LIB_FOLDER) -lUnitexJni
-	BOOST_LINKFLAGS = $(STATIC_LINK_FLAG) -L$(BOOST_ROOT)/lib -lboost_filesystem -lboost_system -lboost_date_time -lboost_thread
+	BOOST_LINKFLAGS = $(STATIC_LINK_FLAG) -L$(BOOST_HOME)/lib -lboost_filesystem-mt -lboost_system-mt -lboost_date_time-mt -lboost_thread-mt
 endif
 
-USER_LINKFLAGS = -lxerces-c -ldl $(ICU_LINKFLAGS) $(UNITEX_LINKFLAGS) $(BOOST_LINKFLAGS) $(DYNAMIC_LINK_FLAG)
+USER_LINKFLAGS = -Wl,-t -lxerces-c -ldl $(ICU_LINKFLAGS) $(UNITEX_LINKFLAGS) $(BOOST_LINKFLAGS) $(DYNAMIC_LINK_FLAG)
 
 # Set DEBUG=1 for a debug build (if not 1 a ship build will result)
-DEBUG = 1
+DEBUG = 0
 
 ifeq ($(DEBUG),1)
 	USER_CFLAGS = -O0 -ggdb3 -W -Wall
 else
-	USER_CFLAGS = -O3 -W
+	USER_CFLAGS = -O3 -W -Wunused-parameter
 endif
 
 # Set DLL_BUILD=1 to build an annotator (shared library)
 #    if not 1 an executable binary will be built
 DLL_BUILD = 1
 
-USER_CFLAGS = $(INCLUDE_DIRS)
+USER_CFLAGS += $(INCLUDE_DIRS) -fno-inline 
 
 # include file with generic compiler instructions
 include $(UIMACPP_HOME)/lib/base.mak
@@ -229,7 +227,9 @@ include $(UIMACPP_HOME)/lib/base.mak
 	@echo "Compiling UnitexAnnotatorCpp for $(UNAME) - DEBUG=$(DEBUG)..."
 	@echo "#############################################################################"
 	@echo JAVA_INCLUDE=$(JAVA_INCLUDE)
-	
+	@echo BOOST_HOME=$(BOOST_HOME)
+	@echo DEBUG=$(DEBUG)
+
 .clean_banner:
 	@echo "#############################################################################"
 	@echo "Cleaning UnitexAnnotatorCpp for $(UNAME)..."
