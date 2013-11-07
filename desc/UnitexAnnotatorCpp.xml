@@ -1,20 +1,12 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<analysisEngineDescription xmlns="http://uima.apache.org/resourceSpecifier">
-
-  <!-- This is a C++ UIMA annotator -->
+<?xml version="1.0" encoding="UTF-8"?><analysisEngineDescription xmlns="http://uima.apache.org/resourceSpecifier">
   <frameworkImplementation>org.apache.uima.cpp</frameworkImplementation>
   <primitive>true</primitive>
-
-  <!-- Override this to put the absolute path of the annotator DLL (or SO or DYLIB) on your system -->
   <annotatorImplementationName>C:\Users\Sylvain\Pulse\workspace\UnitexAnnotatorCpp\UnitexAnnotatorCpp.dll</annotatorImplementationName>
-
   <analysisEngineMetaData>
     <name>UnitexAnnotatorCpp</name>
     <description>Find entities using Unitex.</description>
     <version>1.0</version>
     <vendor>Gramlab</vendor>
-
-    <!-- Parameter definition -->
     <configurationParameters defaultGroup="French" searchStrategy="none">
       <commonParameters>
         <configurationParameter>
@@ -47,12 +39,10 @@
         </configurationParameter>
         <configurationParameter>
           <name>MorphoDictionaries</name>
-          <description>
-            Morphological dictionaries to be applied on each graph.
+          <description>Morphological dictionaries to be applied on each graph.
             Use the format:
             &lt;graph path&gt;=&lt;list of morpho dictionaries&gt;
-            where the list of morphological dictionaries is a single string with one or more dictionary paths (relative to the current language's Dela folder) separated with semi-colons.
-          </description>
+            where the list of morphological dictionaries is a single string with one or more dictionary paths (relative to the current language's Dela folder) separated with semi-colons.</description>
           <type>String</type>
           <multiValued>true</multiValued>
           <mandatory>false</mandatory>
@@ -80,11 +70,9 @@
         </configurationParameter>
         <configurationParameter>
           <name>fakeTokens</name>
-          <description>
-            A list of tokens produced by Unitex that are not present in the input document (those "fake" tokens are optionnally generated before calling Unitex, for ad hoc graph purposes).
+          <description>A list of tokens produced by Unitex that are not present in the input document (those "fake" tokens are optionnally generated before calling Unitex, for ad hoc graph purposes).
 
-            Each item of this list can span over more than 1 token, e.g. "[SDOC]" is in fact 3 tokens for Unitex: [, SDOC, ].
-          </description>
+            Each item of this list can span over more than 1 token, e.g. "[SDOC]" is in fact 3 tokens for Unitex: [, SDOC, ].</description>
           <type>String</type>
           <multiValued>true</multiValued>
           <mandatory>false</mandatory>
@@ -112,10 +100,8 @@
         </configurationParameter>
         <configurationParameter>
           <name>ForceGraphCompilation</name>
-          <description>
-            If True, recompile graphs when initializing the annotator.
-            If False, recompile only those graphs for which the .grf was specified (cf. parameter Graphs), and only if there is no corresponding .fst2 or an older one.
-          </description>
+          <description>If True, recompile graphs when initializing the annotator.
+            If False, recompile only those graphs for which the .grf was specified (cf. parameter Graphs), and only if there is no corresponding .fst2 or an older one.</description>
           <type>Boolean</type>
           <multiValued>false</multiValued>
           <mandatory>false</mandatory>
@@ -136,21 +122,17 @@
         </configurationParameter>
         <configurationParameter>
           <name>ForceDictionaryCompilation</name>
-          <description>
-            If True, recompile dictionaries when initializing the annotator.
-            If False, recompile only those dictionaries for which the .dic was specified (cf. parameter Dictionaries), and only if there is no corresponding .bin or an older one.
-          </description>
+          <description>If True, recompile dictionaries when initializing the annotator.
+            If False, recompile only those dictionaries for which the .dic was specified (cf. parameter Dictionaries), and only if there is no corresponding .bin or an older one.</description>
           <type>Boolean</type>
           <multiValued>false</multiValued>
           <mandatory>false</mandatory>
         </configurationParameter>
         <configurationParameter>
           <name>CumulateAutomatonPerformances</name>
-          <description>
-            If set (by default) cumulate the automaton performances from one document to the other, i.e. performances stored in each document are the sum of performances from the beginning of collection.
+          <description>If set (by default) cumulate the automaton performances from one document to the other, i.e. performances stored in each document are the sum of performances from the beginning of collection.
 
-            If not set, reset the performances for each document.
-          </description>
+            If not set, reset the performances for each document.</description>
           <type>Boolean</type>
           <multiValued>false</multiValued>
           <mandatory>true</mandatory>
@@ -158,8 +140,6 @@
       </commonParameters>
       <configurationGroup names="English French"/>
     </configurationParameters>
-    
-    <!-- Parameter settings -->
     <configurationParameterSettings>
       <settingsForGroup name="French">
         <nameValuePair>
@@ -257,6 +237,12 @@
             <boolean>true</boolean>
           </value>
         </nameValuePair>
+        <nameValuePair>
+          <name>CumulateAutomatonPerformances</name>
+          <value>
+            <boolean>true</boolean>
+          </value>
+        </nameValuePair>
       </settingsForGroup>
       <settingsForGroup name="English">
         <nameValuePair>
@@ -348,6 +334,12 @@
         </nameValuePair>
         <nameValuePair>
           <name>HideUnitexOutput</name>
+          <value>
+            <boolean>true</boolean>
+          </value>
+        </nameValuePair>
+        <nameValuePair>
+          <name>CumulateAutomatonPerformances</name>
           <value>
             <boolean>true</boolean>
           </value>
