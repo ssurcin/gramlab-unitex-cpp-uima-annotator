@@ -9,6 +9,7 @@
 #include "Utils.h"
 #include "UnitexAnnotatorCpp.h"
 #include <sstream>
+#include <iostream>
 #include <boost/foreach.hpp>
 #include "Unitex-C++/UnitexLibIO.h"
 #include "Unitex-C++/File.h"
@@ -32,20 +33,20 @@ namespace unitexcpp {
 	// A unique instance to represent a file not found
 	const path fileNotFoundPath;
 
-	// A static variable to store only once the VFS prefix
-	static string VfsPrefix;
-	static bool VfsPrefixInitialized = false;
-
 	string const& getVirtualFilePfx()
 	{
-		if (!VfsPrefixInitialized) {
+		// A static variable to store only once the VFS prefix
+		static string vfsPrefix;
+		static bool vfsPrefixInitialized = false;
+
+		if (!vfsPrefixInitialized) {
 			if (UnitexAbstractPathExists("*") != 0)
-				VfsPrefix = "*";
+				vfsPrefix = "*";
 			else if (UnitexAbstractPathExists("$:") != 0)
-				VfsPrefix= "$:";
-			VfsPrefixInitialized = true;
+				vfsPrefix= "$:";
+			vfsPrefixInitialized = true;
 		}
-		return VfsPrefix;
+		return vfsPrefix;
 	}
 
 	bool isAbsolutePath(const path& path)
@@ -63,7 +64,7 @@ namespace unitexcpp {
 	*/
 	bool isVirtualPath(const path& aPath)
 	{
-		return boost::starts_with(aPath.string(), VfsPrefix);
+		return boost::starts_with(aPath.string(), getVirtualFilePfx());
 	}
 
 	/**
@@ -73,7 +74,7 @@ namespace unitexcpp {
 	path virtualizedPath(const path& aPath)
 	{
 		if (!isVirtualPath(aPath))
-			return path(VfsPrefix + aPath.string());
+			return path(getVirtualFilePfx() + aPath.string());
 		return aPath;
 	}
 
@@ -86,7 +87,7 @@ namespace unitexcpp {
 		if (isVirtualPath(aPath)) {
 			path p = aPath;
 			do {
-				p = path(p.string().substr(VfsPrefix.length()));
+				p = path(p.string().substr(getVirtualFilePfx().length()));
 			} while (isVirtualPath(p));
 			return p;
 		}
@@ -365,6 +366,7 @@ namespace unitexcpp {
 			RemoveUnitexFile(file.c_str());
 		}
 	}
+
 }
 
 

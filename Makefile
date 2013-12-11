@@ -169,6 +169,7 @@ OBJS = $(OBJ_TYPES) \
 	   LanguageResources.o \
 	   Utils.o FileUtils.o \
 	   VirtualFolderCleaner.o \
+	   UnitexLogInstaller.o \
 	   $(OBJ_COMMANDS) \
 	   $(OBJ_ENGINES) \
 	   $(OBJ_ANNOTATIONS) \
@@ -185,7 +186,10 @@ LIBS =
 
 LIB_FOLDER = ./Release
 UIMA_LIB_FOLDER = $(LIB_FOLDER)/uima-cpp/lib
-UNITEX_LIB_FOLDER = $(LIB_FOLDER)/gramlab-unitexjni
+ifeq ($(UNITEX_LIB_FOLDER),)
+	UNITEX_LIB_FOLDER = $(LIB_FOLDER)/gramlab-unitexjni
+endif
+BOOST_LIB_FOLDER = $(BOOST_HOME)/lib
 
 ICU_LINKFLAGS = -L$(ICU_HOME)/lib -licuuc -licuio -licui18n -licudata
 ifeq ($(MACOS),yes)
@@ -197,10 +201,10 @@ else
 	DYNAMIC_LINK_FLAG = -Wl,-Bdynamic
 	STATIC_LINK_FLAG = -Wl,-Bstatic
 	UNITEX_LINKFLAGS = -L$(UNITEX_LIB_FOLDER) -lUnitexJni
-	BOOST_LINKFLAGS = $(STATIC_LINK_FLAG) -L$(BOOST_HOME)/lib -lboost_filesystem-mt -lboost_system-mt -lboost_date_time-mt -lboost_thread-mt
+	BOOST_LINKFLAGS = $(STATIC_LINK_FLAG) -L$(BOOST_LIB_FOLDER) -lboost_date_time-mt -lboost_thread-mt -lboost_filesystem-mt -lboost_system-mt 
 endif
 
-USER_LINKFLAGS = -Wl,-t -lxerces-c -ldl $(ICU_LINKFLAGS) $(UNITEX_LINKFLAGS) $(BOOST_LINKFLAGS) $(DYNAMIC_LINK_FLAG)
+USER_LINKFLAGS = -Wl,-z,defs -Wl,-t -lxerces-c $(ICU_LINKFLAGS) $(UNITEX_LINKFLAGS) $(BOOST_LINKFLAGS) $(DYNAMIC_LINK_FLAG) -ldl -lpthread -lrt
 
 # Set DEBUG=1 for a debug build (if not 1 a ship build will result)
 DEBUG = 0
